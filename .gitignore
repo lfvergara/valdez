@@ -1,3 +1,4 @@
 private/
 logs/
 settings.php
+static/template.html
