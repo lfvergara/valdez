@@ -1,3 +1,5 @@
 private/
 logs/
 settings.php
+static/template.html
+static/common/alertas
