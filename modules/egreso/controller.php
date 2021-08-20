@@ -122,7 +122,7 @@ class EgresoController {
 
 		$array_ids = array(1,2,3);
 		foreach ($tipofactura_collection as $clave=>$valor) {
-			if (!in_array($valor->tipofactura_id, $array_ids)) $tipofactura_collection[$clave];
+			if (!in_array($valor->tipofactura_id, $array_ids)) unset($tipofactura_collection[$clave]);
 		}
 
 		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
