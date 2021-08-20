@@ -120,6 +120,11 @@ class EgresoController {
 		$condicioniva_collection = Collector()->get('CondicionIVA');
 		$tipofactura_collection = Collector()->get('TipoFactura');
 
+		$array_ids = array(1,2,3);
+		foreach ($tipofactura as $clave=>$valor) {
+			if (!in_array($valor->tipofactura_id, $array_ids)) $tipofactura[$clave];
+		}
+
 		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
 				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO";
 		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
