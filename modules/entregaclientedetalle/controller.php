@@ -200,11 +200,13 @@ class EntregaClienteDetalleController {
 		$entregacliente_id = filter_input(INPUT_POST, "entregacliente_id");
 		$entregaclientedetalle_id = filter_input(INPUT_POST, "entregaclientedetalle_id");
 		$monto = filter_input(INPUT_POST, "monto");
+		$parcial = filter_input(INPUT_POST, "parcial");
 		$vendedor_id = filter_input(INPUT_POST, "vendedor_id");
 
 		$this->model->entregaclientedetalle_id = $entregaclientedetalle_id;
 		$this->model->get();
 		$this->model->monto = $monto;
+		$this->model->parcial = $monto;
 		$this->model->save();
 
 		$ecm = new EntregaCliente();

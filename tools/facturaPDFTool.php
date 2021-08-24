@@ -28,7 +28,7 @@ class FacturaPDF extends View {
             $valor_alicuota_costo = round($valor['COSTO'] / $alicuota, 2);
             // $importe_neto = round($valor['COSTO'] - $valor_alicuota_costo);
             //$importe_neto = round(($valor_alicuota_costo - $importe_neto),2);
-	    $importe_neto = round(($valor['COSTO'] / $alicuota), 2);
+	        $importe_neto = round(($valor['COSTO'] / $alicuota), 2);
 
             $egresodetalle_collection[$clave]['COSTO'] = "$" . $importe_neto;
             $egresodetalle_collection[$clave]['SUBTOTAL'] = "$" . $subtotal;
@@ -96,8 +96,8 @@ class FacturaPDF extends View {
         unset($obj_egreso->cliente, $obj_egreso->vendedor, $obj_cliente->infocontacto_collection,
               $obj_cliente->vendedor->infocontacto_collection, $obj_egreso->egresocomision, $obj_egreso->egresoentrega);
 
-	   $condicionfiscal_id = $obj_cliente->condicionfiscal->condicionfiscal_id;
-	   $condicioniva_id = $obj_cliente->condicioniva->condicioniva_id;
+	    $condicionfiscal_id = $obj_cliente->condicionfiscal->condicionfiscal_id;
+	    $condicioniva_id = $obj_cliente->condicioniva->condicioniva_id;
 
         $obj_egreso->punto_venta = str_pad($obj_egreso->punto_venta, 4, '0', STR_PAD_LEFT);
         $obj_egreso->numero_factura = str_pad($obj_egreso->numero_factura, 8, '0', STR_PAD_LEFT);
@@ -119,7 +119,8 @@ class FacturaPDF extends View {
             $valor_alicuota_costo = round($valor['COSTO'] / $alicuota, 2);
             // $importe_neto = round($valor['COSTO'] - $valor_alicuota_costo);
             //$importe_neto = round(($valor_alicuota_costo - $importe_neto),2);
-	          $importe_neto = round(($valor['COSTO'] / $alicuota), 2);
+	        $iva = round(($valor['IVA'] * $valor['NETPRO'] / 100), 2);
+            $importe_neto = round(($valor['NETPRO'] + $iva), 2);
 
             $egresodetalle_collection[$clave]['COSTO'] = "$" . $importe_neto;
             $egresodetalle_collection[$clave]['SUBTOTAL'] = "$" . $subtotal;
