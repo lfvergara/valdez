@@ -29,6 +29,7 @@ class HojaRutaController {
     		$hojaruta_collection = array();
     	} else {
     		foreach ($hojaruta_collection as $clave=>$valor) {
+    			$hojaruta_id = $valor['HRID'];
     			$egreso_ids = $valor['EIDS'];
     			$array_egreso_ids = explode(',', $egreso_ids);
 
@@ -44,13 +45,16 @@ class HojaRutaController {
 					$where = "eafip.egreso_id = {$egreso_id}";
 					$eafip = CollectorCondition()->get('EgrasoAFIP', $where, 4, $from, $select);
 
+					/*
 					$eem = new EstadoEntrega();
 					$eem->estadoentrega_id = $estadoentrega_id;
 					$eem->get();
 					$denominacion_estadoentrega = $eem->denominacion;
-
+					*/
+					
+					$lbl_quitar = "<a href='{url_app}/hojaruta/liberar_egreso/{$hojaruta_id}@{$egreso_id}' class='btn btn-danger btn-xs' title='Quitar de hoja de ruta'><i class='fa fa-trash-o'></i> Quitar de Hoja de Ruta</a>";
 					if (is_array($eafip)) {
-						$factura = $eafip[0]['REFERENCIA'] . " - {$denominacion_estadoentrega}";
+						$factura = $eafip[0]['REFERENCIA'] . " {$lbl_quitar}";
 					} else {
 						$em = new Egreso();
 						$em->egreso_id = $egreso_id;
@@ -58,7 +62,7 @@ class HojaRutaController {
 						$tipofactura_nomenclatura = $em->tipofactura->nomenclatura;
 						$punto_venta = str_pad($em->punto_venta, 4, '0', STR_PAD_LEFT);
 						$numero_factura = str_pad($em->numero_factura, 8, '0', STR_PAD_LEFT);
-						$factura = "{$tipofactura_nomenclatura} {$punto_venta}-{$numero_factura} - {$denominacion_estadoentrega}";
+						$factura = "{$tipofactura_nomenclatura} {$punto_venta}-{$numero_factura} {$lbl_quitar}";
 					}
 
 					$array_nums_facturas[] = $factura;
@@ -271,102 +275,114 @@ class HojaRutaController {
 	}
 
 	function entregas($arg) {
-			SessionHandler()->check_session();
+		SessionHandler()->check_session();
 
-			$this->model->hojaruta_id = $arg;
-			$this->model->get();
+		$this->model->hojaruta_id = $arg;
+		$this->model->get();
 
-			$fm = new Flete();
-			$fm->flete_id = $this->model->flete_id;
-			$fm->get();
-			$flete = $fm->denominacion;
+		$fm = new Flete();
+		$fm->flete_id = $this->model->flete_id;
+		$fm->get();
+		$flete = $fm->denominacion;
 
-			$monto_total=0;
-			$array_formulario = array();
-			$egreso_ids = explode(',', $this->model->egreso_ids);
-			foreach ($egreso_ids as $egreso) {
-				$ids = explode('@', $egreso);
-				$egreso_id = $ids[0];
+		$monto_total=0;
+		$array_formulario = array();
+		$egreso_ids = explode(',', $this->model->egreso_ids);
+		foreach ($egreso_ids as $egreso) {
+			$ids = explode('@', $egreso);
+			$egreso_id = $ids[0];
 
-				$select = "CONCAT(tf.nomenclatura, ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) AS REFERENCIA";
-				$from = "egresoafip eafip INNER JOIN tipofactura tf ON eafip.tipofactura = tf.tipofactura_id";
-				$where = "eafip.egreso_id = {$egreso_id}";
-				$eafip = CollectorCondition()->get('EgrasoAFIP', $where, 4, $from, $select);
+			$select = "CONCAT(tf.nomenclatura, ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) AS REFERENCIA";
+			$from = "egresoafip eafip INNER JOIN tipofactura tf ON eafip.tipofactura = tf.tipofactura_id";
+			$where = "eafip.egreso_id = {$egreso_id}";
+			$eafip = CollectorCondition()->get('EgresoAFIP', $where, 4, $from, $select);
 
-				$em = new Egreso();
-				$em->egreso_id = $egreso_id;
-				$em->get();
+			$em = new Egreso();
+			$em->egreso_id = $egreso_id;
+			$em->get();
 
+			$select = "nc.importe_total AS IMPORTETOTAL";
+			$from = "notacredito nc";
+			$where = "nc.egreso_id = {$egreso_id}";
+			$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
+
+			if (is_array($notacredito) AND !empty($notacredito)) {
+				$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
+				$monto = $em->importe_total - $importe_notacredito;
+			} else {
 				$monto = $em->importe_total;
-				$fecha = $em->fecha.' '.$em->hora;
-				$cliente = $em->cliente->razon_social;
-				$tipofactura_nomenclatura = $em->tipofactura->nomenclatura;
-				$punto_venta = str_pad($em->punto_venta, 4, '0', STR_PAD_LEFT);
-				$numero_factura = str_pad($em->numero_factura, 8, '0', STR_PAD_LEFT);
-				$factura = (is_array($eafip)) ? $eafip[0]['REFERENCIA'] : "{$tipofactura_nomenclatura} {$punto_venta}-{$numero_factura}";
+			}
+			
+			//$monto = $em->importe_total;
+			$fecha = $em->fecha.' '.$em->hora;
+			$cliente = $em->cliente->razon_social;
+			$tipofactura_nomenclatura = $em->tipofactura->nomenclatura;
+			$punto_venta = str_pad($em->punto_venta, 4, '0', STR_PAD_LEFT);
+			$numero_factura = str_pad($em->numero_factura, 8, '0', STR_PAD_LEFT);
+			$factura = (is_array($eafip)) ? $eafip[0]['REFERENCIA'] : "{$tipofactura_nomenclatura} {$punto_venta}-{$numero_factura}";
 
-				if ($em->condicionpago->condicionpago_id == 1) {
-					$select = "ccc.estadomovimientocuenta AS ESTMOVCUENTA";
-					$from = "cuentacorrientecliente ccc";
-					$where = "ccc.egreso_id = {$egreso_id} ORDER BY ccc.cuentacorrientecliente_id DESC";
-					$cuentacorrientecliente = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
-					$estadomovimientocuenta = (is_array($cuentacorrientecliente) AND !empty($cuentacorrientecliente)) ? $cuentacorrientecliente[0]['ESTMOVCUENTA'] : 0;
+			if ($em->condicionpago->condicionpago_id == 1) {
+				$select = "ccc.estadomovimientocuenta AS ESTMOVCUENTA";
+				$from = "cuentacorrientecliente ccc";
+				$where = "ccc.egreso_id = {$egreso_id} ORDER BY ccc.cuentacorrientecliente_id DESC";
+				$cuentacorrientecliente = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
+				$estadomovimientocuenta = (is_array($cuentacorrientecliente) AND !empty($cuentacorrientecliente)) ? $cuentacorrientecliente[0]['ESTMOVCUENTA'] : 0;
 
-					switch ($estadomovimientocuenta) {
-						case 1:
-							$chk_abonado_check = 'checked';
-							$chk_abonado_display = 'block';
-							$chk_abonado_msj = 'Abonar';
-							$txt_abonado_msj = '';
-							$txt_abonado_display = 'none';
-							break;
-						case 3:
-							$chk_abonado_check = '';
-							$chk_abonado_display = 'none';
-							$chk_abonado_msj = '';
-							$txt_abonado_msj = 'Posee un pago parcial.';
-							$txt_abonado_display = 'block';
-							break;
-						case 4:
-							$chk_abonado_check = '';
-							$chk_abonado_display = 'none';
-							$chk_abonado_msj = '';
-							$txt_abonado_msj = 'Comprobante abonado.';
-							$txt_abonado_display = 'block';
-							break;
-					}
-
-					$txt_tipopago_msj = 'Cuenta Corriente';
-				} else {
-					$chk_abonado_check = '';
-					$chk_abonado_display = 'none';
-					$chk_abonado_msj = '';
-					$txt_abonado_msj = 'Comprobante contado.';
-					$txt_tipopago_msj = 'Contado';
-					$txt_abonado_display = 'block';
+				switch ($estadomovimientocuenta) {
+					case 1:
+						$chk_abonado_check = '';
+						$chk_abonado_display = 'block';
+						$chk_abonado_msj = 'Debe';
+						$txt_abonado_msj = '';
+						$txt_abonado_display = 'none';
+						break;
+					case 3:
+						$chk_abonado_check = '';
+						$chk_abonado_display = 'none';
+						$chk_abonado_msj = '';
+						$txt_abonado_msj = 'Posee un pago parcial.';
+						$txt_abonado_display = 'block';
+						break;
+					case 4:
+						$chk_abonado_check = '';
+						$chk_abonado_display = 'none';
+						$chk_abonado_msj = '';
+						$txt_abonado_msj = 'Comprobante abonado.';
+						$txt_abonado_display = 'block';
+						break;
 				}
 
-				$array_temp = array('{formulario-egreso_id}'=>$egreso_id,
-									'{formulario-chk_abonado_check}'=>$chk_abonado_check,
-									'{formulario-chk_abonado_display}'=>$chk_abonado_display,
-									'{formulario-chk_abonado_msj}'=>$chk_abonado_msj,
-									'{formulario-txt_abonado_msj}'=>$txt_abonado_msj,
-									'{formulario-txt_abonado_display}'=>$txt_abonado_display,
-									'{formulario-txt_tipopago_msj}'=>$txt_tipopago_msj,
-									'{formulario-factura}'=>$factura,
-									'{formulario-monto}'=>$monto,
-									'{formulario-cliente}'=>$cliente,
-									'{formulario-fecha}'=>$fecha);
-				$array_formulario[] = $array_temp;
-				$monto_total = $monto_total + $monto;
+				$txt_tipopago_msj = 'Cuenta Corriente';
+			} else {
+				$chk_abonado_check = '';
+				$chk_abonado_display = 'none';
+				$chk_abonado_msj = '';
+				$txt_abonado_msj = 'Comprobante contado.';
+				$txt_tipopago_msj = 'Contado';
+				$txt_abonado_display = 'block';
 			}
 
-			$cobrador_collection = Collector()->get('Cobrador');
-			foreach ($cobrador_collection as $clave=>$valor) {
-				if ($valor->oculto == 1) unset($cobrador_collection[$clave]);
-			}
+			$array_temp = array('{formulario-egreso_id}'=>$egreso_id,
+								'{formulario-chk_abonado_check}'=>$chk_abonado_check,
+								'{formulario-chk_abonado_display}'=>$chk_abonado_display,
+								'{formulario-chk_abonado_msj}'=>$chk_abonado_msj,
+								'{formulario-txt_abonado_msj}'=>$txt_abonado_msj,
+								'{formulario-txt_abonado_display}'=>$txt_abonado_display,
+								'{formulario-txt_tipopago_msj}'=>$txt_tipopago_msj,
+								'{formulario-factura}'=>$factura,
+								'{formulario-monto}'=>$monto,
+								'{formulario-cliente}'=>$cliente,
+								'{formulario-fecha}'=>$fecha);
+			$array_formulario[] = $array_temp;
+			$monto_total = $monto_total + $monto;
+		}
 
-			$this->view->entregas($array_formulario, $this->model,$flete,$cobrador_collection,$monto_total);
+		$cobrador_collection = Collector()->get('Cobrador');
+		foreach ($cobrador_collection as $clave=>$valor) {
+			if ($valor->oculto == 1) unset($cobrador_collection[$clave]);
+		}
+
+		$this->view->entregas($array_formulario, $this->model,$flete,$cobrador_collection,$monto_total);
 	}
 
 	function editar_hojaruta($arg){
@@ -572,5 +588,42 @@ class HojaRutaController {
 		header("Location: " . URL_APP . "/hojaruta/panel");
 	}
 
+	function liberar_egreso($arg) {
+		SessionHandler()->check_session();
+		$ids = explode('@', $arg);
+		$hojaruta_id = $ids[0];
+		$egreso_id = $ids[1];
+
+		$this->model->hojaruta_id = $hojaruta_id;
+		$this->model->get();
+		$egreso_ids = $this->model->egreso_ids;
+		$array_tuplas = explode(',', $egreso_ids);
+		
+		foreach ($array_tuplas as $clave=>$valor) {
+			$tmp_ids = explode('@', $valor);
+			$tmp_egreso_id = $tmp_ids[0];
+			if ($egreso_id == $tmp_egreso_id) {
+				unset($array_tuplas[$clave]);
+				$em = new Egreso();
+				$em->egreso_id = $egreso_id;
+				$em->get();
+				$egresoentrega_id = $em->egresoentrega->egresoentrega_id;
+
+				$eem = new EgresoEntrega();
+				$eem->egresoentrega_id = $egresoentrega_id;
+				$eem->get();
+				$eem->estadoentrega = 2;
+				$eem->save();
+			}
+		}
+
+		$tuplas = implode(',', $array_tuplas);
+		$this->model->hojaruta_id = $hojaruta_id;
+		$this->model->get();
+		$this->model->egreso_ids = $tuplas;
+		$this->model->save();
+
+		header("Location: " . URL_APP . "/hojaruta/panel");
+	}
 }
 ?>

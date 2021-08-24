@@ -64,6 +64,8 @@ class EntregaClienteDetalleView extends View {
 
   function editar_ajax($obj_entregacliente, $obj_entregaclientedetalle) {
     $gui = file_get_contents("static/modules/entregaclientedetalle/editar_ajax.html");
+    $obj_entregaclientedetalle->selected_parcial = ($obj_entregaclientedetalle->parcial == 1) ? 'selected' : '';
+    $obj_entregaclientedetalle->selected_total = ($obj_entregaclientedetalle->parcial == 1) ? '' : 'selected';
     $obj_entregacliente = $this->set_dict($obj_entregacliente);
     $obj_entregaclientedetalle = $this->set_dict($obj_entregaclientedetalle);
     $render = $this->render($obj_entregacliente, $gui);

@@ -109,6 +109,8 @@ class ClienteView extends View {
 			  $obj_cliente->vendedor->frecuenciaventa);
 
 		$obj_cliente->txt_impacto_ganancia = ($obj_cliente->impacto_ganancia == 1) ? 'SI' : 'NO';
+		$obj_cliente->documentotipo_id = $obj_cliente->documentotipo->documentotipo_id;
+		$obj_cliente->documento_denominacion = $obj_cliente->documentotipo->denominacion;
 		$obj_cliente = $this->set_dict($obj_cliente);
 		$gui_slt_provincia = $this->render_regex('SLT_PROVINCIA', $gui_slt_provincia, $provincia_collection);
 		$gui_slt_documentotipo = $this->render_regex('SLT_DOCUMENTOTIPO', $gui_slt_documentotipo, $documentotipo_collection);
