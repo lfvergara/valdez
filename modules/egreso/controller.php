@@ -627,7 +627,7 @@ class EgresoController {
 		$ecm->valor_comision = round($comision, 2);
 		$ecm->valor_abonado = 0;
 		$ecm->estadocomision = 1;
-		//$ecm->save();
+		$ecm->save();
 		$egresocomision_id = $ecm->egresocomision_id;
 
 		$cliente_id = filter_input(INPUT_POST, 'cliente');
@@ -643,7 +643,7 @@ class EgresoController {
 		$eem->fecha = $fecha_entrega;
 		$eem->flete = $flete_id;
 		$eem->estadoentrega = 2;
-		//$eem->save();
+		$eem->save();
 		$egresoentrega_id = $eem->egresoentrega_id;
 
 		$condicionpago = filter_input(INPUT_POST, 'condicionpago');
@@ -667,7 +667,7 @@ class EgresoController {
 		$this->model->egresocomision = $egresocomision_id;
 		$this->model->egresoentrega = $egresoentrega_id;
 		$this->model->save();
-		print_r($this->model);exit;
+		//print_r($this->model);exit;
 		$egreso_id = $this->model->egreso_id;
 		
 		$this->model->egreso_id = $egreso_id;
