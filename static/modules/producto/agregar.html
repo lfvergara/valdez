@@ -135,12 +135,6 @@ function verificarProducto() {
     var array = new Array();
     var flag_array = 0;
 
-    var codigo = document.getElementById("codigo").value;
-    if (codigo == null || codigo.length == 0 || codigo == "") {
-        flag_array = 1;
-        array.push("<strong>[ERROR]</strong> Por favor complete el CÓDIGO del producto.");
-    }
-
     var denominacion = document.getElementById("denominacion").value;
     if (denominacion == null || denominacion.length == 0 || denominacion == "") {
         flag_array = 1;
