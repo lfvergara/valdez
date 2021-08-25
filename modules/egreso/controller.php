@@ -185,6 +185,7 @@ class EgresoController {
 
 		$this->model->egreso_id = $egreso_id;
 		$this->model->get();
+		print_r($this->model);exit;
 		$this->model->cliente_documentotipo = $this->model->cliente->documentotipo->denominacion;
 		$infocontacto_collection = $this->model->cliente->infocontacto_collection;
 
@@ -730,8 +731,8 @@ class EgresoController {
 		$where_egresos = "ed.egreso_id = {$egreso_id}";
 		$egresodetalle_collection = CollectorCondition()->get('EgresoDetalle', $where_egresos, 4, $from_egresos, $select_egresos);
 
+		$flag_error = 0;
 		if ($tipofactura == 1 OR $tipofactura == 3) {
-			$flag_error = 0;
 			try {
 			    $this->facturar_afip_argumento($egreso_id);
 			} catch (Exception $e) {
