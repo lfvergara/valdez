@@ -186,7 +186,8 @@ class EgresoController {
 		$this->model->egreso_id = $egreso_id;
 		$this->model->get();
 		
-		$this->model->cliente_documentotipo = $this->model->cliente->documentotipo->denominacion;
+		$cliente_documentotipo = $this->model->cliente->documentotipo->denominacion;
+		$this->model->cliente_documentotipo = $cliente_documentotipo;
 		$infocontacto_collection = $this->model->cliente->infocontacto_collection;
 
 		if (is_array($infocontacto_collection) AND !empty($infocontacto_collection)) {
