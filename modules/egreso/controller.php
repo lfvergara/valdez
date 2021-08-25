@@ -265,7 +265,6 @@ class EgresoController {
 			$this->model->fecha_vencimiento = 0;
 			$plantilla_tipofactura = $this->model->tipofactura->plantilla_impresion;
 			$plantilla_tipofactura = (string)$plantilla_tipofactura;
-			//print_r($plantilla_tipofactura);exit;
 			@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
 		} else {
 			$egresoafip = $egresoafip[0];
@@ -1868,7 +1867,6 @@ class EgresoController {
 		$em = new Egreso();
 		$em->egreso_id = $egreso_id;
 		$em->get();
-		print_r($em);exit;
 		$tipofactura_id = $em->tipofactura->tipofactura_id;
 
 		$tfm = new TipoFactura();
