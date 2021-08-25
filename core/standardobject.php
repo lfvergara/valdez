@@ -14,6 +14,7 @@ abstract class StandardObject {
             
             $sql = "INSERT INTO $tabla ($string_propiedades_insert) VALUES ($string_sustituciones_insert)";
             $datos = ObjectParser($this)->valores_sustituciones;
+            print_r($sql);exit;
             $this->$propiedad_id = execute_query($sql, $datos);
         } else {
             $string_propiedades_update = ObjectParser($this)->update_string;
