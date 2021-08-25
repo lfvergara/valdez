@@ -668,7 +668,7 @@ class EgresoController {
 		$this->model->condicionpago = $condicionpago;
 		$this->model->egresocomision = $egresocomision_id;
 		$this->model->egresoentrega = $egresoentrega_id;		
-		$this->model->guardar();
+		$this->model->save();
 		$egreso_id = $this->model->egreso_id;
 		
 		$this->model->egreso_id = $egreso_id;
