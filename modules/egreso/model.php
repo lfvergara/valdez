@@ -36,6 +36,7 @@ class Egreso extends StandardObject {
 	function guardar() {
 		$sql = "INSERT INTO egreso(punto_venta, numero_factura, fecha, hora, descuento, subtotal, importe_total, emitido, dias_alerta_comision, dias_vencimiento, cliente, vendedor, tipofactura, condicioniva, condicionpago, egresocomision, egresoentrega) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		$datos = array($this->punto_venta, $this->numero_factura, $this->fecha, $this->hora, $this->descuento, $this->subtotal, $this->importe_total, $this->emitido, $this->dias_alerta_comision, $this->dias_vencimiento, $this->cliente, $this->vendedor, $this->tipofactura, $this->condicioniva, $this->condicionpago, $this->egresocomision, $this->egresoentrega);
+		print_r($datos);exit;
 		$this->egreso_id = execute_query($sql, $datos);
 	}
 }
