@@ -169,6 +169,7 @@ function verificarProducto() {
     }   
 
     if (flag_array == 0) {
+        /*
         var flag = $.ajax({
             url: '{url_app}/producto/verifica_existencia_codigo/' + codigo,
                 dataType: 'text',
@@ -181,6 +182,9 @@ function verificarProducto() {
         } else {
             document.getElementById("formulario_guardar").submit();
         }
+        */
+        
+        document.getElementById("formulario_guardar").submit();
     } else {
         var mensaje = array.join("<br><br>");
         $('#sistema_alertas').modal('show');
