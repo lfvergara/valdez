@@ -1859,6 +1859,7 @@ class EgresoController {
 		$em = new Egreso();
 		$em->egreso_id = $egreso_id;
 		$em->get();
+		print_r($em);exit;
 		$tipofactura_id = $em->tipofactura->tipofactura_id;
 
 		$tfm = new TipoFactura();
