@@ -654,7 +654,7 @@ class EgresoController {
 		$this->model->numero_factura = intval($num_factura);
 		$this->model->fecha = $fecha;
 		$this->model->hora = $hora;
-		$this->model->descuento = (is_null(filter_input(INPUT_POST, 'descuento')) ? 0 : is_null(filter_input(INPUT_POST, 'descuento');
+		$this->model->descuento = (is_null(filter_input(INPUT_POST, 'descuento')) ? 0 : filter_input(INPUT_POST, 'descuento';
 		$this->model->subtotal = filter_input(INPUT_POST, 'subtotal');
 		$this->model->importe_total = $importe_total;
 		$this->model->emitido = 0;
@@ -668,7 +668,7 @@ class EgresoController {
 		$this->model->egresocomision = $egresocomision_id;
 		$this->model->egresoentrega = $egresoentrega_id;
 		
-		$this->model->guardar();
+		$this->model->save();
 		$egreso_id = $this->model->egreso_id;
 		
 		$this->model->egreso_id = $egreso_id;
