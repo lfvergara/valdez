@@ -47,23 +47,19 @@
                             {slt_condicionfiscal}
                         </select>
                     </div>
-                    <div class="form-group col-lg-2">
+                    <div class="form-group col-lg-3">
                         <label>Tipo Factura</label>
                         <select class="form-control m-bot15" name="tipofactura" id="tipofactura" required>
                             {slt_tipofactura}
                         </select>
                     </div>
-                    <div class="form-group col-lg-2">
+                    <div class="form-group col-lg-3">
                         <label>IVA</label>
                         <select class="form-control m-bot15" name="iva" id="iva" required>
                             <option value="21">21%</option>
                             <option value="10.5">10.5%</option>
                             <option value="0">0%</option>
                         </select>
-                    </div>
-                    <div class="form-group col-lg-2">
-                        <label>Descuento</label>
-                        <input type="number" name="descuento" id="descuento" step="0.01" value="{cliente-descuento}" class="form-control">
                     </div>
                     <div class="form-group col-lg-3">
                         <label>Vendedor</label>
@@ -161,6 +157,7 @@
                         </div>
                     </div>
                     <div class="form-group col-lg-12" style="margin-top: 2%;" align="right">
+                        <input type="hidden" name="descuento" id="descuento" step="0.01" value="0" class="form-control">
                         <a href="#" class="btn btn-app" onclick="verificarCliente();"> <i class="fa fa-save"></i> Agregar </a>
                     </div>
                 </form>
