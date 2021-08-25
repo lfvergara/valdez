@@ -32,5 +32,10 @@ class Egreso extends StandardObject {
         $this->egresocomision = $egresocomision;
         $this->egresoentrega = $egresoentrega;
 	}
+
+	function prueba() {
+		$sql = "insert into egreso(punto_venta, numero_factura, fecha, hora, descuento, subtotal, importe_total, emitido, dias_alerta_comision, dias_vencimiento, cliente, vendedor, tipofactura, condicioniva, condicionpago, egresocomision, egresoentrega) VALUES (1,2,'2021-08-25', '08:08:08', 0, 100, 400, 0, 10, 10, 1, 1, 3, 1, 1, 1, 1)";
+		execute_query($sql);
+	}
 }
 ?>

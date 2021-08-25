@@ -585,6 +585,8 @@ class EgresoController {
 	function guardar() {
 		SessionHandler()->check_session();
 
+		$this->model->prueba();
+
 		$com = new Configuracion();
 		$com->configuracion_id = 1;
 		$com->get();
