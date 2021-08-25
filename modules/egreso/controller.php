@@ -654,7 +654,7 @@ class EgresoController {
 		$this->model->numero_factura = intval($num_factura);
 		$this->model->fecha = $fecha;
 		$this->model->hora = $hora;
-		$this->model->descuento = (is_null(filter_input(INPUT_POST, 'descuento')) ? 0; is_null(filter_input(INPUT_POST, 'descuento');
+		$this->model->descuento = (is_null(filter_input(INPUT_POST, 'descuento')) ? 0 : is_null(filter_input(INPUT_POST, 'descuento');
 		$this->model->subtotal = filter_input(INPUT_POST, 'subtotal');
 		$this->model->importe_total = $importe_total;
 		$this->model->emitido = 0;
