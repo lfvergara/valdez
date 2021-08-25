@@ -586,6 +586,7 @@ class EgresoController {
 		SessionHandler()->check_session();
 
 		$this->model->prueba();
+		exit;
 
 		$com = new Configuracion();
 		$com->configuracion_id = 1;
