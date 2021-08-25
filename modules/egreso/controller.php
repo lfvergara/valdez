@@ -649,6 +649,7 @@ class EgresoController {
 		$condicionpago = filter_input(INPUT_POST, 'condicionpago');
 		$importe_total = filter_input(INPUT_POST, 'importe_total');
 		$tipofactura = filter_input(INPUT_POST, 'tipofactura');
+		$this->model = new Egreso();
 		$this->model->punto_venta = $punto_venta;
 		$this->model->numero_factura = intval($num_factura);
 		$this->model->fecha = $fecha;
@@ -666,8 +667,9 @@ class EgresoController {
 		$this->model->condicionpago = $condicionpago;
 		$this->model->egresocomision = $egresocomision_id;
 		$this->model->egresoentrega = $egresoentrega_id;
-		$this->model->save();
-		//print_r($this->model);exit;
+		print_r($this->model);exit;
+		
+		$this->model->guardar();
 		$egreso_id = $this->model->egreso_id;
 		
 		$this->model->egreso_id = $egreso_id;
