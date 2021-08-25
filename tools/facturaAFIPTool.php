@@ -15,7 +15,7 @@ class FacturaAFIPTool {
         $documentotipo_cliente = $obj_egreso->cliente->documentotipo->afip_id;
         $documento_cliente = $obj_egreso->cliente->documento;
             
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $ultima_factura = $afip->ElectronicBilling->GetLastVoucher($PTO_VENTA,$tipofactura_afip_id);
         
         $nueva_factura = array('punto_venta'=>$obj_configuracion->punto_venta, 'nueva_factura'=>$ultima_factura + 1, 'tipofactura_afip_id'=>$tipofactura_afip_id,
@@ -41,7 +41,7 @@ class FacturaAFIPTool {
         $descuento = $obj_egreso->descuento;
         $obj_notacredito->descuento = $descuento;
             
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $ultima_factura = $afip->ElectronicBilling->GetLastVoucher($PTO_VENTA,$tipofactura_afip_id);
         
         $nueva_factura = array('punto_venta'=>$obj_configuracion->punto_venta, 'nueva_factura'=>$ultima_factura + 1, 'tipofactura_afip_id'=>$tipofactura_afip_id,
@@ -67,7 +67,7 @@ class FacturaAFIPTool {
         
         $array_discriminado = $this->prepara_array_discriminado($obj_egreso, $egresodetalle_collection);
         $tipofactura_afip_id = $obj_egreso->tipofactura->afip_id;
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $ultima_factura = $afip->ElectronicBilling->GetLastVoucher($PTO_VENTA,$tipofactura_afip_id);
         
         $nueva_factura = array('punto_venta'=>$cm->punto_venta, 'nueva_factura'=>$ultima_factura + 1);
@@ -85,7 +85,7 @@ class FacturaAFIPTool {
         $array_discriminado = $this->prepara_array_discriminado_nc($obj_notacredito, $notacreditodetalle_collection);
         $tipofactura_afip_id = $obj_notacredito->tipofactura->afip_id;
         
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $ultima_factura = $afip->ElectronicBilling->GetLastVoucher($PTO_VENTA,$tipofactura_afip_id);
 
         $nueva_factura = array('punto_venta'=>$cm->punto_venta, 'nueva_factura'=>$ultima_factura + 1);
@@ -685,7 +685,7 @@ class FacturaAFIPTool {
         $CUIT = $cm->cuit;
         $PTO_VENTA = $cm->punto_venta;
         
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $ultima_factura = $afip->ElectronicBilling->GetLastVoucher($PTO_VENTA,$tipofactura_afip_id);
         $nuevo_numero = $ultima_factura + 1;
         $nuevo_comprobante = str_pad($cm->punto_venta, 4, '0', STR_PAD_LEFT) . "-";
@@ -700,7 +700,7 @@ class FacturaAFIPTool {
 
         $punto_venta = $cm->punto_venta;
         $CUIT = $cm->cuit;
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $info_factura = $afip->ElectronicBilling->GetVoucherInfo($punto_venta,3,6); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)->GetAliquotTypes();
         print_r($info_factura);exit;
         return $info_factura;
@@ -712,7 +712,7 @@ class FacturaAFIPTool {
         $cm->get();
 
         $CUIT = $cm->cuit;
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $alicuotas = $afip->ElectronicBilling->GetAliquotTypes();
         return $alicuotas;
     }
@@ -723,7 +723,7 @@ class FacturaAFIPTool {
         $cm->get();
 
         $CUIT = $cm->cuit;
-        $afip = new Afip(array('CUIT' => $CUIT, 'production' => desa));
+        $afip = new Afip(array('CUIT' => $CUIT, 'production' => false));
         $voucher_types = $afip->ElectronicBilling->GetVoucherTypes();
         return $voucher_types;
     }
