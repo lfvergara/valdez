@@ -656,6 +656,7 @@ class EgresoController {
 		$this->model->descuento = filter_input(INPUT_POST, 'descuento');
 		$this->model->subtotal = filter_input(INPUT_POST, 'subtotal');
 		$this->model->importe_total = $importe_total;
+		$this->model->emitido = 0;
 		$this->model->dias_alerta_comision = $dias_alerta_comision;
 		$this->model->dias_vencimiento = $dias_vencimiento;
 		$this->model->cliente = $cliente_id;
