@@ -669,8 +669,7 @@ class EgresoController {
 		
 		$this->model->egreso_id = $egreso_id;
 		$this->model->get();
-		print_r($this->model);exit;
-
+		
 		if ($condicionpago == 1) {
 			$cccm = new CuentaCorrienteCliente();
 			$cccm->fecha = date('Y-m-d');

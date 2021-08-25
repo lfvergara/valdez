@@ -226,7 +226,7 @@ class ProductoController {
 	function guardar() {
 		SessionHandler()->check_session();
 
-		$this->model->codigo = filter_input(INPUT_POST, 'codigo');
+		$this->model->codigo = 0;
 		$this->model->denominacion = filter_input(INPUT_POST, 'denominacion');
 		$this->model->peso = filter_input(INPUT_POST, 'peso');
 		$this->model->costo = filter_input(INPUT_POST, 'costo');
@@ -247,6 +247,12 @@ class ProductoController {
 		$this->model->productounidad = filter_input(INPUT_POST, 'productounidad');
 		$this->model->save();
 		$producto_id = $this->model->producto_id;
+
+		$this->model->producto_id = $producto_id;
+		$this->model->get();
+		$this->model->codigo = $producto_id;
+		$this->model->save();
+
 		header("Location: " . URL_APP . "/producto/listar");
 	}
 
