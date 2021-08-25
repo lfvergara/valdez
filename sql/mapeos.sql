@@ -565,6 +565,9 @@ CREATE TABLE IF NOT EXISTS egreso (
     , descuento FLOAT
     , subtotal FLOAT
     , importe_total FLOAT
+    , emitido INT(11)
+    , dias_alerta_comision INT(11)
+    , dias_vencimiento INT(11)
     , cliente INT(11)
     , INDEX (cliente)
     , FOREIGN KEY (cliente)
