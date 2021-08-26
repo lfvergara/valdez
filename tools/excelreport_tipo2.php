@@ -160,5 +160,5 @@ class ExcelReportTipo2 extends View {
   }
 }
 
-function ExcelReport() { return new ExcelReport(); }
+function ExcelReportTipo2() { return new ExcelReportTipo2(); }
 ?>
