@@ -104,6 +104,8 @@ class ExcelReportTipo2 extends View {
     header('Content-Disposition: attachment;filename="infDHTordo.xlsx"');
     header('Cache-Control: max-age=0');
 
+
+    $objWriter = PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
     file_put_contents('depuracion.txt', ob_get_contents());
     ob_end_clean();
