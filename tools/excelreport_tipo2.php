@@ -48,8 +48,8 @@ class ExcelReportTipo2 extends View {
                 ->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
     
-                /*
     print_r($array_exportacion);exit;
+                /*
     $l = 4;
     $breack_row_temp = '';
     $breack_row_ant = '';
