@@ -22,10 +22,10 @@ class FacturaAFIPTool {
                                'fecha_factura'=>$fecha_factura, 'documentotipo_cliente'=>$documentotipo_cliente, 'documento_cliente'=>$documento_cliente);
         
         $array_discriminado = $this->prepara_array_discriminado($obj_egreso, $egresodetalle_collection);
-        print_r($array_discriminado);exit;
 
         $array_final = array_merge($nueva_factura, $array_discriminado);
         $data = $this->generaArrayData($array_final);
+        print_r($data);exit;
         
         $res = $afip->ElectronicBilling->CreateVoucher($data);
         $res['NUMFACTURA'] = $nueva_factura['nueva_factura'];
