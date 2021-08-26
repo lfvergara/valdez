@@ -39,7 +39,7 @@ class ExcelReportTipo2 extends View {
         $ultimaLetraPosicion = $valor;
       }
     }
-
+    print_r($array_exportacion);exit;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
