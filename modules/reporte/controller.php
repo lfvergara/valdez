@@ -1623,6 +1623,7 @@ class ReporteController {
 
 		$groupby = "ed.producto_id, ed.codigo_producto ORDER BY	ROUND(SUM(ed.cantidad),2) DESC";
 		$sum_cantidad_producto = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
+		$sum_cantidad_producto = (is_array($sum_cantidad_producto) AND !empty($sum_cantidad_producto)) ? $sum_cantidad_producto : array();
 
 		$select = "ROUND(SUM(ncd.importe),2) AS IMPORTE, ROUND(SUM(ncd.cantidad),2) AS CANTIDAD";
 		$from = "notacreditodetalle ncd INNER JOIN notacredito nc ON ncd.notacredito_id = nc.notacredito_id";
