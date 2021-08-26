@@ -2792,9 +2792,5 @@ class ReporteController {
 		exit;
 
 	}
-
-	function php() {
-		print phpinfo();
-	}
 }
 ?>
