@@ -1903,7 +1903,7 @@ class ReporteController {
 
 	function post_descarga() {
 		SessionHandler()->check_session();
-		require_once "tools/excelreport.php";
+		//require_once "tools/excelreport.php";
 		require_once "tools/excelreport_tipo2.php";
 
 		$fecha_sys = strtotime(date('Y-m-d'));
