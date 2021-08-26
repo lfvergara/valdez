@@ -25,7 +25,6 @@ class FacturaAFIPTool {
 
         $array_final = array_merge($nueva_factura, $array_discriminado);
         $data = $this->generaArrayData($array_final);
-        print_r($data);exit;
         
         $res = $afip->ElectronicBilling->CreateVoucher($data);
         $res['NUMFACTURA'] = $nueva_factura['nueva_factura'];
