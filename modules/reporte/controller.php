@@ -333,6 +333,7 @@ class ReporteController {
 				 ingreso i ON ccp.ingreso_id = i.ingreso_id";
 		$where = "ccp.estadomovimientocuenta != 4 GROUP BY ccp.ingreso_id";
 		$cuentacorrienteproveedor_collection = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
+		$cuentacorrienteproveedor_collection = (is_array($cuentacorrienteproveedor_collection) AND !empty($cuentacorrienteproveedor_collection)) ? $cuentacorrienteproveedor_collection : array();
 
 		$ingreso_ids = array();
 		foreach ($cuentacorrienteproveedor_collection as $clave=>$valor) {
