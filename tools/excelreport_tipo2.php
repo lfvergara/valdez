@@ -11,7 +11,6 @@ class ExcelReportTipo2 extends View {
   public $abecedario = array("B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
 
   function extraer_informe($subtitulo, $array_exportacion) {
-    print_r($array_exportacion);exit;
     date_default_timezone_set('America/Mexico_City');
     if (PHP_SAPI == 'cli') die('Este archivo solo se puede ver desde un navegador web');
     $objPHPExcel = new PHPExcel();
@@ -73,6 +72,7 @@ class ExcelReportTipo2 extends View {
     $objPHPExcel->getActiveSheet()->getStyle('B1')->applyFromArray($this->estilo_titulo);
     $objPHPExcel->getActiveSheet()->getStyle('F1')->applyFromArray($this->estilo_fecha);
     $objPHPExcel->getActiveSheet()->getStyle('B2')->applyFromArray($this->estilo_subtitulo);
+    print_r($array_exportacion);exit;
 
     //ALTOS Y ANCHOS
     $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(2);
