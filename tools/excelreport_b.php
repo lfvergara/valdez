@@ -78,7 +78,7 @@ class ExcelReport extends View {
     header('Content-Disposition: attachment;filename="infDharma.xlsx"');
     header('Cache-Control: max-age=0');
 
-    $objWriter = PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
+    //$objWriter = PHPExcel_Settings::setZipClass(PHPExcel_Settings::PCLZIP);
     $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
     $objWriter->save('php://output');
   }
