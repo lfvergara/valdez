@@ -40,8 +40,8 @@ class ExcelReportTipo2 extends View {
       }
     }
     
-    //print_r($ultimaLetraPosicion);exit;
     $ultimaLetraPosicion = ($ultimaLetraPosicion == 'C') ? 'E' : $ultimaLetraPosicion;
+    print_r($ultimaLetraPosicion);exit;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
