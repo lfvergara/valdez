@@ -1625,6 +1625,7 @@ class ReporteController {
 
 		$select = "ROUND(SUM(ncd.importe),2) AS IMPORTE, ROUND(SUM(ncd.cantidad),2) AS CANTIDAD";
 		$from = "notacreditodetalle ncd INNER JOIN notacredito nc ON ncd.notacredito_id = nc.notacredito_id";
+		print_r($sum_importe_producto);exit;
 		foreach ($sum_importe_producto as $clave=>$valor) {
 			$tmp_producto_id = $valor["PRID"];
 			$where = "ncd.producto_id = {$tmp_producto_id} AND date_format(nc.fecha, '%Y%m') = '{$periodo_actual}'";
