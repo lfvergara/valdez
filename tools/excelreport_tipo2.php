@@ -40,15 +40,15 @@ class ExcelReportTipo2 extends View {
       }
     }
     
+    print_r($ultimaLetraPosicion1);exit;
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
-                //->mergeCells("F1:{$ultimaLetraPosicion}1")
+                ->mergeCells("F1:{$ultimaLetraPosicion}1")
                 //->setCellValue("B1", $tituloReporte)
                 //->setCellValue("F1", $fechaReporte)
                 //->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
-    print_r($array_exportacion);exit;
     
                 /*
     $l = 4;
