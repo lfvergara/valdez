@@ -1944,7 +1944,7 @@ class ReporteController {
 						$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
 						$datos_reporte[$clave]['NC_IMPORTE_TOTAL'] = $importe_notacredito;
 						$datos_reporte[$clave]['IMPORTETOTAL'] = $datos_reporte[$clave]['IMPORTETOTAL'] - $importe_notacredito;
-						$datos_reporte[$clave]['VC'] = round(($datos_reporte[$clave]['COMISION'] * $datos_reporte[$clave]['IMPORTETOTAL'] / 100),2);
+						//$datos_reporte[$clave]['VC'] = round(($datos_reporte[$clave]['COMISION'] * $datos_reporte[$clave]['IMPORTETOTAL'] / 100),2);
 
 					} else {
 						$datos_reporte[$clave]['NC_IMPORTE_TOTAL'] = 0;
