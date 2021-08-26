@@ -238,9 +238,9 @@ class ReporteController {
 
 		$total_facturado_class = ($total_facturado >= 0) ? 'blue' : 'red';
 		$total_facturado = ($total_facturado >= 0) ? "$" . $total_facturado : "-$" . abs($total_facturado);
-		print_r($deuda_cuentacorrientecliente);exit;
+		print_r($deuda_cuentacorrienteproveedor);exit;
 		$array_totales = array('{periodo_actual}'=>$periodo_actual,
-							   '{estado_actual}'=>($total_facturado + $stock_valorizado) - ($deuda_cuentacorrientecliente + $deuda_cuentacorrientecliente),
+							   '{estado_actual}'=>($total_facturado + $stock_valorizado) - ($deuda_cuentacorrientecliente + $deuda_cuentacorrienteproveedor),
 							   '{total_facturado}'=>$total_facturado,
 							   '{total_facturado_class}'=>$total_facturado_class,
 							   '{deuda_cuentacorrientecliente}'=>$deuda_cuentacorrientecliente,
