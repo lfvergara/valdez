@@ -39,6 +39,8 @@ class ExcelReportTipo2 extends View {
         $ultimaLetraPosicion = $valor;
       }
     }
+    print_r($array_exportacion);exit;
+    
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
@@ -48,7 +50,6 @@ class ExcelReportTipo2 extends View {
                 ->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
     
-    print_r($array_exportacion);exit;
                 /*
     $l = 4;
     $breack_row_temp = '';
