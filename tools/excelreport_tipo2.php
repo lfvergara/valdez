@@ -32,7 +32,7 @@ class ExcelReportTipo2 extends View {
     $ultimaLetraPosicion = "";
     $this->estilo();
 
-    print_r($array_exportacion);exit;
+    //print_r($array_exportacion);exit;
     foreach ($this->abecedario as $clave=>$valor) {
       if ($clave <= $cantidadColumnas) {
         $objPHPExcel->setActiveSheetIndex(0)
