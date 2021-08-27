@@ -18,7 +18,6 @@ require_once "modules/egresocomision/model.php";
 require_once "modules/egresoentrega/model.php";
 require_once "modules/cuentacorrientecliente/model.php";
 require_once "modules/egresoafip/model.php";
-require_once "tools/facturaAFIPTool.php";
 
 
 class PedidoVendedorController {
@@ -801,7 +800,6 @@ class PedidoVendedorController {
 		$em->egreso_id = $egreso_id;
 		$em->get();
 		$tipofactura_id = $em->tipofactura->tipofactura_id;
-		print_r($tipofactura_id);exit;
 
 		$tfm = new TipoFactura();
 		$tfm->tipofactura_id = $tipofactura_id;
