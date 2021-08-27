@@ -275,8 +275,6 @@ class CuentaCorrienteClienteController {
 			}
 		}
 
-		print_r($cuentacorriente_collection);exit;
-
 		$max_cuentacorrientecliente_ids = array();
 		foreach ($egreso_ids as $egreso_id) {
 			$select = "ccc.cuentacorrientecliente_id AS ID";
@@ -284,6 +282,11 @@ class CuentaCorrienteClienteController {
 			$where = "ccc.egreso_id = {$egreso_id} ORDER BY ccc.cuentacorrientecliente_id DESC LIMIT 1";
 			$max_id = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
 			if (!in_array($max_id[0]['ID'], $max_cuentacorrientecliente_ids)) $max_cuentacorrientecliente_ids[] = $max_id[0]['ID'];
+		}
+
+		foreach ($cuentacorriente_collection as $clave=>$valor) {
+			$cuentacorrientecliente_id = $valor["CCCID"];
+			if (!in_array($cuentacorrientecliente_id, $max_cuentacorrientecliente_ids)) unset($cuentacorriente_collection[$clave]);
 		}
 		
 		$this->view->listar_cuentas($cuentacorriente_collection, $cm);
