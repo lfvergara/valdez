@@ -766,12 +766,11 @@ class PedidoVendedorController {
 				}
 			}
 
-			/*
+			
 			$this->model->pedidovendedor_id = filter_input(INPUT_POST, 'pedidovendedor_id');
 			$this->model->get();
 			$this->model->estadopedido = 2;
 			$this->model->save();
-			*/
 
 			header("Location: " . URL_APP . "/egreso/consultar/{$egreso_id}");
 		} else {
