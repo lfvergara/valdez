@@ -18,6 +18,7 @@ require_once "modules/egresocomision/model.php";
 require_once "modules/egresoentrega/model.php";
 require_once "modules/cuentacorrientecliente/model.php";
 require_once "modules/egresoafip/model.php";
+require_once "tools/facturaAFIPTool.php";
 
 
 class PedidoVendedorController {
