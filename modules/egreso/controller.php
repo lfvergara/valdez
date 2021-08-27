@@ -1245,6 +1245,7 @@ class EgresoController {
 		}
 
 		$flete_collection = Collector()->get('Flete');
+		print_r($flete_collection);exit;
 		$this->view->entregas_pendientes($egreso_collection, $flete_collection, $arg);
 	}
 
