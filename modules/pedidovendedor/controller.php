@@ -294,6 +294,56 @@ class PedidoVendedorController {
 		$this->view->editar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $this->model, $cm);
 	}
 
+	function procesar($arg) {
+    	SessionHandler()->check_session();
+    	$usuario_rol = $_SESSION["data-login-" . APP_ABREV]["usuario-configuracionmenu"];
+    	$usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
+    	$select = "uv.usuario_id AS USUID, uv.vendedor_id AS VENID";
+		$from = "usuariovendedor uv";
+		$where = "uv.usuario_id = {$usuario_id}";
+		$usuariovendedor_id = CollectorCondition()->get('UsuarioVendedor', $where, 4, $from, $select);
+
+		$this->model->pedidovendedor_id = $arg;
+		$this->model->get();
+		$cliente_id = $this->model->cliente_id;
+
+		$cm = new Cliente();
+		$cm->cliente_id = $cliente_id;
+		$cm->get();
+
+		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
+				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL,
+				   p.costo as COSTO, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA, (((p.costo * p.porcentaje_ganancia)/100)+p.costo) AS VENTA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
+				 productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id LEFT JOIN
+				 productodetalle pd ON p.producto_id = pd.producto_id LEFT JOIN proveedor prv ON pd.proveedor_id = prv.proveedor_id";
+		$groupby = "p.producto_id";
+		$producto_collection = CollectorCondition()->get('Producto', NULL, 4, $from, $select, $groupby);
+
+		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, CONCAT(c.razon_social, '(', c.nombre_fantasia, ')') AS RAZON_SOCIAL,
+				   CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
+		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id";
+		if ($usuario_rol == 5) {
+			$vendedor_id = $usuariovendedor_id[0]['VENID'];
+			$where = "c.oculto = 0 AND c.vendedor = {$vendedor_id}";
+		} else {
+			$where = "c.oculto = 0";
+		}
+
+		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
+		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD,
+				   pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE,
+				   pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, pvd.valor_descuento AS VD,
+				   pvd.iva AS IVA, pvd.valor_ganancia AS VALGAN";
+		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN
+		 		 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$where = "pvd.pedidovendedor_id = {$arg}";
+		$pedidovendedordetalle_collection = CollectorCondition()->get('PedidoVendedorDetalle', $where, 4, $from, $select);
+
+		$this->view->procesar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $this->model, $cm);
+	}
+
+
 	function actualizar() {
 		SessionHandler()->check_session();
 
