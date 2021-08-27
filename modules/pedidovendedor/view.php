@@ -186,6 +186,7 @@ class PedidoVendedorView extends View {
 		}
 
 		unset($obj_cliente->infocontacto_collection, $obj_cliente->vendedor->infocontacto_collection);
+		print_r($obj_cliente);exit;
 		$obj_pedidovendedor = $this->set_dict($obj_pedidovendedor);
 		$obj_cliente = $this->set_dict($obj_cliente);
 		
