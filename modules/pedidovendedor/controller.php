@@ -340,7 +340,16 @@ class PedidoVendedorController {
 		$where = "pvd.pedidovendedor_id = {$arg}";
 		$pedidovendedordetalle_collection = CollectorCondition()->get('PedidoVendedorDetalle', $where, 4, $from, $select);
 
-		$this->view->procesar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $this->model, $cm);
+		$condicionpago_collection = Collector()->get('CondicionPago');
+		$condicioniva_collection = Collector()->get('CondicionIVA');
+		$tipofactura_collection = Collector()->get('TipoFactura');
+
+		$array_ids = array(1,2,3);
+		foreach ($tipofactura_collection as $clave=>$valor) {
+			if (!in_array($valor->tipofactura_id, $array_ids)) unset($tipofactura_collection[$clave]);
+		}
+
+		$this->view->procesar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $condicionpago_collection, $condicioniva_collection, $tipofactura_collection, $this->model, $cm);
 	}
 
 

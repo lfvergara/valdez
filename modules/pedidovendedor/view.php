@@ -145,12 +145,19 @@ class PedidoVendedorView extends View {
 		print $template;
 	}
 
-	function procesar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $obj_pedidovendedor, $obj_cliente) {
-		$gui = file_get_contents("static/modules/pedidovendedor/editar.html");
+	function procesar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $condicionpago_collection, $condicioniva_collection, $tipofactura_collection, $obj_pedidovendedor, $obj_cliente) {
+		$gui = file_get_contents("static/modules/pedidovendedor/procesar.html");
 		$tbl_producto_array = file_get_contents("static/modules/pedidovendedor/tbl_producto_array.html");
 		$tbl_cliente_array = file_get_contents("static/modules/pedidovendedor/tbl_cliente_array.html");
 		$tbl_editar_pedidovendedordetalle_array = file_get_contents("static/modules/pedidovendedor/tbl_editar_pedidovendedordetalle_array.html");
 		$hidden_editar_pedidovendedordetalle_array = file_get_contents("static/modules/pedidovendedor/hidden_editar_pedidovendedordetalle_array.html");
+		$slt_tipofactura = file_get_contents("static/common/slt_tipofactura.html");
+		$slt_condicionpago = file_get_contents("static/common/slt_condicionpago.html");
+		$slt_condicioniva = file_get_contents("static/common/slt_condicioniva.html");
+		
+		$slt_tipofactura = $this->render_regex('SLT_TIPOFACTURA', $slt_tipofactura, $tipofactura_collection);
+		$slt_condicionpago = $this->render_regex('SLT_CONDICIONPAGO', $slt_condicionpago, $condicionpago_collection);
+		$slt_condicioniva = $this->render_regex('SLT_CONDICIONIVA', $slt_condicioniva, $condicioniva_collection);
 
 		$tbl_producto_array = $this->render_regex_dict('TBL_PRODUCTO', $tbl_producto_array, $producto_collection);
 		$tbl_producto_array = str_replace('<!--TBL_PRODUCTO-->', '', $tbl_producto_array);
@@ -184,6 +191,9 @@ class PedidoVendedorView extends View {
 		
 		$render = str_replace('{tbl_producto}', $tbl_producto_array, $gui);
 		$render = str_replace('{tbl_cliente}', $tbl_cliente_array, $render);
+		$render = str_replace('{slt_tipofactura}', $slt_tipofactura, $render);
+		$render = str_replace('{slt_condicionpago}', $slt_condicionpago, $render);
+		$render = str_replace('{slt_condicioniva}', $slt_condicioniva, $render);
 		$render = str_replace('{pedidovendedor-costobase}', $costo_base, $render);
 		$render = str_replace('{tbl_editar_pedidovendedordetalle_array}', $tbl_editar_pedidovendedordetalle_array, $render);
 		$render = str_replace('{hidden_editar_pedidovendedordetalle_array}', $hidden_editar_pedidovendedordetalle_array, $render);
