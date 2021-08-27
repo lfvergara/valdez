@@ -2057,13 +2057,15 @@ class ReporteController {
 					$datos_reporte = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $group_by);
 
 					$subtitulo = "VENDEDOR: {$razon_social} - DESDE: {$desde}   HASTA {$hasta}";
-					$array_encabezados = array('CLIENTE', 'CANTIDAD VENTAS');
+					$array_encabezados = array('', 'CLIENTE', '', 'CANTIDAD VENTAS');
 					$array_exportacion = array();
 					$array_exportacion[] = $array_encabezados;
 					foreach ($datos_reporte as $clave=>$valor) {
 						$array_temp = array();
 						$array_temp = array(
-									  $valor["CLIENTE"]
+									''
+									, $valor["CLIENTE"]
+									, ''
 									, $valor["CANT"]);
 						$array_exportacion[] = $array_temp;
 					}
