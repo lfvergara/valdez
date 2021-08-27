@@ -560,13 +560,7 @@ class PedidoVendedorController {
 		$groupby = "e.tipofactura";
 		$verificar_remito = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
 
-		if (is_array($verificar_remito)) {
-			$num_factura = $this->siguiente_remito();
-		}
-
-		// $numero_factura = filter_input(INPUT_POST, 'numero_factura');
-		// $explode_numero = explode('-', $numero_factura);
-		// $num_factura = $explode_numero[1];
+		if (is_array($verificar_remito)) $num_factura = $this->siguiente_remito();
 		$fecha = filter_input(INPUT_POST, 'fecha');
 		$hora = date('H:i:s');
 		$comprobante = str_pad($punto_venta, 4, '0', STR_PAD_LEFT) . "-";
@@ -629,8 +623,7 @@ class PedidoVendedorController {
 		
 		$mem->egreso_id = $egreso_id;
 		$mem->get();
-		//print_r($this->model);exit;
-
+		
 		if ($condicionpago == 1) {
 			$cccm = new CuentaCorrienteCliente();
 			$cccm->fecha = date('Y-m-d');
@@ -772,6 +765,11 @@ class PedidoVendedorController {
 					$sm->save();
 				}
 			}
+
+			$this->model->pedidovendedor_id = filter_input(INPUT_POST, 'pedidovendedor_id');
+			$this->model->get();
+			$this->model->estadopedido = 2;
+			$this->model->save();
 
 			header("Location: " . URL_APP . "/egreso/consultar/{$egreso_id}");
 		} else {
