@@ -237,7 +237,7 @@ class CuentaCorrienteClienteController {
     	$select = "date_format(ccc.fecha, '%d/%m/%Y') AS FECHA, ccc.importe AS IMPORTE, ccc.ingreso AS INGRESO, ccc.egreso_id AS EID,
 				   ccc.referencia AS REFERENCIA, ccc.cuentacorrientecliente_id CCCID";
 		$from = "cuentacorrientecliente ccc INNER JOIN tipomovimientocuenta tmc ON ccc.tipomovimientocuenta = tmc.tipomovimientocuenta_id";
-		$where = "ccc.cliente_id = {$arg}";
+		$where = "ccc.cliente_id = {$arg} GROUP BY ccc.egreso_id";
 		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
 		
 		$egreso_ids = array();
@@ -274,6 +274,8 @@ class CuentaCorrienteClienteController {
 				$cuentacorriente_collection[$clave]['REFERENCIA'] = "{$tipofactura_nomenclatura} {$punto_venta}-{$numero_factura}";
 			}
 		}
+
+		print_r($cuentacorriente_collection);exit;
 
 		$max_cuentacorrientecliente_ids = array();
 		foreach ($egreso_ids as $egreso_id) {
