@@ -239,7 +239,7 @@ class CuentaCorrienteClienteController {
 		$from = "cuentacorrientecliente ccc INNER JOIN tipomovimientocuenta tmc ON ccc.tipomovimientocuenta = tmc.tipomovimientocuenta_id";
 		$where = "ccc.cliente_id = {$arg} GROUP BY ccc.egreso_id";
 		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
-
+		print_r($cuentacorriente_collection);exit;
 		$egreso_ids = array();
 		foreach ($cuentacorriente_collection as $clave=>$valor) {
 			$egreso_id = $valor['EID'];
