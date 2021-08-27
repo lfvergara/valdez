@@ -1,6 +1,5 @@
-ob_start();
 <?php
-require_once "common/libs/PHPExcel/Classes/PHPExcel.php";
+//require_once "common/libs/PHPExcel/Classes/PHPExcel.php";
 
 
 class ExcelReportTipo2 extends View {
@@ -11,8 +10,18 @@ class ExcelReportTipo2 extends View {
   public $abecedario = array("B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
 
   function extraer_informe($subtitulo, $array_exportacion) {
-    date_default_timezone_set('America/Mexico_City');
-    if (PHP_SAPI == 'cli') die('Este archivo solo se puede ver desde un navegador web');
+    error_reporting(E_ALL);
+    ini_set('display_errors', TRUE);
+    ini_set('display_startup_errors', TRUE);
+    date_default_timezone_set('Europe/London');
+
+    if (PHP_SAPI == 'cli')
+      die('This example should only be run from a Web Browser');
+
+    /** Include PHPExcel */
+    require_once "common/libs/PHPSpreadsheet/Classes/PHPExcel.php";
+    //require_once '/../Classes/PHPExcel.php';
+
     $objPHPExcel = new PHPExcel();
     $objPHPExcel->getProperties()->setCreator("DHARMA") 
                                  ->setLastModifiedBy("DHARMA") 
@@ -103,14 +112,21 @@ class ExcelReportTipo2 extends View {
     $objPHPExcel->setActiveSheetIndex(0);
     $objPHPExcel->getActiveSheet(0)->freezePaneByColumnAndRow(0,4);
 
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment;filename="infDHTordo.xlsx"');
-    header('Cache-Control: max-age=0');
+    // Redirect output to a client’s web browser (Excel2007)
+header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+header('Content-Disposition: attachment;filename="01simple.xlsx"');
+header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+header('Cache-Control: max-age=1');
 
-    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
-    file_put_contents('depuracion.txt', ob_get_contents());
-    ob_end_clean();
-    $objWriter->save('php://output');
+// If you're serving to IE over SSL, then the following may be needed
+header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+header ('Pragma: public'); // HTTP/1.0
+
+$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
+$objWriter->save('php://output');
   }
 
   /* ESTILO DE EXCEL */
