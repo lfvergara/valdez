@@ -1,6 +1,6 @@
 ob_start();
 <?php
-require_once "common/libs/PHPExcel/Classes/PHPExcel.php";
+require_once "common/libs/PHPExcel.php";
 
 
 class ExcelReportTipo2 extends View {
