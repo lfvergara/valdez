@@ -5,6 +5,9 @@ require_once "modules/cliente/model.php";
 require_once "modules/vendedor/model.php";
 require_once "modules/producto/model.php";
 require_once "modules/stock/model.php";
+require_once "modules/condicionpago/model.php";
+require_once "modules/condicioniva/model.php";
+require_once "modules/tipofactura/model.php";
 require_once "modules/pedidovendedordetalle/model.php";
 require_once "modules/usuariovendedor/model.php";
 
