@@ -22,7 +22,7 @@ class ExcelReportTipo2 extends View {
                                  ->setKeywords("infDHTordo")
                                  ->setCategory("infDHTordo");
     
-    $tituloReporte = "Valdez Distribuciones";
+    $tituloReporte = "RR Distribuciones";
     $fechaReporte = date("d-m-Y");
     $softReporte = "dhTordo";
     $tituloWeb = $tituloReporte;
@@ -39,19 +39,16 @@ class ExcelReportTipo2 extends View {
         $ultimaLetraPosicion = $valor;
       }
     }
-    
-    //$ultimaLetraPosicion = ($ultimaLetraPosicion == 'C') ? 'E' : $ultimaLetraPosicion;
+
     $objPHPExcel->setActiveSheetIndex(0)
                 ->setShowGridlines(false)
                 ->mergeCells("B1:E1")
                 ->mergeCells("F1:{$ultimaLetraPosicion}1")
-                //->setCellValue("B1", $tituloReporte)
-                //->setCellValue("F1", $fechaReporte)
+                ->setCellValue("B1", $tituloReporte)
+                ->setCellValue("F1", $fechaReporte)
                 ->mergeCells("B2:{$ultimaLetraPosicion}2")
                 ->setCellValue("B2", $subtitulo);
-    
-    print_r($ultimaLetraPosicion);exit;
-                
+
     $l = 4;
     $breack_row_temp = '';
     $breack_row_ant = '';
@@ -68,7 +65,7 @@ class ExcelReportTipo2 extends View {
       
       $l++;
     }
-    
+
     //print_r($array_exportacion);exit;
     $celdas_titulos = "B3:{$ultimaLetraPosicion}3";
     $celdas_informacion = "B4:{$ultimaLetraPosicion}".($l-1);
