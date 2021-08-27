@@ -801,6 +801,7 @@ class PedidoVendedorController {
 		$em->egreso_id = $egreso_id;
 		$em->get();
 		$tipofactura_id = $em->tipofactura->tipofactura_id;
+		print_r($tipofactura_id);exit;
 
 		$tfm = new TipoFactura();
 		$tfm->tipofactura_id = $tipofactura_id;
