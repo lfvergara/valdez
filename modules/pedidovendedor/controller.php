@@ -605,7 +605,7 @@ class PedidoVendedorController {
 		$mem->numero_factura = intval($num_factura);
 		$mem->fecha = $fecha;
 		$mem->hora = $hora;
-		$mem->descuento = (is_null($descuento)) ? 0 : $descuento;
+		$mem->descuento = 0;
 		$mem->subtotal = filter_input(INPUT_POST, 'subtotal');
 		$mem->importe_total = $importe_total;
 		$mem->emitido = 0;
@@ -766,10 +766,12 @@ class PedidoVendedorController {
 				}
 			}
 
+			/*
 			$this->model->pedidovendedor_id = filter_input(INPUT_POST, 'pedidovendedor_id');
 			$this->model->get();
 			$this->model->estadopedido = 2;
 			$this->model->save();
+			*/
 
 			header("Location: " . URL_APP . "/egreso/consultar/{$egreso_id}");
 		} else {
