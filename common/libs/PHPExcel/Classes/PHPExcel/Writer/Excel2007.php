@@ -1,5 +1,5 @@
 <?php
-
+require_once '../Settings.php';
 /**
  * PHPExcel_Writer_Excel2007
  *
