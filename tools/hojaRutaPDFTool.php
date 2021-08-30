@@ -16,7 +16,7 @@ class hojaRutaPDF extends View {
         $gui_html = str_replace('{tbl_hojaruta}', $gui_tbl_hoja_ruta_flete, $gui_html);
         $gui_html = $this->render($obj_flete, $gui_html);
         $gui_html = $this->render($array_cantidades, $gui_html);
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "portrait");
         $dompdf->load_html($gui_html);
         $dompdf->render();
