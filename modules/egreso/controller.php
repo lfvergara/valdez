@@ -33,7 +33,7 @@ class EgresoController {
 
 	function listar($arg) {
     	SessionHandler()->check_session();
-    	print('H:i:s');exit;
+    	print(date('H:i:s'));exit;
     	$periodo_actual = date('Ym');
     	$select = "e.egreso_id AS EGRESO_ID, CONCAT(date_format(e.fecha, '%d/%m/%Y'), ' ', LEFT(e.hora,5)) AS FECHA, UPPER(cl.razon_social) AS CLIENTE, ci.denominacion AS CONDIV,
     			   CONCAT(LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) AS BK, e.subtotal AS SUBTOTAL, ese.denominacion AS ENTREGA,
