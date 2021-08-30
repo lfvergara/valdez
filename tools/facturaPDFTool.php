@@ -1,6 +1,6 @@
 <?php
 //require_once 'common/libs/domPDF/dompdf_config.inc.php';
-require_once 'common/libs/dompdf/autoload.inc.php';
+require_once 'common/libs/domPDF/autoload.inc.php';
 
 
 class FacturaPDF extends View {
