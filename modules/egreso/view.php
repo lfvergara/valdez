@@ -8,7 +8,6 @@ class EgresoView extends View {
 		$user_level = $_SESSION["data-login-" . APP_ABREV]["usuario-nivel"];
 		switch ($user_level) {
 			case 1:
-				//print_r($user_level);exit;
 				$tbl_egreso_array = file_get_contents("static/modules/egreso/tbl_egreso_array_operador.html");
 				break;
 			case 2:
