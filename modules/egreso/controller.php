@@ -174,8 +174,7 @@ class EgresoController {
 
 	function consultar($arg) {
     	SessionHandler()->check_session();
-		//require_once 'tools/facturaPDFTool.php';
-		use Dompdf\Dompdf;
+		require_once 'tools/facturaPDFTool.php';
 		require_once 'modules/configuracion/model.php';
 		require_once "core/helpers/file.php";
 
@@ -299,8 +298,7 @@ class EgresoController {
 
 	function configurar($arg) {
     	SessionHandler()->check_session();
-		//require_once 'tools/facturaPDFTool.php';
-		use Dompdf\Dompdf;
+		require_once 'tools/facturaPDFTool.php';
 		require_once 'modules/configuracion/model.php';
 		require_once "core/helpers/file.php";
 
@@ -476,8 +474,7 @@ class EgresoController {
 
 	function descarga_notacredito($arg) {
     	SessionHandler()->check_session();
-		//require_once 'tools/facturaPDFTool.php';
-		use Dompdf\Dompdf;
+		require_once 'tools/facturaPDFTool.php';
 		require_once 'modules/configuracion/model.php';
 
 		$notacredito_id = $arg;
