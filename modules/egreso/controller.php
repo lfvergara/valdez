@@ -185,6 +185,7 @@ class EgresoController {
 
 		$this->model->egreso_id = $egreso_id;
 		$this->model->get();
+		$condicionpago_id = $this->model->condicionpago->condicionpago_id;
 		
 		$cliente_documentotipo = $this->model->cliente->documentotipo->denominacion;
 		$this->model->cliente_documentotipo = $cliente_documentotipo;
@@ -202,13 +203,17 @@ class EgresoController {
 			$this->model->cliente->telefono = '';
 		}
 
-		if (!empty($this->model->cliente->entregaminima)) {
-			$porcentaje_entregaminima = $this->model->cliente->entregaminima;
-			$importe_total = $this->model->importe_total;
-			$monto_entrega = ($porcentaje_entregaminima * $importe_total)/100;
-			$monto_entrega = round($monto_entrega, 0);
-			$this->model->cliente->monto_entrega = 'Entrega Minima: $' . $monto_entrega;
-		}else {
+		if ($condicionpago_id == 1) {
+			if (!empty($this->model->cliente->entregaminima)) {
+				$porcentaje_entregaminima = $this->model->cliente->entregaminima;
+				$importe_total = $this->model->importe_total;
+				$monto_entrega = ($porcentaje_entregaminima * $importe_total)/100;
+				$monto_entrega = round($monto_entrega, 0);
+				$this->model->cliente->monto_entrega = 'Entrega Minima: $' . $monto_entrega;
+			} else {
+				$this->model->cliente->monto_entrega = '';
+			}
+		} else {
 			$this->model->cliente->monto_entrega = '';
 		}
 

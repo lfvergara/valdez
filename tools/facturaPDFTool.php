@@ -1,5 +1,4 @@
 <?php
-//require_once 'common/libs/domPDF/dompdf_config.inc.php';
 use Dompdf\Dompdf;
 require_once 'common/libs/dompdf/autoload.inc.php';
 
@@ -28,8 +27,6 @@ class FacturaPDF extends View {
             $valor_alicuota_importe = round(($valor['IMPORTE'] - $subtotal),2);
 
             $valor_alicuota_costo = round($valor['COSTO'] / $alicuota, 2);
-            // $importe_neto = round($valor['COSTO'] - $valor_alicuota_costo);
-            //$importe_neto = round(($valor_alicuota_costo - $importe_neto),2);
 	        $importe_neto = round(($valor['COSTO'] / $alicuota), 2);
 
             $egresodetalle_collection[$clave]['COSTO'] = "$" . $importe_neto;
@@ -62,9 +59,7 @@ class FacturaPDF extends View {
             $gui_facturaA = $this->render($obj_egreso, $gui_facturaA);
             $gui_facturaA = $this->render($obj_configuracion, $gui_facturaA);
             $gui_facturaA = $this->render($obj_cliente, $gui_facturaA);
-						//print_r($gui_facturaA);exit;
             $gui_facturaA = str_replace('{tbl_egresodetalle}', $gui_tbl_facturaA, $gui_facturaA);
-
             $contenido .= $gui_facturaA;
         }
 
