@@ -263,9 +263,10 @@ class EgresoController {
 			$egresoafip = array();
 			$this->model->cae = 0;
 			$this->model->fecha_vencimiento = 0;
+			$tipofactura_id = $this->model->tipofactura->tipofactura_id;
 			$plantilla_tipofactura = $this->model->tipofactura->plantilla_impresion;
-			$plantilla_tipofactura = (string)$plantilla_tipofactura;
-			@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
+			//$plantilla_tipofactura = (string)$plantilla_tipofactura;
+			//@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
 		} else {
 			$egresoafip = $egresoafip[0];
 			$tipofactura_id = $egresoafip['TF_ID'];
@@ -280,8 +281,21 @@ class EgresoController {
 			$this->model->fecha_vencimiento = $egresoafip['FVENCIMIENTO'];
 			unset($this->model->tipofactura);
 			$this->model->tipofactura = $tfm;
-			$plantilla_tipofactura = $this->model->tipofactura->plantilla_impresion;
-			@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
+			$tipofactura_id = $this->model->tipofactura->tipofactura_id;
+			//$plantilla_tipofactura = $this->model->tipofactura->plantilla_impresion;
+			//@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
+		}
+
+		switch ($tipofactura_id) {
+			case 1:
+				$facturaPDFHelper->facturaA($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
+				break;
+			case 2:
+				$facturaPDFHelper->remitoR($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
+				break;
+			case 3:
+				$facturaPDFHelper->facturaB($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
+				break;
 		}
 
 		$this->model = new Egreso();
