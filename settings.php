@@ -5,8 +5,8 @@ const SO_UNIX = true;
 
 # Credenciales para la conexión con la base de datos MySQL
 const DB_HOST = 'localhost';
-const DB_USER = 'Takodana';
-const DB_PASS = 'v47d3zd15tr1buc10n35';
+const DB_USER = 'root';
+const DB_PASS = 'Dandoran$16';
 const DB_NAME = 'dh.tordo.prod';
 
 

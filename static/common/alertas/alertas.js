@@ -11,7 +11,7 @@ function ajax() {
 var objAJAX = ajax();
 
 function confirma_formulario(tipo, path) {  
-  var enlace = "/dh_tordo/static/common/alertas/confirma_formulario.html";        
+  var enlace = "/static/common/alertas/confirma_formulario.html";        
   var div_modal = document.getElementById('div_modal');
   switch(tipo) {
     case 1:
