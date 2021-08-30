@@ -78,7 +78,7 @@ class FacturaPDF extends View {
 
         $gui_html = str_replace('{contenido}', $contenido, $gui_html);
         $output = $directorio . $nombre_PDF;
-        $mipdf = new DOMPDF();
+        $mipdf = new Dompdf();
         $mipdf ->set_paper("A4", "landscape");
         $mipdf ->load_html($gui_html);
         $mipdf->render();
@@ -172,7 +172,7 @@ class FacturaPDF extends View {
 
         $gui_html = str_replace('{contenido}', $contenido, $gui_html);
         $output = $directorio . $nombre_PDF;
-        $mipdf = new DOMPDF();
+        $mipdf = new Dompdf();
         $mipdf ->set_paper("A4", "landscape");
         $mipdf ->load_html($gui_html);
         $mipdf->render();
@@ -236,7 +236,7 @@ class FacturaPDF extends View {
 
         $gui_html = str_replace('{contenido}', $contenido, $gui_html);
         $output = $directorio . $nombre_PDF;
-        $mipdf = new DOMPDF();
+        $mipdf = new Dompdf();
         $mipdf ->set_paper("A4", "landscape");
         $mipdf ->load_html($gui_html);
         $mipdf->render();
@@ -299,7 +299,7 @@ class FacturaPDF extends View {
         $gui_html = str_replace('{contenido}', $contenido, $gui_html);
 
         $output = $directorio . $nombre_PDF;
-        $mipdf = new DOMPDF();
+        $mipdf = new Dompdf();
         $mipdf ->set_paper("A4", "portrait");
         $mipdf ->load_html($gui_html);
         $mipdf->render();
@@ -345,7 +345,7 @@ class FacturaPDF extends View {
         }
 
         $gui_html = str_replace('{contenido}', $contenido, $gui_html);
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "landscape");
         $dompdf->load_html($gui_html);
         $dompdf->render();
@@ -363,7 +363,7 @@ class FacturaPDF extends View {
         $flete = $obj_flete->denominacion;
         $nombre_PDF = "HojaRuta-{$flete}";
         $gui_html = str_replace('{tbl_hoja_ruta_flete_pdf}', $gui_tbl_hoja_ruta_flete_pdf, $gui_html);
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "landscape");
         $dompdf->load_html($gui_html);
         $dompdf->render();
