@@ -22,7 +22,7 @@ class CuentaCorrienteProveedorPDF extends View {
         $gui_html = str_replace('{cant_total}', $cant_total, $gui_html);
         $gui_html = str_replace('{tbl_cuentacorrienteproveedor}', $gui_tbl_cuentacorrienteproveedor, $gui_html);
         
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "portrait");
         $dompdf->load_html($gui_html);
         $dompdf->render();
