@@ -1,5 +1,5 @@
 <?php
-require_once 'common/libs/domPDF/autoload.inc.php';
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class hojaRutaPDF extends View {
