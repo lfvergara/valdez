@@ -1,5 +1,6 @@
 <?php
-require_once 'common/libs/domPDF/dompdf_config.inc.php';
+use Dompdf\Dompdf;
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class pagoComisionPDF extends View {
@@ -15,7 +16,7 @@ class pagoComisionPDF extends View {
         $gui_html = str_replace('{tbl_pago_egresocomision}', $gui_tbl_pago_egresocomision_vendedor, $gui_html);
         $gui_html = $this->render($obj_vendedor, $gui_html);
         $gui_html = $this->render($array_extra, $gui_html);
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "portrait");
         $dompdf->load_html($gui_html);
         $dompdf->render();

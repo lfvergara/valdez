@@ -1,5 +1,6 @@
 <?php
-require_once 'common/libs/domPDF/dompdf_config.inc.php';
+use Dompdf\Dompdf;
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class cobrosPDF extends View {
@@ -12,8 +13,7 @@ class cobrosPDF extends View {
         $gui_html = str_replace('{fecha_sys}', $fecha, $gui_html);
         $gui_html = str_replace('{cant_total}', $total, $gui_html);
         $gui_html = str_replace('{cobrador}', $cobrador_denominacion, $gui_html);
-      //print_r($gui_html);exit();
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "portrait");
         $dompdf->load_html($gui_html);
         $dompdf->render();

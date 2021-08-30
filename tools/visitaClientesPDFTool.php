@@ -1,5 +1,6 @@
 <?php
-require_once 'common/libs/domPDF/dompdf_config.inc.php';
+use Dompdf\Dompdf;
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class visitaClientesVendedorPDF extends View {
@@ -19,7 +20,7 @@ class visitaClientesVendedorPDF extends View {
         $gui_html = $this->render($array_extra, $gui_html);
         $gui_html = str_replace('{fecha_sys}', date('d/m/Y'), $gui_html);
 
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "portrait");
         $dompdf->load_html($gui_html);
         $dompdf->render();

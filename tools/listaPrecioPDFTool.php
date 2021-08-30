@@ -1,5 +1,6 @@
 <?php
-require_once 'common/libs/domPDF/dompdf_config.inc.php';
+use Dompdf\Dompdf;
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class listaPrecioPDF extends View {
@@ -15,7 +16,7 @@ class listaPrecioPDF extends View {
         $gui_html = str_replace('{tbl_listaprecio}', $gui_tbl_lista_precio, $gui_html);
         $gui_html = str_replace('{objeto-denominacion}', $obj_denominacion, $gui_html);
 
-        $dompdf = new DOMPDF();
+        $dompdf = new Dompdf();
         $dompdf->set_paper("A4", "portrait");
         $dompdf->load_html($gui_html);
         $dompdf->render();

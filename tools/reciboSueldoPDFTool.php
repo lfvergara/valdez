@@ -1,5 +1,6 @@
 <?php
-require_once 'common/libs/domPDF/dompdf_config.inc.php';
+use Dompdf\Dompdf;
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class reciboSueldoPDFTool extends View {
@@ -10,7 +11,7 @@ class reciboSueldoPDFTool extends View {
         $obj_salario = $this->set_dict($obj_salario);
         $gui_html = $this->render($obj_salario, $gui_html);
         
-        $mipdf = new DOMPDF();
+        $mipdf = new Dompdf();
         $mipdf->set_paper("A4", "landscape");
         $mipdf->load_html($gui_html);
         $mipdf->render(); 

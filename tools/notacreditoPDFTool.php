@@ -1,5 +1,6 @@
 <?php
-require_once 'common/libs/domPDF/dompdf_config.inc.php';
+use Dompdf\Dompdf;
+require_once 'common/libs/dompdf/autoload.inc.php';
 
 
 class NotaCreditoPDF extends View {
@@ -52,7 +53,7 @@ class NotaCreditoPDF extends View {
 
         $gui_html = str_replace('{contenido}', $contenido, $gui_html);
         $output = $directorio . $nombre_PDF;
-        $mipdf = new DOMPDF();
+        $mipdf = new Dompdf();
         $mipdf ->set_paper("A4", "landscape");
         $mipdf ->load_html($gui_html);
         $mipdf->render(); 
