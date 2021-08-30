@@ -1,4 +1,5 @@
 <?php
+use Dompdf\Dompdf;
 require_once 'common/libs/dompdf/autoload.inc.php';
 
 
