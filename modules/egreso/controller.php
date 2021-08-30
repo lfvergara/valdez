@@ -21,6 +21,7 @@ require_once "modules/configuracion/model.php";
 require_once "modules/configuracioncomprobante/model.php";
 require_once "modules/usuariodetalle/model.php";
 require_once "tools/facturaAFIPTool.php";
+
 require_once "tools/hojaRutaPDFTool.php";
 
 
@@ -1245,6 +1246,7 @@ class EgresoController {
 		}
 
 		$flete_collection = Collector()->get('Flete');
+
 		$this->view->entregas_pendientes($egreso_collection, $flete_collection, $arg);
 	}
 
