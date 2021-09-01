@@ -18,9 +18,7 @@ class HojaRutaController {
 	function panel() {
     	SessionHandler()->check_session();
     	$periodo_actual = date('Ym');
-    	$select = "hr.hojaruta_id AS HRID, hr.fecha AS FECHA, f.denominacion AS FLETE, ee.denominacion AS ESTENTREGA, hr.egreso_ids AS EIDS,
-    			   CASE WHEN hr.estadoentrega = 7 THEN 'none' ELSE 'inline-block' END AS BTN_CERRAR_HR,
-						 CASE WHEN hr.estadoentrega = 7 THEN 'final_hoja_ruta_flete'  ELSE 'reimprimir_hoja_ruta_flete'  END AS BTN_PRINT";
+    	$select = "hr.hojaruta_id AS HRID, hr.fecha AS FECHA, f.denominacion AS FLETE, ee.denominacion AS ESTENTREGA, hr.egreso_ids AS EIDS, CASE WHEN hr.estadoentrega = 7 THEN 'none' ELSE 'inline-block' END AS BTN_CERRAR_HR, CASE WHEN hr.estadoentrega = 7 THEN 'final_hoja_ruta_flete'  ELSE 'reimprimir_hoja_ruta_flete'  END AS BTN_PRINT, hr.estadoentrega AS EEID";
     	$from = "hojaruta hr INNER JOIN flete f ON hr.flete_id = f.flete_id INNER JOIN estadoentrega ee ON hr.estadoentrega = ee.estadoentrega_id";
     	$where = "date_format(hr.fecha, '%Y%m') = {$periodo_actual}";
     	$hojaruta_collection = CollectorCondition()->get('HojaRuta', $where, 4, $from, $select);
@@ -31,6 +29,7 @@ class HojaRutaController {
     		foreach ($hojaruta_collection as $clave=>$valor) {
     			$hojaruta_id = $valor['HRID'];
     			$egreso_ids = $valor['EIDS'];
+    			$estadoentrega_id = $valor['EEID'];
     			$array_egreso_ids = explode(',', $egreso_ids);
 
     			if (!is_array($array_egreso_ids)) $array_egreso_ids = array();
@@ -45,14 +44,12 @@ class HojaRutaController {
 					$where = "eafip.egreso_id = {$egreso_id}";
 					$eafip = CollectorCondition()->get('EgrasoAFIP', $where, 4, $from, $select);
 
-					/*
-					$eem = new EstadoEntrega();
-					$eem->estadoentrega_id = $estadoentrega_id;
-					$eem->get();
-					$denominacion_estadoentrega = $eem->denominacion;
-					*/
-					
-					$lbl_quitar = "<a href='{url_app}/hojaruta/liberar_egreso/{$hojaruta_id}@{$egreso_id}' class='btn btn-danger btn-xs' title='Quitar de hoja de ruta'><i class='fa fa-trash-o'></i> Quitar de Hoja de Ruta</a>";
+					if ($estadoentrega_id == 7) {
+						$lbl_quitar = '';
+					} else {
+						$lbl_quitar = "<a href='{url_app}/hojaruta/liberar_egreso/{$hojaruta_id}@{$egreso_id}' class='btn btn-danger btn-xs' title='Quitar de hoja de ruta'><i class='fa fa-trash-o'></i> Quitar de Hoja de Ruta</a>";
+					}
+
 					if (is_array($eafip)) {
 						$factura = $eafip[0]['REFERENCIA'] . " {$lbl_quitar}";
 					} else {
