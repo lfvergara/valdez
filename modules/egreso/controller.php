@@ -1424,6 +1424,7 @@ class EgresoController {
 			$array_exportacion[] = array('','','','','','Cuenta Corriente',$cant_cuentacorriente);
 			$array_exportacion[] = array('','','','','','Contado',$cant_contado);
 
+			/*
 			$select = "hr.hojaruta_id AS ID";
 			$from = "hojaruta hr";
 			$where = "hr.flete_id = {$flete_id} AND hr.fecha = CURDATE() AND hr.estadoentrega = 3";
@@ -1435,6 +1436,7 @@ class EgresoController {
 					$hrm->delete();
 				}
 			}
+			*/
 
 			$fecha_actual = date('Y-m-d');
 			$hrm = new HojaRuta();
