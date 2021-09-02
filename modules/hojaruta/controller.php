@@ -532,15 +532,21 @@ class HojaRutaController {
 			$eem->estadoentrega = $estadoentrega_id;
 			$eem->save();
 
-			$select = "ccc.cuentacorrientecliente_id AS CCCID";
-			$from = "cuentacorrientecliente ccc";
-			$where = "ccc.egreso_id = {$egreso_id} ORDER BY ccc.cuentacorrientecliente_id DESC LIMIT 1";
-			$cuentacorrientecliente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
-			$cuentacorrientecliente_id = $cuentacorrientecliente_collection[0]['CCCID'];
+			$estado_abonado = $egreso_abonado_array[$egreso_id];
+			if ($estado_abonado == 4) {
+				$select = "ccc.cuentacorrientecliente_id AS CCCID";
+				$from = "cuentacorrientecliente ccc";
+				$where = "ccc.egreso_id = {$egreso_id} ORDER BY ccc.cuentacorrientecliente_id DESC LIMIT 1";
+				$cuentacorrientecliente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
+				$cuentacorrientecliente_id = $cuentacorrientecliente_collection[0]['CCCID'];
 
-			$cccm = new CuentaCorrienteCliente();
-			$cccm->cuentacorrientecliente_id = $cuentacorrientecliente_id;
-			$cccm->get();
+				$cccm = new CuentaCorrienteCliente();
+				$cccm->cuentacorrientecliente_id = $cuentacorrientecliente_id;
+				$cccm->get();
+
+				
+			}
+
 
 			
 		}
