@@ -507,15 +507,42 @@ class HojaRutaController {
 		$this->model->get();
 
 		$egreso_estadoentrega_array = $_POST["egreso_estadoentrega"];
-		
+		print('Estado');print_r($egreso_estadoentrega_array);print('<hr>');
 		$egreso_abonado_array = $_POST["egreso_abonado"];
+		print('Abonado');print_r($egreso_abonado_array);print('<hr>');
 		$egreso_pagoentrega_array = $_POST["egreso_pagoentrega"];
+		print('Tipo Pago');print_r($egreso_pagoentrega_array);print('<hr>');
 		$egreso_monto_parcial_array = $_POST["monto_parcial"];
+		print('Monto Pago');print_r($egreso_monto_parcial_array);exit;
 
+		$array_egreso_ids = array();
 		foreach ($egreso_estadoentrega_array as $clave=>$valor) {
 			$egreso_id = $clave;
 			$estadoentrega_id = $valor;
-			print_r($valor);exit;
+			$array_egreso_ids[] = "{$egreso_id}@{$estadoentrega_id}";
+			
+			$em = new Egreso();
+			$em->egreso_id = $egreso_id;
+			$em->get();
+			$egresoentrega_id = $em->egresoentrega->egresoentrega_id;
+
+			$eem = new EgresoEntrega();
+			$eem->egresoentrega_id = $egresoentrega_id;
+			$eem->get();
+			$eem->estadoentrega = $estadoentrega_id;
+			$eem->save();
+
+			$select = "ccc.cuentacorrientecliente_id AS CCCID";
+			$from = "cuentacorrientecliente ccc";
+			$where = "ccc.egreso_id = {$egreso_id} ORDER BY ccc.cuentacorrientecliente_id DESC LIMIT 1";
+			$cuentacorrientecliente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
+			$cuentacorrientecliente_id = $cuentacorrientecliente_collection[0]['CCCID'];
+
+			$cccm = new CuentaCorrienteCliente();
+			$cccm->cuentacorrientecliente_id = $cuentacorrientecliente_id;
+			$cccm->get();
+
+			
 		}
 
 
