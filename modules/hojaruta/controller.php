@@ -507,8 +507,9 @@ class HojaRutaController {
 		$this->model->get();
 
 		$egreso_estadoentrega_array = $_POST["egreso_estadoentrega"];
-		print_r($egreso_estadoentrega_array);exit;
+		print_r($egreso_estadoentrega_array);
 		$egreso_abonado_array = $_POST["egreso_abonado"];
+		print_r($egreso_abonado_array);exit;
 		$egreso_pagoentrega_array = $_POST["egreso_pagoentrega"];
 		$egreso_monto_parcial_array = $_POST["monto_parcial"];
 
