@@ -507,6 +507,7 @@ class HojaRutaController {
 		$this->model->get();
 
 		$egreso_estadoentrega_array = $_POST["egreso_estadoentrega"];
+		print_r($egreso_estadoentrega_array);exit;
 		$egreso_abonado_array = $_POST["egreso_abonado"];
 		$egreso_pagoentrega_array = $_POST["egreso_pagoentrega"];
 		$egreso_monto_parcial_array = $_POST["monto_parcial"];
@@ -578,8 +579,10 @@ class HojaRutaController {
 		}
 
 		$egreso_ids = implode(',', $array_egreso_ids);
-		$this->model->egreso_ids = $egreso_ids;
-		$this->model->estadoentrega = 7	;
+		$this->model->hojaruta_id = $hojaruta_id;
+		$this->model->get();
+		//$this->model->egreso_ids = $egreso_ids;
+		$this->model->estadoentrega = 7;
 		$this->model->save();
 
 		header("Location: " . URL_APP . "/hojaruta/panel");

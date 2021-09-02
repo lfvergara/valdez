@@ -1424,20 +1424,6 @@ class EgresoController {
 			$array_exportacion[] = array('','','','','','Cuenta Corriente',$cant_cuentacorriente);
 			$array_exportacion[] = array('','','','','','Contado',$cant_contado);
 
-			/*
-			$select = "hr.hojaruta_id AS ID";
-			$from = "hojaruta hr";
-			$where = "hr.flete_id = {$flete_id} AND hr.fecha = CURDATE() AND hr.estadoentrega = 3";
-			$hojaruta_id = CollectorCondition()->get('HojaRuta', $where, 4, $from, $select);
-			if (is_array($hojaruta_id)) {
-				if (!is_null($hojaruta_id[0]['ID'])) {
-					$hrm = new HojaRuta();
-					$hrm->hojaruta_id = $hojaruta_id[0]['ID'];
-					$hrm->delete();
-				}
-			}
-			*/
-
 			$fecha_actual = date('Y-m-d');
 			$hrm = new HojaRuta();
 			$hrm->fecha = $fecha_actual;
