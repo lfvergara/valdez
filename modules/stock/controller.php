@@ -108,8 +108,6 @@ class StockController {
 					$stock_valorizado = $stock_valorizado + $valor_stock_producto;
 
 					$class_stm = ($this->model->cantidad_actual < $pm->stock_minimo) ? 'danger' : 'success';
-					$mensaje_stm = ($this->model->cantidad_actual < $pm->stock_minimo) ? 'Reponer producto!' : '';
-
 					$this->model->producto = $pm;
 					$this->model->valor_stock = $valor_stock_producto;
 					$this->model->class_stm = $class_stm;
