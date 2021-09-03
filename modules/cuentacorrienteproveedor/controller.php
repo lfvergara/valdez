@@ -40,10 +40,7 @@ class CuentaCorrienteProveedorController {
 	function consultar($arg) {
     	SessionHandler()->check_session();
 
-    	$select = "ccp.proveedor_id AS PID, p.razon_social AS PROVEEDOR, (SELECT ROUND(SUM(dccp.importe),2) FROM
-    			   cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 1 AND dccp.proveedor_id = ccp.proveedor_id) AS DEUDA,
-				   (SELECT ROUND(SUM(dccp.importe),2) FROM cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 2 AND
-				   dccp.proveedor_id = ccp.proveedor_id) AS INGRESO";
+    	$select = "ccp.proveedor_id AS PID, p.razon_social AS PROVEEDOR, (SELECT ROUND(SUM(dccp.importe),2) FROM     			   cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 1 AND dccp.proveedor_id = ccp.proveedor_id) AS DEUDA, (SELECT ROUND(SUM(dccp.importe),2) FROM cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 2 AND dccp.proveedor_id = ccp.proveedor_id) AS INGRESO";
 		$from = "cuentacorrienteproveedor ccp INNER JOIN proveedor p ON ccp.proveedor_id = p.proveedor_id";
 		$groupby = "ccp.proveedor_id";
 		$cuentascorrientes_collection = CollectorCondition()->get('CuentaCorrienteProveedor', NULL, 4, $from, $select, $groupby);
@@ -52,11 +49,8 @@ class CuentaCorrienteProveedorController {
     	$pm->proveedor_id = $arg;
     	$pm->get();
     	
-		$select = "date_format(ccp.fecha, '%d/%m/%Y') AS FECHA, ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, SUBSTRING(tmc.denominacion,1,3) AS MOVIMIENTO, ccp.ingreso_id AS IID,
-				   ccp.referencia AS REFERENCIA, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'danger' WHEN 2 THEN 'success' END AS CLASS,
-				   CASE ccp.tipomovimientocuenta WHEN 1 THEN 'down' WHEN 2 THEN 'up' END AS MOVICON, ccp.cuentacorrienteproveedor_id CCPID,
-				   ingresotipopago AS ING_TIP_PAG, ccp.proveedor_id AS PROID";
-		$from = "cuentacorrienteproveedor ccp INNER JOIN tipomovimientocuenta tmc ON ccp.tipomovimientocuenta = tmc.tipomovimientocuenta_id";
+		$select = "date_format(ccp.fecha, '%d/%m/%Y') AS FECHA, ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, SUBSTRING(tmc.denominacion,1,3) AS MOVIMIENTO, ccp.ingreso_id AS IID, CONCAT(tf.nomenclatura, ' ', ccp.referencia) AS REFERENCIA, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'danger' WHEN 2 THEN 'success' END AS CLASS, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'down' WHEN 2 THEN 'up' END AS MOVICON, ccp.cuentacorrienteproveedor_id CCPID, ingresotipopago AS ING_TIP_PAG, ccp.proveedor_id AS PROID";
+		$from = "cuentacorrienteproveedor ccp INNER JOIN tipomovimientocuenta tmc ON ccp.tipomovimientocuenta = tmc.tipomovimientocuenta_id INNER JOIN tipofactura tf ON ccp.tipofactura = tf.tipofactura_id";
 		$where = "ccp.proveedor_id = {$arg} AND ccp.estadomovimientocuenta != 4";
 		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 
@@ -143,9 +137,7 @@ class CuentaCorrienteProveedorController {
 			if (!in_array($valor['CCPID'], $max_cuentacorrienteproveedor_ids)) $cuentacorriente_collection[$clave]['BTN_DISPLAY'] = 'none';
 		}
 			
-		$select = "(SELECT ROUND(SUM(dccp.importe),2) FROM cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 1 AND 
-					dccp.proveedor_id = ccp.proveedor_id) AS DEUDA, (SELECT ROUND(SUM(dccp.importe),2) FROM cuentacorrienteproveedor dccp 
-					WHERE dccp.tipomovimientocuenta = 2 AND dccp.proveedor_id = ccp.proveedor_id) AS INGRESO";
+		$select = "(SELECT ROUND(SUM(dccp.importe),2) FROM cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 1 AND  dccp.proveedor_id = ccp.proveedor_id) AS DEUDA, (SELECT ROUND(SUM(dccp.importe),2) FROM cuentacorrienteproveedor dccp WHERE dccp.tipomovimientocuenta = 2 AND dccp.proveedor_id = ccp.proveedor_id) AS INGRESO";
 		$from = "cuentacorrienteproveedor ccp INNER JOIN proveedor p ON ccp.proveedor_id = p.proveedor_id";
 		$where = "ccp.proveedor_id = {$arg}";
 		$groupby = "ccp.proveedor_id";

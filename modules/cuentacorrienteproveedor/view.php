@@ -22,7 +22,6 @@ class CuentaCorrienteProveedorView extends View {
 		}
 
 		$totales_array = $totales_array[0];
-		//$totales_array['BALANCE'] = abs(round(($totales_array['TDEUDA'] - $totales_array['TINGRESO']),2));
 		$totales_array['BALANCE'] = abs(round($balance_temp,2));
 		$totales_array['BALANCE'] = ($totales_array['BALANCE'] > 0.5) ? $totales_array['BALANCE'] : 0;
 		$totales_array['CLASS_BALANCE'] = ($totales_array['TDEUDA'] <= $totales_array['TINGRESO']) ? "green" : "red";
