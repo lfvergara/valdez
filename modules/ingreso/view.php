@@ -279,7 +279,7 @@ class IngresoView extends View {
 		$slt_tipofactura = $this->render_regex('SLT_TIPOFACTURA', $slt_tipofactura, $tipofactura_collection);
 		
 		unset($obj_ingreso->proveedor->infocontacto_collection);
-		$obj_ingreso = $this->set_dict($obj_ingresodetalle);
+		$obj_ingreso = $this->set_dict($obj_ingreso);
 		
 		$render = str_replace('{tbl_proveedor}', $slt_proveedor_array, $gui);
 		$render = str_replace('{slt_tipofactura}', $slt_tipofactura, $render);
