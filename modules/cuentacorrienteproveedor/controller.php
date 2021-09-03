@@ -50,7 +50,7 @@ class CuentaCorrienteProveedorController {
     	$pm->get();
     	
 		$select = "date_format(ccp.fecha, '%d/%m/%Y') AS FECHA, ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, SUBSTRING(tmc.denominacion,1,3) AS MOVIMIENTO, ccp.ingreso_id AS IID, CONCAT(tf.nomenclatura, ' ', ccp.referencia) AS REFERENCIA, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'danger' WHEN 2 THEN 'success' END AS CLASS, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'down' WHEN 2 THEN 'up' END AS MOVICON, ccp.cuentacorrienteproveedor_id CCPID, ingresotipopago AS ING_TIP_PAG, ccp.proveedor_id AS PROID";
-		$from = "cuentacorrienteproveedor ccp INNER JOIN tipomovimientocuenta tmc ON ccp.tipomovimientocuenta = tmc.tipomovimientocuenta_id INNER JOIN tipofactura tf ON ccp.tipofactura = tf.tipofactura_id";
+		$from = "cuentacorrienteproveedor ccp INNER JOIN tipomovimientocuenta tmc ON ccp.tipomovimientocuenta = tmc.tipomovimientocuenta_id INNER JOIN ingreso i ON ccp.ingreso_id = i.ingreso_id INNER JOIN tipofactura tf ON i.tipofactura = tf.tipofactura_id";
 		$where = "ccp.proveedor_id = {$arg} AND ccp.estadomovimientocuenta != 4";
 		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 
