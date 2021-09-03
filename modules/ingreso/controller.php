@@ -537,6 +537,11 @@ class IngresoController {
 		$proveedor = filter_input(INPUT_POST, 'proveedor');
 		$tipofactura = filter_input(INPUT_POST, 'tipofactura');
 
+		$tfm = new TipoFactura();
+		$tfm->tipofactura_id = $tipofactura;
+		$tfm->get();
+		$nomenclatura = $tfm->nomenclatura;
+
 		$this->model->ingreso_id = $ingreso_id;
 		$this->model->get();
 		$condicionpago = $this->model->condicionpago;
