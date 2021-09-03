@@ -232,13 +232,27 @@ class ReporteController {
 
 		$ingresos_hoy = $sum_contado + $ingreso_cuentacorriente_hoy;
 		$egresos_hoy = $egreso_comision_hoy + $egreso_cuentacorrienteproveedor_hoy;
-		//$total_facturado = round(($ingresos_hoy - $egresos_hoy),2);
-		//$total_facturado = round(($cajadiaria + $ingresos_hoy - $egresos_hoy),2);
 		$total_facturado = $this->calcula_cajadiaria();
 
 		$total_facturado_class = ($total_facturado >= 0) ? 'blue' : 'red';
 		$total_facturado_int = ($total_facturado >= 0) ? $total_facturado : "-" . abs($total_facturado);
 		$total_facturado = ($total_facturado >= 0) ? "$" . $total_facturado : "-$" . abs($total_facturado);
+
+		$select = "ROUND(SUM(CASE WHEN e.tipofactura = 1 THEN e.importe_total WHEN e.tipofactura = 3 THEN e.importe_total ELSE 0
+        END),2) AS BLANCO, ROUND(SUM(CASE WHEN e.tipofactura = 2 THEN e.importe_total ELSE 0 END),2) AS NEGRO, ROUND(SUM(e.importe_total), 2) AS TOTAL";
+		$from = "egreso e";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}'AND '{$fecha_sys1}'";
+		$ventas_tipofactura = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
+		$ventas_tipofactura = (is_array($ventas_tipofactura) AND !empty($ventas_tipofactura)) ? $ventas_tipofactura : array(array('BLANCO'=>0, 'NEGRO'=>0, 'TOTAL'=>0));
+
+		$select = "ROUND(SUM(CASE WHEN nc.tipofactura = 4 THEN nc.importe_total WHEN nc.tipofactura = 5 THEN nc.importe_total ELSE 0 END),2) AS BLANCO, ROUND(SUM(CASE WHEN nc.tipofactura = 6 THEN nc.importe_total ELSE 0 END),2) AS NEGRO, ROUND(SUM(nc.importe_total), 2) AS TOTAL";
+		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
+		$notacredito_tipofactura = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
+		$notacredito_tipofactura = (is_array($notacredito_tipofactura) AND !empty($notacredito_tipofactura)) ? $notacredito_tipofactura : array(array('BLANCO'=>0, 'NEGRO'=>0, 'TOTAL'=>0));
+
+		$suma_importe_factura = $ventas_tipofactura[0]['BLANCO'] - $notacredito_tipofactura[0]['BLANCO'];
+		$suma_importe_remito = $ventas_tipofactura[0]['NEGRO'] - $notacredito_tipofactura[0]['NEGRO'];
 		
 		$array_totales = array('{periodo_actual}'=>$periodo_actual,
 							   '{estado_actual}'=>($total_facturado_int + $stock_valorizado) - ($deuda_cuentacorrientecliente + $deuda_cuentacorrienteproveedor),
@@ -254,6 +268,8 @@ class ReporteController {
 							   '{suma_importe_ventas_cc}'=>$suma_importe_ventas_cc,
 							   '{suma_importe_ventas_cont}'=>$suma_importe_ventas_cont,
 								 '{suma_total_ventas}'=>$suma_importe_ventas_cont + $suma_importe_ventas_cc,
+							   '{suma_importe_factura}'=>$suma_importe_factura,
+							   '{suma_importe_remito}'=>$suma_importe_remito,
 							   '{suma_ingresos_hoy}'=>$suma_ingresos_hoy,
 							   '{suma_notacredito_hoy}'=>$suma_notacredito_hoy,
 							   '{total_facturacion_hoy}'=>$total_facturacion_hoy);
