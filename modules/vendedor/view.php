@@ -113,27 +113,22 @@ class VendedorView extends View {
 		print $template;
 	}
 
-	function estadisticas($vendedor_collection, $ventas_vendedor,$ventas_vendedor_tipo_factura, $top3_vendedor_proveedor) {
+	function estadisticas($vendedor_collection, $ventas_vendedor, $top3_vendedor_proveedor) {
 		$gui = file_get_contents("static/modules/vendedor/estadisticas.html");
+		
 		$gui_tbl_ventas_vendedor = file_get_contents("static/modules/vendedor/tbl_ventas_vendedor.html");
-
-		$gui_tbl_ventas_vendedor_tipo_factura = file_get_contents("static/modules/vendedor/tbl_ventas_vendedor_tipo_factura.html");
-		$gui_tbl_row_ventas_vendedor_tipo_factura = file_get_contents("static/modules/vendedor/tbl_row_ventas_vendedor_tipo_factura.html");
-		$gui_tbl_row_ventas_vendedor_tipo_factura = $this->render_regex_dict('TBL_TOTAL_VENDEDOR_TIPO_FACTURA', $gui_tbl_row_ventas_vendedor_tipo_factura, $ventas_vendedor_tipo_factura);
-		$gui_tbl_ventas_vendedor_tipo_factura = $this->get_regex('TBL_VENDEDOR_TIPO_FACTURA', $gui_tbl_ventas_vendedor_tipo_factura);
-		$gui_tbl_ventas_vendedor_tipo_factura = str_replace('{tbl_row_vendedor_tipo_factura}', $gui_tbl_row_ventas_vendedor_tipo_factura, $gui_tbl_ventas_vendedor_tipo_factura);
-
 		$gui_tbl_ventas_vendedor = $this->render_regex_dict('LST_VENTAS', $gui_tbl_ventas_vendedor, $ventas_vendedor);
+
 		$gui_slt_vendedor = file_get_contents("static/common/slt_vendedor_array.html");
 		$gui_slt_vendedor = $this->render_regex_dict('SLT_VENDEDOR', $gui_slt_vendedor, $vendedor_collection);
+		
 		$gui_carga_barchart_venta_vendedor = file_get_contents("static/modules/vendedor/carga_barchart_venta_vendedor.html");
 		$gui_carga_barchart_venta_vendedor = $this->render_regex_dict('BARCHART_VENTA', $gui_carga_barchart_venta_vendedor, $ventas_vendedor);
+		
 		$gui_top3_vendedor_proveedor = file_get_contents("static/modules/vendedor/tbl_top3_vendedor_proveedor.html");
-
+        $cod_tbl_vendedor_proveedor = $this->get_regex('TBL_TOP3_VENDEDOR_PROVEEDOR', $gui_top3_vendedor_proveedor);
 		$periodo_actual = date('Ym');
 		$render_top3_vendedor_proveedor = '';
-        $cod_tbl_vendedor_proveedor = $this->get_regex('TBL_TOP3_VENDEDOR_PROVEEDOR', $gui_top3_vendedor_proveedor);
-
         foreach ($top3_vendedor_proveedor as $dict_vendedor) {
             $totales_proveedores = $dict_vendedor['ARRAY_TOTALES'];
             unset($dict_vendedor['ARRAY_TOTALES']);
@@ -146,26 +141,19 @@ class VendedorView extends View {
             $render_top3_vendedor_proveedor .= $tbl_vendedor;
         }
 
-    $gui_top3_vendedor_proveedor = str_replace($cod_tbl_vendedor_proveedor, $render_top3_vendedor_proveedor, $gui_top3_vendedor_proveedor);
+    	$gui_top3_vendedor_proveedor = str_replace($cod_tbl_vendedor_proveedor, $render_top3_vendedor_proveedor, $gui_top3_vendedor_proveedor);
 		$render = str_replace('{carga_barchart_venta_vendedor}', $gui_carga_barchart_venta_vendedor, $gui);
 		$render = str_replace('{slt_vendedor}', $gui_slt_vendedor, $render);
 		$render = str_replace('{tbl_ventas_vendedor}', $gui_tbl_ventas_vendedor, $render);
-		$render = str_replace('{tbl_ventas_vendedor_tipo_factura}', $gui_tbl_ventas_vendedor_tipo_factura, $render);
-		$render = str_replace('{periodo_actual}', $periodo_actual, $render);
 		$render = str_replace('{top3_vendedor_proveedor}', $gui_top3_vendedor_proveedor, $render);
+		$render = str_replace('{periodo_actual}', $periodo_actual, $render);
 		$render = $this->render_breadcrumb($render);
 		$template = $this->render_template($render);
 		print $template;
 	}
 
-	function filtro_estadisticas($vendedor_collection, $ventas_vendedor,$ventas_vendedor_tipo_factura,$array_fechas, $top3_vendedor_proveedor) {
+	function filtro_estadisticas($vendedor_collection, $ventas_vendedor, $array_fechas, $top3_vendedor_proveedor) {
 		$gui = file_get_contents("static/modules/vendedor/filtro_estadisticas.html");
-
-		$gui_tbl_ventas_vendedor_tipo_factura = file_get_contents("static/modules/vendedor/tbl_ventas_vendedor_tipo_factura.html");
-		$gui_tbl_row_ventas_vendedor_tipo_factura = file_get_contents("static/modules/vendedor/tbl_row_ventas_vendedor_tipo_factura.html");
-		$gui_tbl_row_ventas_vendedor_tipo_factura = $this->render_regex_dict('TBL_TOTAL_VENDEDOR_TIPO_FACTURA', $gui_tbl_row_ventas_vendedor_tipo_factura, $ventas_vendedor_tipo_factura);
-		$gui_tbl_ventas_vendedor_tipo_factura = $this->get_regex('TBL_VENDEDOR_TIPO_FACTURA', $gui_tbl_ventas_vendedor_tipo_factura);
-		$gui_tbl_ventas_vendedor_tipo_factura = str_replace('{tbl_row_vendedor_tipo_factura}', $gui_tbl_row_ventas_vendedor_tipo_factura, $gui_tbl_ventas_vendedor_tipo_factura);
 
 		$gui_tbl_ventas_vendedor = file_get_contents("static/modules/vendedor/tbl_ventas_vendedor.html");
 		$gui_tbl_ventas_vendedor = $this->render_regex_dict('LST_VENTAS', $gui_tbl_ventas_vendedor, $ventas_vendedor);
@@ -190,11 +178,10 @@ class VendedorView extends View {
             $render_top3_vendedor_proveedor .= $tbl_vendedor;
         }
 
-    $gui_top3_vendedor_proveedor = str_replace($cod_tbl_vendedor_proveedor, $render_top3_vendedor_proveedor, $gui_top3_vendedor_proveedor);
+    	$gui_top3_vendedor_proveedor = str_replace($cod_tbl_vendedor_proveedor, $render_top3_vendedor_proveedor, $gui_top3_vendedor_proveedor);
 		$render = str_replace('{carga_barchart_venta_vendedor}', $gui_carga_barchart_venta_vendedor, $gui);
 		$render = str_replace('{slt_vendedor}', $gui_slt_vendedor, $render);
 		$render = str_replace('{tbl_ventas_vendedor}', $gui_tbl_ventas_vendedor, $render);
-		$render = str_replace('{tbl_ventas_vendedor_tipo_factura}', $gui_tbl_ventas_vendedor_tipo_factura, $render);
 		$render = str_replace('{periodo_actual}', $periodo_actual, $render);
 		$render = str_replace('{top3_vendedor_proveedor}', $gui_top3_vendedor_proveedor, $render);
 		$render = $this->render($array_fechas, $render);

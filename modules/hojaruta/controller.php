@@ -29,7 +29,7 @@ class HojaRutaController {
     		foreach ($hojaruta_collection as $clave=>$valor) {
     			$hojaruta_id = $valor['HRID'];
     			$egreso_ids = $valor['EIDS'];
-    			$estadoentrega_id = $valor['EEID'];
+    			$temp_estadoentrega_id = $valor['EEID'];
     			$array_egreso_ids = explode(',', $egreso_ids);
 
     			if (!is_array($array_egreso_ids)) $array_egreso_ids = array();
@@ -44,7 +44,7 @@ class HojaRutaController {
 					$where = "eafip.egreso_id = {$egreso_id}";
 					$eafip = CollectorCondition()->get('EgrasoAFIP', $where, 4, $from, $select);
 
-					if ($estadoentrega_id == 7) {
+					if ($temp_estadoentrega_id == 7) {
 						$lbl_quitar = '';
 					} else {
 						$lbl_quitar = "<a href='{url_app}/hojaruta/liberar_egreso/{$hojaruta_id}@{$egreso_id}' class='btn btn-danger btn-xs' title='Quitar de hoja de ruta'><i class='fa fa-trash-o'></i> Quitar de Hoja de Ruta</a>";

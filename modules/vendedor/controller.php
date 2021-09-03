@@ -110,77 +110,50 @@ class VendedorController {
 
 	function estadisticas() {
 		SessionHandler()->check_session();
+		$primer_dia_mes = date('Y-m') . '-01'; 
+		$fecha_sys = date('Y-m-d'); 
 
-		$select_vendedor = "v.vendedor_id AS ID, CONCAT(v.apellido, ' ', v.nombre) AS DENOMINACION";
-		$from_vendedor = "vendedor v";
-		$vendedor_collection = CollectorCondition()->get('Egreso', NULL, 4, $from_vendedor, $select_vendedor);
+		$select = "v.vendedor_id AS ID, CONCAT(v.apellido, ' ', v.nombre) AS DENOMINACION";
+		$from = "vendedor v";
+		$vendedor_collection = CollectorCondition()->get('Egreso', NULL, 4, $from, $select);
 
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(e.importe_total), 2) AS TOTAL,tf.plantilla_impresion AS TIPOFAC,
-		(CASE WHEN tf.nomenclatura = 'R' THEN 'Negro' WHEN tf.nomenclatura = 'B' THEN 'Blanco' WHEN tf.nomenclatura = 'A' THEN 'Blanco' END) AS VENTA";
-		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN tipofactura tf ON tf.tipofactura_id = e.tipofactura";
-		$where = "MONTH(e.fecha)=MONTH(CURDATE())";
-		$groupby = "e.vendedor,tf.nomenclatura";
+		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(CASE WHEN e.tipofactura = 1 THEN e.importe_total WHEN e.tipofactura = 3 THEN e.importe_total ELSE 0 END),2) AS BLANCO, ROUND(SUM(CASE WHEN e.tipofactura = 2 THEN e.importe_total ELSE 0 END),2) AS NEGRO, ROUND(SUM(e.importe_total), 2) AS TOTAL";
+		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys}'";
+		$groupby = "e.vendedor";
 		$ventas_vendedor_tipo_factura = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
 		$ventas_vendedor_tipo_factura = (is_array($ventas_vendedor_tipo_factura) AND !empty($ventas_vendedor_tipo_factura)) ? $ventas_vendedor_tipo_factura : array();
 
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(nc.importe_total), 2) AS TOTAL,tf.plantilla_impresion AS TIPOFAC";
-		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id INNER JOIN
-				 vendedor v ON e.vendedor = v.vendedor_id INNER JOIN tipofactura tf ON tf.tipofactura_id = e.tipofactura";
-		$where = "MONTH(e.fecha)=MONTH(CURDATE())";
-		$groupby = "e.vendedor,tf.nomenclatura";
+		$select = "e.vendedor AS VID, ROUND(SUM(CASE WHEN nc.tipofactura = 4 THEN nc.importe_total WHEN nc.tipofactura = 5 THEN nc.importe_total ELSE 0 END),2) AS BLANCO, ROUND(SUM(CASE WHEN nc.tipofactura = 6 THEN nc.importe_total ELSE 0         END),2) AS NEGRO, ROUND(SUM(nc.importe_total), 2) AS TOTAL";
+		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys}'";
+		$groupby = "e.vendedor";
 		$notacredito_vendedor_tipo_factura = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
 		$notacredito_vendedor_tipo_factura = (is_array($notacredito_vendedor_tipo_factura) AND !empty($notacredito_vendedor_tipo_factura)) ? $notacredito_vendedor_tipo_factura : array();
 
 		foreach ($ventas_vendedor_tipo_factura as $clave=>$valor) {
-			$vendedor_id = $valor['VID'];
-			$tipofac = $valor['TIPOFAC'];
+			$ventas_vendedor_id = $valor['VID'];
+			$ventas_blanco = $valor['BLANCO'];
+			$ventas_negro = $valor['NEGRO'];
+			$ventas_total = $valor['TOTAL'];
+
 			foreach ($notacredito_vendedor_tipo_factura as $c=>$v) {
-				if ($vendedor_id == $v['VID'] AND $tipofac == $v['TIPOFAC']) $ventas_vendedor_tipo_factura[$clave]['TOTAL'] = $ventas_vendedor_tipo_factura[$clave]['TOTAL'] - $v['TOTAL'];
-			}
-		}
-
-		$newArray = array();
-		foreach($ventas_vendedor_tipo_factura as $key => $value){
-			if (array_search($value['VID'], array_column($newArray, 'VID')) === FALSE) {
-					$newArray[] = array('VID'=>$value['VID'], 'VENDEDOR'=>$value['VENDEDOR'],'TOTAL'=>$value['TOTAL'],'TIPOFAC'=>$value['TIPOFAC'],'VENTA'=>$value['VENTA'],'SUMA'=>$value['TOTAL']);
-			}else {
-				$clave = array_search($value['VID'], array_column($newArray, 'VID'));
-				if ($newArray[$clave]['VENTA'] == $value['VENTA']) {
-					$newArray[$clave]['SUMA'] += $value['TOTAL'];
-				}else {
-					$newArray[] = array('VID'=>$value['VID'], 'VENDEDOR'=>$value['VENDEDOR'],'TOTAL'=>$value['TOTAL'],'TIPOFAC'=>$value['TIPOFAC'],'VENTA'=>$value['VENTA'],'SUMA'=>$value['TOTAL']);
+				$nc_vendedor_id = $v['VID'];
+				$nc_blanco = $v['BLANCO'];
+				$nc_negro = $v['NEGRO'];
+				$nc_total = $v['TOTAL'];
+				
+				if ($ventas_vendedor_id == $nc_vendedor_id) {
+					$ventas_vendedor_tipo_factura[$clave]['BLANCO'] = $ventas_blanco - $nc_blanco;
+					$ventas_vendedor_tipo_factura[$clave]['NEGRO'] = $ventas_negro - $nc_negro;
+					$ventas_vendedor_tipo_factura[$clave]['TOTAL'] = $ventas_total - $nc_total;
 				}
-			}
-		}
-		$ventas_vendedor_tipo_factura = $newArray;
-
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(e.importe_total), 2) AS TOTAL";
-		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
-		$where = "MONTH(e.fecha)=MONTH(CURDATE())";
-		$groupby = "e.vendedor";
-		$ventas_vendedor = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
-		$ventas_vendedor = (is_array($ventas_vendedor) AND !empty($ventas_vendedor)) ? $ventas_vendedor : array();
-
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(nc.importe_total), 2) AS TOTAL";
-		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id INNER JOIN
-				 vendedor v ON e.vendedor = v.vendedor_id";
-		$where = "MONTH(e.fecha)=MONTH(CURDATE())";
-		$groupby = "e.vendedor";
-		$notacredito_vendedor = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
-		$notacredito_vendedor = (is_array($notacredito_vendedor) AND !empty($notacredito_vendedor)) ? $notacredito_vendedor : array();
-
-		foreach ($ventas_vendedor as $clave=>$valor) {
-			$vendedor_id = $valor['VID'];
-			foreach ($notacredito_vendedor as $c=>$v) {
-				if ($vendedor_id == $v['VID']) $ventas_vendedor[$clave]['TOTAL'] = $ventas_vendedor[$clave]['TOTAL'] - $v['TOTAL'];
 			}
 		}
 
 		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, LEFT(pr.razon_social, 25) AS PROVEEDOR, ROUND(SUM(ed.importe),2) AS IMPORTE";
-		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id INNER JOIN
-				 producto p ON ed.producto_id = p.producto_id INNER JOIN productodetalle pd ON p.producto_id = pd.producto_id INNER JOIN
-				 proveedor pr ON pd.proveedor_id = pr.proveedor_id";
-		$where = "MONTH(e.fecha)=MONTH(CURDATE())";
+		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN productodetalle pd ON p.producto_id = pd.producto_id INNER JOIN proveedor pr ON pd.proveedor_id = pr.proveedor_id";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys}'";
 		$groupby = "v.vendedor_id, pr.proveedor_id ORDER BY	CONCAT(v.apellido, ' ', v.nombre), ROUND(SUM(ed.importe),2) DESC";
 		$top3_vendedor_proveedor = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
 		$top3_vendedor_proveedor = (is_array($top3_vendedor_proveedor) AND !empty($top3_vendedor_proveedor)) ? $top3_vendedor_proveedor : array();
@@ -248,7 +221,7 @@ class VendedorController {
 			}
 		}
 
-		$this->view->estadisticas($vendedor_collection, $ventas_vendedor,$ventas_vendedor_tipo_factura, $top3_vendedor_proveedor_final);
+		$this->view->estadisticas($vendedor_collection, $ventas_vendedor_tipo_factura, $top3_vendedor_proveedor_final);
 	}
 
 	function filtro_estadisticas() {
@@ -261,71 +234,42 @@ class VendedorController {
 		$from_vendedor = "vendedor v";
 		$vendedor_collection = CollectorCondition()->get('Egreso', NULL, 4, $from_vendedor, $select_vendedor);
 
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(e.importe_total), 2) AS TOTAL,tf.plantilla_impresion AS TIPOFAC,
-		(CASE WHEN tf.nomenclatura = 'R' THEN 'Negro' WHEN tf.nomenclatura = 'B' THEN 'Blanco' WHEN tf.nomenclatura = 'A' THEN 'Blanco' END) AS VENTA";
-		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN tipofactura tf ON tf.tipofactura_id = e.tipofactura";
+		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(CASE WHEN e.tipofactura = 1 THEN e.importe_total WHEN e.tipofactura = 3 THEN e.importe_total ELSE 0 END),2) AS BLANCO, ROUND(SUM(CASE WHEN e.tipofactura = 2 THEN e.importe_total ELSE 0 END),2) AS NEGRO, ROUND(SUM(e.importe_total), 2) AS TOTAL";
+		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
 		$where = "e.fecha BETWEEN '{$desde}' AND '{$hasta}'";
-		$groupby = "e.vendedor,tf.nomenclatura";
+		$groupby = "e.vendedor";
 		$ventas_vendedor_tipo_factura = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
 		$ventas_vendedor_tipo_factura = (is_array($ventas_vendedor_tipo_factura) AND !empty($ventas_vendedor_tipo_factura)) ? $ventas_vendedor_tipo_factura : array();
 
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(nc.importe_total), 2) AS TOTAL,tf.plantilla_impresion AS TIPOFAC";
-		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id INNER JOIN
-				 vendedor v ON e.vendedor = v.vendedor_id INNER JOIN tipofactura tf ON tf.tipofactura_id = e.tipofactura";
+		$select = "e.vendedor AS VID, ROUND(SUM(CASE WHEN nc.tipofactura = 4 THEN nc.importe_total WHEN nc.tipofactura = 5 THEN nc.importe_total ELSE 0 END),2) AS BLANCO, ROUND(SUM(CASE WHEN nc.tipofactura = 6 THEN nc.importe_total ELSE 0         END),2) AS NEGRO, ROUND(SUM(nc.importe_total), 2) AS TOTAL";
+		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id";
 		$where = "e.fecha BETWEEN '{$desde}' AND '{$hasta}'";
-		$groupby = "e.vendedor,tf.nomenclatura";
+		$groupby = "e.vendedor";
 		$notacredito_vendedor_tipo_factura = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
 		$notacredito_vendedor_tipo_factura = (is_array($notacredito_vendedor_tipo_factura) AND !empty($notacredito_vendedor_tipo_factura)) ? $notacredito_vendedor_tipo_factura : array();
 
 		foreach ($ventas_vendedor_tipo_factura as $clave=>$valor) {
-			$vendedor_id = $valor['VID'];
-			$tipofac = $valor['TIPOFAC'];
+			$ventas_vendedor_id = $valor['VID'];
+			$ventas_blanco = $valor['BLANCO'];
+			$ventas_negro = $valor['NEGRO'];
+			$ventas_total = $valor['TOTAL'];
+
 			foreach ($notacredito_vendedor_tipo_factura as $c=>$v) {
-				if ($vendedor_id == $v['VID'] AND $tipofac == $v['TIPOFAC']) $ventas_vendedor_tipo_factura[$clave]['TOTAL'] = $ventas_vendedor_tipo_factura[$clave]['TOTAL'] - $v['TOTAL'];
-			}
-		}
-
-		$newArray = array();
-		foreach($ventas_vendedor_tipo_factura as $key => $value){
-			if (array_search($value['VID'], array_column($newArray, 'VID')) === FALSE) {
-					$newArray[] = array('VID'=>$value['VID'], 'VENDEDOR'=>$value['VENDEDOR'],'TOTAL'=>$value['TOTAL'],'TIPOFAC'=>$value['TIPOFAC'],'VENTA'=>$value['VENTA'],'SUMA'=>$value['TOTAL']);
-			}else {
-				$clave = array_search($value['VID'], array_column($newArray, 'VID'));
-				if ($newArray[$clave]['VENTA'] == $value['VENTA']) {
-					$newArray[$clave]['SUMA'] += $value['TOTAL'];
-				}else {
-					$newArray[] = array('VID'=>$value['VID'], 'VENDEDOR'=>$value['VENDEDOR'],'TOTAL'=>$value['TOTAL'],'TIPOFAC'=>$value['TIPOFAC'],'VENTA'=>$value['VENTA'],'SUMA'=>$value['TOTAL']);
+				$nc_vendedor_id = $v['VID'];
+				$nc_blanco = $v['BLANCO'];
+				$nc_negro = $v['NEGRO'];
+				$nc_total = $v['TOTAL'];
+				
+				if ($ventas_vendedor_id == $nc_vendedor_id) {
+					$ventas_vendedor_tipo_factura[$clave]['BLANCO'] = $ventas_blanco - $nc_blanco;
+					$ventas_vendedor_tipo_factura[$clave]['NEGRO'] = $ventas_negro - $nc_negro;
+					$ventas_vendedor_tipo_factura[$clave]['TOTAL'] = $ventas_total - $nc_total;
 				}
-			}
-		}
-		$ventas_vendedor_tipo_factura = $newArray;
-
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(e.importe_total), 2) AS TOTAL";
-		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id";
-		$where = "e.fecha BETWEEN '{$desde}' AND '{$hasta}'";
-		$groupby = "e.vendedor";
-		$ventas_vendedor = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
-		$ventas_vendedor = (is_array($ventas_vendedor) AND !empty($ventas_vendedor)) ? $ventas_vendedor : array();
-
-		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ROUND(SUM(nc.importe_total), 2) AS TOTAL";
-		$from = "notacredito nc INNER JOIN egreso e ON nc.egreso_id = e.egreso_id INNER JOIN
-				 vendedor v ON e.vendedor = v.vendedor_id";
-		$where = "e.fecha BETWEEN '{$desde}' AND '{$hasta}'";
-		$groupby = "e.vendedor";
-		$notacredito_vendedor = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
-		$notacredito_vendedor = (is_array($notacredito_vendedor) AND !empty($notacredito_vendedor)) ? $notacredito_vendedor : array();
-
-		foreach ($ventas_vendedor as $clave=>$valor) {
-			$vendedor_id = $valor['VID'];
-			foreach ($notacredito_vendedor as $c=>$v) {
-				if ($vendedor_id == $v['VID']) $ventas_vendedor[$clave]['TOTAL'] = $ventas_vendedor[$clave]['TOTAL'] - $v['TOTAL'];
 			}
 		}
 
 		$select = "v.vendedor_id AS VID, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, LEFT(pr.razon_social, 25) AS PROVEEDOR, ROUND(SUM(ed.importe),2) AS IMPORTE";
-		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id INNER JOIN
-				 producto p ON ed.producto_id = p.producto_id INNER JOIN productodetalle pd ON p.producto_id = pd.producto_id INNER JOIN
-				 proveedor pr ON pd.proveedor_id = pr.proveedor_id";
+		$from = "egreso e INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN productodetalle pd ON p.producto_id = pd.producto_id INNER JOIN proveedor pr ON pd.proveedor_id = pr.proveedor_id";
 		$where = "e.fecha BETWEEN '{$desde}' AND '{$hasta}'";
 		$groupby = "v.vendedor_id, pr.proveedor_id ORDER BY	CONCAT(v.apellido, ' ', v.nombre), ROUND(SUM(ed.importe),2) DESC";
 		$top3_vendedor_proveedor = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select, $groupby);
@@ -396,7 +340,7 @@ class VendedorController {
 
 		$array_fechas = array('{desde}'=>$desde, '{hasta}'=>$hasta);
 
-		$this->view->filtro_estadisticas($vendedor_collection, $ventas_vendedor,$ventas_vendedor_tipo_factura,$array_fechas, $top3_vendedor_proveedor_final);
+		$this->view->filtro_estadisticas($vendedor_collection, $ventas_vendedor_tipo_factura,$array_fechas, $top3_vendedor_proveedor_final);
 	}
 
 	function ventas_vendedor() {
