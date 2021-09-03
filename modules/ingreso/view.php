@@ -283,6 +283,7 @@ class IngresoView extends View {
 		
 		$render = str_replace('{slt_proveedor}', $slt_proveedor_array, $gui);
 		$render = str_replace('{slt_tipofactura}', $slt_tipofactura, $render);
+		$render = str_replace('{url_app}', URL_APP, $render);
 		$render = $this->render($obj_ingreso, $render);
 		$render = $this->render($obj_ingresodetalle, $render);
 		print $render;
