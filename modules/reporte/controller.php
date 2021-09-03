@@ -254,6 +254,44 @@ class ReporteController {
 
 		$suma_importe_factura = $ventas_tipofactura[0]['BLANCO'] - $notacredito_tipofactura[0]['BLANCO'];
 		$suma_importe_remito = $ventas_tipofactura[0]['NEGRO'] - $notacredito_tipofactura[0]['NEGRO'];
+
+		$select = "i.ingreso_id AS ID, i.costo_total_iva AS IMPORTE_TOTAL, i.tipofactura AS TIPOFACTURA";
+		$from = "ingreso i";
+		$where = "i.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
+		$ingreso_tipofactura = CollectorCondition()->get('Ingreso', $where, 4, $from, $select);
+		$ingreso_tipofactura = (is_array($ingreso_tipofactura) AND !empty($ingreso_tipofactura)) ? $ingreso_tipofactura : array();
+	
+		$suma_importe_compras_factura = 0;
+		$suma_importe_compras_remito = 0;
+		foreach ($ingreso_tipofactura as $clave=>$valor) {
+			$ingreso_id = $valor['ID'];
+			$compra_total = $valor['IMPORTE_TOTAL'];
+			$compra_tipofactura = $valor['TIPOFACTURA'];
+
+			$select = "ncp.importe_total AS IMPORTE_TOTAL";
+			$from = "notacreditoproveedor ncp";
+			$where = "ncp.ingreso_id = {$ingreso_id}";
+			$notacreditoproveedor_tipofactura = CollectorCondition()->get('NotaCreditoProveedor', $where, 4, $from, $select);
+			if (is_array($notacreditoproveedor_tipofactura) AND !empty($notacreditoproveedor_tipofactura)) {
+				$notacreditoproveedor_total = $notacreditoproveedor_tipofactura[0]['IMPORTE_TOTAL'];
+				$compra_total = $compra_total - $notacreditoproveedor_total;
+			}
+
+			switch ($compra_tipofactura) {
+				case 1:
+					$suma_importe_compras_factura = $suma_importe_compras_factura + $compra_total;
+					break;
+				case 2:
+					$suma_importe_compras_remito = $suma_importe_compras_remito + $compra_total;
+					break;
+				case 3:
+					$suma_importe_compras_factura = $suma_importe_compras_factura + $compra_total;
+					break;
+			}
+
+		}
+
+		$suma_total_compras = $suma_importe_compras_factura + $suma_importe_compras_remito;
 		
 		$array_totales = array('{periodo_actual}'=>$periodo_actual,
 							   '{estado_actual}'=>($total_facturado_int + $stock_valorizado) - ($deuda_cuentacorrientecliente + $deuda_cuentacorrienteproveedor),
@@ -268,9 +306,12 @@ class ReporteController {
 							   '{egreso_comision_hoy}'=>$egreso_comision_hoy,
 							   '{suma_importe_ventas_cc}'=>$suma_importe_ventas_cc,
 							   '{suma_importe_ventas_cont}'=>$suma_importe_ventas_cont,
-								 '{suma_total_ventas}'=>$suma_importe_ventas_cont + $suma_importe_ventas_cc,
+							   '{suma_total_ventas}'=>$suma_importe_ventas_cont + $suma_importe_ventas_cc,
 							   '{suma_importe_factura}'=>$suma_importe_factura,
 							   '{suma_importe_remito}'=>$suma_importe_remito,
+							   '{suma_importe_compras_factura}'=>$suma_importe_compras_factura,
+							   '{suma_importe_compras_remito}'=>$suma_importe_compras_remito,
+							   '{suma_total_compras}'=>$suma_total_compras,
 							   '{suma_ingresos_hoy}'=>$suma_ingresos_hoy,
 							   '{suma_notacredito_hoy}'=>$suma_notacredito_hoy,
 							   '{total_facturacion_hoy}'=>$total_facturacion_hoy);
