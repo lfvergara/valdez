@@ -198,6 +198,7 @@ class IngresoController {
 		$opcion_actualiza_producto = filter_input(INPUT_POST, 'opcion_producto');
 		$opcion_actualiza_producto_proveedor = filter_input(INPUT_POST, 'opcion_producto_proveedor');
 		
+		$tipofactura = filter_input(INPUT_POST, 'tipofactura');
 		$this->model->punto_venta = $punto_venta;
 		$this->model->numero_factura = $numero_factura;
 		$this->model->fecha = $fecha;
@@ -218,11 +219,16 @@ class IngresoController {
 		$this->model->save();
 		$ingreso_id = $this->model->ingreso_id;
 
+		$tfm = new TipoFactura();
+		$tfm->tipofactura_id = $tipofactura;
+		$tfm->get();
+		$nomenclatura = $tfm->nomenclatura;
+
 		if ($condicionpago == 1) {
 			$ccpm = new CuentaCorrienteProveedor();
 			$ccpm->fecha = date('Y-m-d');
 			$ccpm->hora = date('H:i:s');
-			$ccpm->referencia = "Comprobante ingreso {$comprobante}";
+			$ccpm->referencia = "Comprobante ingreso: {$nomenclatura} {$comprobante}";
 			$ccpm->importe = $costo_final;
 			$ccpm->ingreso = 0;
 			$ccpm->proveedor_id = $proveedor_id;
