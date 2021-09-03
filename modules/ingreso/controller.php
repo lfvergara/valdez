@@ -228,7 +228,7 @@ class IngresoController {
 			$ccpm = new CuentaCorrienteProveedor();
 			$ccpm->fecha = date('Y-m-d');
 			$ccpm->hora = date('H:i:s');
-			$ccpm->referencia = "Comprobante ingreso: {$nomenclatura} {$comprobante}";
+			$ccpm->referencia = "Comprobante: {$nomenclatura} {$comprobante}";
 			$ccpm->importe = $costo_final;
 			$ccpm->ingreso = 0;
 			$ccpm->proveedor_id = $proveedor_id;
@@ -357,6 +357,7 @@ class IngresoController {
 		$condicionpago = filter_input(INPUT_POST, 'condicionpago');
 		$importe_total = filter_input(INPUT_POST, 'suma_total');
 		$importe_total_iva = filter_input(INPUT_POST, 'suma_total_iva');
+		$tipofactura = filter_input(INPUT_POST, 'tipofactura');
 		$this->model->punto_venta = $punto_venta;
 		$this->model->numero_factura = $numero_factura;
 		$this->model->fecha = $fecha;
@@ -370,7 +371,7 @@ class IngresoController {
 		$this->model->proveedor = $proveedor;
 		$this->model->condicioniva = filter_input(INPUT_POST, 'condicioniva');
 		$this->model->condicionpago = $condicionpago;
-		$this->model->tipofactura = filter_input(INPUT_POST, 'tipofactura');
+		$this->model->tipofactura = $tipofactura;
 		$this->model->save();
 		
 		$select = "ccp.cuentacorrienteproveedor_id AS ID";
@@ -378,33 +379,38 @@ class IngresoController {
 		$where = "ccp.ingreso_id = {$ingreso_id}";
 		$cuentacorrienteproveedor = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 		
+		$tfm = new TipoFactura();
+		$tfm->tipofactura_id = $tipofactura;
+		$tfm->get();
+		$nomenclatura = $tfm->nomenclatura;
+
 		if ($condicionpago == 1) {
 			if (is_array($cuentacorrienteproveedor) AND !empty($cuentacorrienteproveedor)) {
-				$cccm = new CuentaCorrienteProveedor();
-				$cccm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor[0]['ID'];
-				$cccm->get();
-				$cccm->importe = $importe_total_iva;
-				$cccm->save();
+				$ccpm = new CuentaCorrienteProveedor();
+				$ccpm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor[0]['ID'];
+				$ccpm->get();
+				$ccpm->importe = $importe_total_iva;
+				$ccpm->save();
 			} else {
-				$cccm = new CuentaCorrienteProveedor();
-				$cccm->fecha = date('Y-m-d');
-				$cccm->hora = date('H:i:s');
-				$cccm->referencia = "Comprobante ingreso {$comprobante}";
-				$cccm->importe = $importe_total_iva;
-				$cccm->ingreso = 0;
-				$cccm->proveedor_id = $proveedor;
-				$cccm->ingreso_id = $ingreso_id;
-				$cccm->ingresotipopago = null;
-				$cccm->tipomovimientocuenta = 1;
-				$cccm->estadomovimientocuenta = 1;
+				$ccpm = new CuentaCorrienteProveedor();
+				$ccpm->fecha = date('Y-m-d');
+				$ccpm->hora = date('H:i:s');
+				$ccpm->referencia = "Comprobante: {$nomenclatura} {$comprobante}";
+				$ccpm->importe = $importe_total_iva;
+				$ccpm->ingreso = 0;
+				$ccpm->proveedor_id = $proveedor;
+				$ccpm->ingreso_id = $ingreso_id;
+				$ccpm->ingresotipopago = null;
+				$ccpm->tipomovimientocuenta = 1;
+				$ccpm->estadomovimientocuenta = 1;
 				
-				$cccm->save();
+				$ccpm->save();
 			}
 		} else {
 			if (is_array($cuentacorrienteproveedor) AND !empty($cuentacorrienteproveedor)) {
-				$cccm = new CuentaCorrienteProveedor();
-				$cccm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor[0]['ID'];
-				$cccm->delete();
+				$ccpm = new CuentaCorrienteProveedor();
+				$ccpm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor[0]['ID'];
+				$ccpm->delete();
 			}
 		}
 
@@ -518,6 +524,46 @@ class IngresoController {
 		}
 
 		header("Location: " . URL_APP . "/ingreso/listar/2");
+	}
+
+	function actualizar_abreviado() {
+		SessionHandler()->check_session();
+
+		$ingreso_id = filter_input(INPUT_POST, 'ingreso_id');
+		$punto_venta = filter_input(INPUT_POST, 'punto_venta');
+		$numero_factura = filter_input(INPUT_POST, 'numero_factura');
+		$comprobante = str_pad($punto_venta, 4, '0', STR_PAD_LEFT) . "-";
+		$comprobante .= str_pad($numero_factura, 8, '0', STR_PAD_LEFT);
+		$proveedor = filter_input(INPUT_POST, 'proveedor');
+		$tipofactura = filter_input(INPUT_POST, 'tipofactura');
+
+		$this->model->ingreso_id = $ingreso_id;
+		$this->model->get();
+		$condicionpago = $this->model->condicionpago;
+
+		$this->model->punto_venta = $punto_venta;
+		$this->model->numero_factura = $numero_factura;
+		$this->model->proveedor = $proveedor;
+		$this->model->tipofactura = $tipofactura;
+		$this->model->save();
+
+		if ($condicionpago == 1) {
+			$select = "ccp.cuentacorrienteproveedor_id AS ID";
+			$from = "cuentacorrienteproveedor ccp";
+			$where = "ccp.ingreso_id = {$ingreso_id}";
+			$cuentacorrienteproveedor = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
+		
+			foreach ($cuentacorrienteproveedor as $clave=>$valor) {
+				$ccpm = new CuentaCorrienteProveedor();
+				$ccpm->cuentacorrienteproveedor_id = $valor['ID'];
+				$ccpm->get();
+				$ccpm->referencia = "Comprobante: {$nomenclatura} {$comprobante}";
+				$ccpm->proveedor_id = $proveedor;
+				$ccpm->save();
+			}			
+		}
+		
+		header("Location: " . URL_APP . "/ingreso/consultar/{$ingreso_id}");
 	}
 
 	function reingreso($arg) {
