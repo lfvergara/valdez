@@ -152,11 +152,9 @@ class CuentaCorrienteProveedorController {
     	$pm->proveedor_id = $arg;
     	$pm->get();
     	
-		$select = "date_format(ccp.fecha, '%d/%m/%Y') AS FECHA, ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, tmc.denominacion AS MOVIMIENTO, ccp.ingreso_id AS IID,
-				   ccp.referencia AS REFERENCIA, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'danger' WHEN 2 THEN 'success' END AS CLASS,
-				   ccp.cuentacorrienteproveedor_id CCPID";
+		$select = "date_format(ccp.fecha, '%d/%m/%Y') AS FECHA, ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, ccp.ingreso_id AS IID, tmc.denominacion AS MOVIMIENTO, ccp.referencia AS REFERENCIA, CASE ccp.tipomovimientocuenta WHEN 1 THEN 'danger' WHEN 2 THEN 'success' END AS CLASS, ccp.cuentacorrienteproveedor_id CCPID";
 		$from = "cuentacorrienteproveedor ccp INNER JOIN tipomovimientocuenta tmc ON ccp.tipomovimientocuenta = tmc.tipomovimientocuenta_id";
-		$where = "ccp.proveedor_id = {$arg} GROUP BY ccp.ingreso_id";
+		$where = "ccp.proveedor_id = {$arg}";
 		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 
 		$ingreso_ids = array();
@@ -186,6 +184,11 @@ class CuentaCorrienteProveedorController {
 			$where = "ccp.ingreso_id = {$ingreso_id} ORDER BY ccp.cuentacorrienteproveedor_id DESC LIMIT 1";
 			$max_id = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 			if (!in_array($max_id[0]['ID'], $max_cuentacorrienteproveedor_ids)) $max_cuentacorrienteproveedor_ids[] = $max_id[0]['ID'];
+		}
+
+		foreach ($cuentacorriente_collection as $clave=>$valor) {
+			$cuentacorrienteproveedor_id = $valor["CCPID"];
+			if (!in_array($cuentacorrienteproveedor_id, $max_cuentacorrienteproveedor_ids)) unset($cuentacorriente_collection[$clave]);
 		}
 		
 		$this->view->listar_cuentas($cuentacorriente_collection, $pm);

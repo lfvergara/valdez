@@ -232,8 +232,7 @@ class CuentaCorrienteClienteController {
     	$cm = new Cliente();
     	$cm->cliente_id = $arg;
     	$cm->get();
-    	//print_r($cm);exit;
-
+    	
     	$select = "date_format(ccc.fecha, '%d/%m/%Y') AS FECHA, ccc.importe AS IMPORTE, ccc.ingreso AS INGRESO, ccc.egreso_id AS EID,
 				   ccc.referencia AS REFERENCIA, ccc.cuentacorrientecliente_id CCCID";
 		$from = "cuentacorrientecliente ccc INNER JOIN tipomovimientocuenta tmc ON ccc.tipomovimientocuenta = tmc.tipomovimientocuenta_id";
