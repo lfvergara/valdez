@@ -281,7 +281,7 @@ class IngresoView extends View {
 		unset($obj_ingreso->proveedor->infocontacto_collection);
 		$obj_ingreso = $this->set_dict($obj_ingreso);
 		
-		$render = str_replace('{tbl_proveedor}', $slt_proveedor_array, $gui);
+		$render = str_replace('{slt_proveedor}', $slt_proveedor_array, $gui);
 		$render = str_replace('{slt_tipofactura}', $slt_tipofactura, $render);
 		$render = $this->render($obj_ingreso, $render);
 		$render = $this->render($obj_ingresodetalle, $render);
