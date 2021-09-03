@@ -736,5 +736,20 @@ class IngresoController {
 		$denominacion =$pm->documentotipo->denominacion . ' ' . $pm->documento . ' - ' . $pm->razon_social;
 		print $denominacion;
 	}
+
+	function traer_formulario_editar_ingresar_ajax($arg) {
+		$ingreso_id = $arg;
+		$this->model->ingreso_id = $ingreso_id;
+		$this->model->get();
+
+		$select = "p.proveedor_id AS ID, p.razon_social AS DENOMINACION,  
+				   CONCAT(dt.denominacion, ' ', p.documento) AS DOCUMENTO";
+		$from = "proveedor p INNER JOIN documentotipo dt ON p.documentotipo = dt.documentotipo_id";
+		$where = "p.oculto = 0";
+		$proveedor_collection = CollectorCondition()->get('Proveedor', $where, 4, $from, $select);
+		$tipofactura_collection = Collector()->get('TipoFactura');
+
+		$this->view->traer_formulario_editar_ingresar_ajax($this->model, $proveedor_collection, $tipofactura_collection);
+	}
 }
 ?>

@@ -270,5 +270,22 @@ class IngresoView extends View {
 		$gui = $this->render($obj_ingresodetalle, $gui);
 		print $gui;
 	}
+
+	function traer_formulario_editar_ingresar_ajax($obj_ingreso, $proveedor_collection, $tipofactura_collection) {
+		$gui = file_get_contents("static/modules/ingreso/formulario_editar_ingresar_ajax.html");		
+		$slt_proveedor_array = file_get_contents("static/common/slt_proveedor_array.html");
+		$slt_proveedor_array = $this->render_regex_dict('SLT_PROVEEDOR', $slt_proveedor_array, $proveedor_collection);
+		$slt_tipofactura = file_get_contents("static/common/slt_tipofactura.html");
+		$slt_tipofactura = $this->render_regex('SLT_TIPOFACTURA', $slt_tipofactura, $tipofactura_collection);
+		
+		unset($obj_ingreso->proveedor->infocontacto_collection);
+		$obj_ingreso = $this->set_dict($obj_ingresodetalle);
+		
+		$render = str_replace('{tbl_proveedor}', $slt_proveedor_array, $gui);
+		$render = str_replace('{slt_tipofactura}', $slt_tipofactura, $render);
+		$render = $this->render($obj_ingreso, $render);
+		$render = $this->render($obj_ingresodetalle, $render);
+		print $render;
+	}
 }
 ?>
