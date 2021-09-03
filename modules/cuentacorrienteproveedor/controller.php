@@ -490,8 +490,7 @@ class CuentaCorrienteProveedorController {
 					$cpdm->delete();
 				}
 				break;
-		}
-		
+		}		
 
 		$select = "ccp.importe AS IMPORTE, ccp.ingreso AS INGRESO, ccp.cuentacorrienteproveedor_id AS ID";
 		$from = "cuentacorrienteproveedor ccp";
