@@ -37,10 +37,12 @@ class ReporteController {
     	$fecha_sys = strtotime(date('Y-m-d'));
 		$periodo_minimo = date("Ym", strtotime("-6 month", $fecha_sys));
     	$periodo_actual = date('Ym');
+    	$primer_dia_mes = date('Y-m') . '-01'; 
+		$fecha_sys1 = date('Y-m-d');
 
     	$select = "ROUND(SUM(e.importe_total),2) AS CONTADO";
 		$from = "egreso e";
-		$where = "e.condicionpago = 2 AND e.fecha = CURDATE()";
+		$where = "e.condicionpago = 2 AND e.fecha = '{$fecha_sys1}'";
 		$sum_contado = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 		$sum_contado = (is_array($sum_contado)) ? $sum_contado[0]['CONTADO'] : 0;
 		$sum_contado = (is_null($sum_contado)) ? 0 : $sum_contado;
@@ -148,32 +150,31 @@ class ReporteController {
 
 		$select = "ROUND(SUM(CASE WHEN ccc.tipomovimientocuenta = 2 OR ccc.tipomovimientocuenta = 3 THEN ccc.importe ELSE 0 END),2) AS TINGRESO";
 		$from = "cuentacorrientecliente ccc";
-		$where = "ccc.fecha = CURDATE()";
+		$where = "ccc.fecha = '{$fecha_sys1}'";
 		$ingreso_cuentacorriente_hoy = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
 		$ingreso_cuentacorriente_hoy = (is_array($ingreso_cuentacorriente_hoy)) ? $ingreso_cuentacorriente_hoy[0]['TINGRESO'] : 0;
 		$ingreso_cuentacorriente_hoy = (is_null($ingreso_cuentacorriente_hoy)) ? 0 : $ingreso_cuentacorriente_hoy;
 
 		$select = "ROUND(SUM(CASE WHEN ccp.tipomovimientocuenta = 2 OR ccp.tipomovimientocuenta = 3 THEN ccp.importe ELSE 0 END),2) AS TSALIDA";
 		$from = "cuentacorrienteproveedor ccp";
-		$where = "ccp.fecha = CURDATE()";
+		$where = "ccp.fecha = '{$fecha_sys1}'";
 		$egreso_cuentacorrienteproveedor_hoy = CollectorCondition()->get('CuentaCorrienteProveedor', $where, 4, $from, $select);
 		$egreso_cuentacorrienteproveedor_hoy = (is_array($egreso_cuentacorrienteproveedor_hoy)) ? $egreso_cuentacorrienteproveedor_hoy[0]['TSALIDA'] : 0;
 		$egreso_cuentacorrienteproveedor_hoy = (is_null($egreso_cuentacorrienteproveedor_hoy)) ? 0 : $egreso_cuentacorrienteproveedor_hoy;
 
 		$select = "ROUND(SUM(valor_abonado),2) AS ECOMISION";
 		$from = "egresocomision ec";
-		$where = "ec.fecha = CURDATE() AND ec.estadocomision IN (2,3)";
+		$where = "ec.fecha = '{$fecha_sys1}' AND ec.estadocomision IN (2,3)";
 		$egreso_comision_hoy = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
 		$egreso_comision_hoy = (is_array($egreso_comision_hoy)) ? $egreso_comision_hoy[0]['ECOMISION'] : 0;
 		$egreso_comision_hoy = (is_null($egreso_comision_hoy)) ? 0 : $egreso_comision_hoy;
 
-		$fecha_dia = date('Y-m-d');
 		$select = "e.egreso_id AS EGRESO_ID, e.importe_total AS IMPORTETOTAL";
 		$from = "egreso e INNER JOIN cliente cl ON e.cliente = cl.cliente_id INNER JOIN vendedor ve ON e.vendedor = ve.vendedor_id INNER JOIN
 				 condicionpago cp ON e.condicionpago = cp.condicionpago_id INNER JOIN condicioniva ci ON e.condicioniva = ci.condicioniva_id INNER JOIN
 				 egresoentrega ee ON e.egresoentrega = ee.egresoentrega_id INNER JOIN estadoentrega ese ON ee.estadoentrega = ese.estadoentrega_id LEFT JOIN
 				 egresoafip eafip ON e.egreso_id = eafip.egreso_id";
-		$where = "e.fecha = '{$fecha_dia}'";
+		$where = "e.fecha = '{$fecha_sys1}'";
 		$egresos_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 
 		$suma_ingresos_hoy = 0;
@@ -202,7 +203,7 @@ class ReporteController {
 
 		$select = "e.egreso_id AS EGRESO_ID, e.subtotal AS SUBTOTAL, e.importe_total AS IMPORTETOTAL, e.condicionpago AS CONDPAGO";
 		$from = "egreso e";
-		$where = "date_format(e.fecha, '%Y%m') = '{$periodo_actual}'";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
 		$egreso_collection = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 
 		$suma_importe_ventas_cc = 0;
@@ -241,7 +242,7 @@ class ReporteController {
 		$select = "ROUND(SUM(CASE WHEN e.tipofactura = 1 THEN e.importe_total WHEN e.tipofactura = 3 THEN e.importe_total ELSE 0
         END),2) AS BLANCO, ROUND(SUM(CASE WHEN e.tipofactura = 2 THEN e.importe_total ELSE 0 END),2) AS NEGRO, ROUND(SUM(e.importe_total), 2) AS TOTAL";
 		$from = "egreso e";
-		$where = "e.fecha BETWEEN '{$primer_dia_mes}'AND '{$fecha_sys1}'";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
 		$ventas_tipofactura = CollectorCondition()->get('Egreso', $where, 4, $from, $select);
 		$ventas_tipofactura = (is_array($ventas_tipofactura) AND !empty($ventas_tipofactura)) ? $ventas_tipofactura : array(array('BLANCO'=>0, 'NEGRO'=>0, 'TOTAL'=>0));
 
@@ -277,7 +278,7 @@ class ReporteController {
 		$select = "ed.codigo_producto AS COD, ed.descripcion_producto AS PRODUCTO, ROUND(SUM(ed.importe),2) AS IMPORTE,
 				   ROUND(SUM(ed.cantidad),2) AS CANTIDAD, ed.producto_id AS PRID";
 		$from = "egreso e INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id";
-		$where = "date_format(e.fecha, '%Y%m') = '{$periodo_actual}'";
+		$where = "e.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
 
 		$groupby = "ed.producto_id, ed.codigo_producto ORDER BY	ROUND(SUM(ed.importe),2) DESC";
 		$sum_importe_producto = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
@@ -290,7 +291,7 @@ class ReporteController {
 		if (is_array($sum_importe_producto) AND !empty($sum_importe_producto)) {
 			foreach ($sum_importe_producto as $clave=>$valor) {
 				$tmp_producto_id = $valor["PRID"];
-				$where = "ncd.producto_id = {$tmp_producto_id} AND date_format(nc.fecha, '%Y%m') = '{$periodo_actual}'";
+				$where = "ncd.producto_id = {$tmp_producto_id} AND nc.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
 				$datos_notacredito = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
 
 				if (is_array($datos_notacredito) AND !empty($datos_notacredito)) {
@@ -309,7 +310,7 @@ class ReporteController {
 		if (is_array($sum_cantidad_producto) AND !empty($sum_cantidad_producto)) {
 			foreach ($sum_cantidad_producto as $clave=>$valor) {
 				$tmp_producto_id = $valor["PRID"];
-				$where = "ncd.producto_id = {$tmp_producto_id} AND date_format(nc.fecha, '%Y%m') = '{$periodo_actual}'";
+				$where = "ncd.producto_id = {$tmp_producto_id} AND nc.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
 				$datos_notacredito = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
 
 				$nuevo_valor_importe = 0;
@@ -337,7 +338,7 @@ class ReporteController {
 
 		$select = "gc.denominacion AS DENOMINACION, SUM(g.importe) AS IMPORTE";
 		$from = "gasto g INNER JOIN	gastocategoria gc ON g.gastocategoria = gc.gastocategoria_id";
-		$where = "date_format(g.fecha, '%Y%m') = '{$periodo_actual}'";
+		$where = "g.fecha BETWEEN '{$primer_dia_mes}' AND '{$fecha_sys1}'";
 		$group_by = "gc.gastocategoria_id";
 		$gasto_collection = CollectorCondition()->get('Gasto', $where, 4, $from, $select, $group_by);
 
