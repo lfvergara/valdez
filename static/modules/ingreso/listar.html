@@ -118,12 +118,7 @@
         <h4 class="modal-title" id="myModalLabel">ATENCIÓN! Sistema de Alertas!</h4>
       </div>
       <div class="modal-body">
-        <div class="col-lg-12">
-          <div class="col-lg-2">
-            <center><h1><i class="fa fa-exclamation-triangle" style="color: #ff6c60;"></i></h1></center>
-          </div>
-          <div class="col-lg-10"><h5 id="msj_alerta_modal"></h5></div>
-        </div>
+        <div class="col-lg-12" id="content_form"></div>
         <br><br><br><br><br>
       </div>
       <div class="modal-footer">
@@ -160,5 +155,7 @@
             dataType: 'text',
             async: false
         }).responseText;
+
+        document.getElementById('content_form').innerHTML = resultado;
     }
 </script>
