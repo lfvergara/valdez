@@ -241,7 +241,7 @@ class NotaCreditoController {
 			$where = "s.producto_id = {$producto_id} ORDER BY s.stock_id DESC LIMIT 1";
 			$stock_id = CollectorCondition('Stock', $where, 4, $from, $select);
 			$stock_id = (is_array($stock_id) AND !empty($stock_id)) ? $stock_id[0]['ID'] : 0;
-
+			print_r($stock_id);exit;
 			if ($stock_id != 0) {
 				$sm = new Stock();
 				$sm->stock_id = $stock_id;
@@ -275,7 +275,7 @@ class NotaCreditoController {
 			$cccm = new CuentaCorrienteCliente();
 			$cccm->cuentacorrientecliente_id = $cuentacorrientecliente_id;
 			$cccm->get();
-			$cccm->referencia = 'Comprobante venta: {$comprobante}';
+			$cccm->referencia = "Comprobante venta: {$comprobante}";
 			$cccm->importe = $importe;
 			$cccm->estadomovimientocuenta = 1;
 			$cccm->save();
