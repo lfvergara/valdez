@@ -222,7 +222,7 @@ class NotaCreditoController {
 		$em->egreso_id = $egreso_id;
 		$em->get();
 		$comprobante = str_pad($em->punto_venta, 4, '0', STR_PAD_LEFT);
-		$comprobante .= '-' . str_pad($em->numero_factura, 8, '0', STR_PAD_LEFT));
+		$comprobante .= '-' . str_pad($em->numero_factura, 8, '0', STR_PAD_LEFT);
 		$importe = $em->importe_total;
 
 		$select = "ncd.notacreditodetalle_id AS NCDID, ncd.codigo_producto AS CODIGO, ncd.descripcion_producto AS DESCRIPCION, ncd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, ncd.descuento AS DESCUENTO, ncd.valor_descuento AS VD, p.no_gravado AS NOGRAVADO, ncd.costo_producto AS COSTO, ROUND(ncd.importe, 2) AS IMPORTE, ncd.iva AS IVA, p.exento AS EXENTO, ncd.producto_id AS PROID";
