@@ -56,10 +56,8 @@ class EgresoView extends View {
 		$tbl_egreso_array = file_get_contents("static/modules/egreso/tbl_entregaspendientes_array.html");
 		$tbl_egreso_array = $this->render_regex_dict('TBL_EGRESO', $tbl_egreso_array, $egreso_collection);		
 
-		//foreach ($flete_collection as $clave=>$valor) if ($valor->flete_id == 1) unset($flete_collection[$clave]);
 		foreach ($flete_collection as $flete) unset($flete->infocontacto_collection);
 		$lst_btn_flete = $this->render_regex('LST_FLETE', $lst_btn_flete, $flete_collection);		
-		
 
 		switch ($arg) {
 			case 1:
@@ -339,7 +337,6 @@ class EgresoView extends View {
 		$btn_entrega_display = ($estadoentrega_id == 1 OR $estadoentrega_id == 2) ? 'block' : 'none';
 		$obj_egreso->egresoentrega->btn_entrega_display = $btn_entrega_display;
 		
-		/*
 		if (!empty($cuentacorrientecliente_collection)) {
 			$obj_egreso->btn_generar_nc = 'none';
 			$obj_egreso->btn_consultar_nc = ($notacredito_id == 0) ? 'none' : 'block';
@@ -352,7 +349,7 @@ class EgresoView extends View {
 				$obj_egreso->btn_consultar_nc = ($notacredito_id == 0) ? 'none' : 'block';
 			}
 		}
-		*/
+		
 		$obj_egreso->btn_generar_nc = ($notacredito_id == 0) ? 'block' : 'none';
 		$obj_egreso->btn_consultar_nc = ($notacredito_id == 0) ? 'none' : 'block';
 
