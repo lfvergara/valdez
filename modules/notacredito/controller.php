@@ -219,15 +219,72 @@ class NotaCreditoController {
 		$em = new Egreso();
 		$em->egreso_id = $egreso_id;
 		$em->get();
+		$comprobante = str_pad($em->punto_venta, 4, '0', STR_PAD_LEFT);
+		$comprobante .= '-' . str_pad($em->numero_factura, 8, '0', STR_PAD_LEFT));
+		$importe = $em->importe_total;
 
-		$select = "ncd.codigo_producto AS CODIGO, ncd.descripcion_producto AS DESCRIPCION, ncd.cantidad AS CANTIDAD,
-				   pu.denominacion AS UNIDAD, ncd.descuento AS DESCUENTO, ncd.valor_descuento AS VD, p.no_gravado AS NOGRAVADO,
-				   ncd.costo_producto AS COSTO, ROUND(ncd.importe, 2) AS IMPORTE, ncd.iva AS IVA, p.exento AS EXENTO";
-		$from = "notacreditodetalle ncd INNER JOIN producto p ON ncd.producto_id = p.producto_id INNER JOIN
-				 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "ncd.notacreditodetalle_id AS NCDID, ncd.codigo_producto AS CODIGO, ncd.descripcion_producto AS DESCRIPCION, ncd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, ncd.descuento AS DESCUENTO, ncd.valor_descuento AS VD, p.no_gravado AS NOGRAVADO, ncd.costo_producto AS COSTO, ROUND(ncd.importe, 2) AS IMPORTE, ncd.iva AS IVA, p.exento AS EXENTO, ncd.producto_id AS PROID";
+		$from = "notacreditodetalle ncd INNER JOIN producto p ON ncd.producto_id = p.producto_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
 		$where = "ncd.notacredito_id = {$notacredito_id}";
 		$notacreditodetalle_collection = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
-		print_r($notacreditodetalle_collection);exit;
+		$notacreditodetalle_collection = (is_array($notacreditodetalle_collection) AND !empty($notacreditodetalle_collection)) ? $notacreditodetalle_collection : array();
+
+		foreach ($notacreditodetalle_collection as $clave=>$valor) {
+			$notacreditodetalle_id = $valor['NCDID'];
+			$producto_id = $valor['PROID'];
+			$cantidad = $valor['CANTIDAD'];
+			$codigo = $valor['CODIGO'];
+
+			$select = "s.stock_id AS ID";
+			$from = "stock s";
+			$where = "s.producto_id = {$producto_id} ORDER BY s.stock_id DESC LIMIT 1";
+			$stock_id = CollectorCondition('Stock', $where, 4, $from, $select);
+			$stock_id = (is_array($stock_id) AND !empty($stock_id)) ? $stock_id[0]['ID'] : 0;
+
+			if ($stock_id != 0) {
+				$sm = new Stock();
+				$sm->stock_id = $stock_id;
+				$sm->get();
+				$cantidad_actual = $sm->cantidad_actual;
+				$nueva_cantidad = $cantidad_actual - $cantidad;
+
+				$sm = new Stock();
+				$sm->fecha = date('Y-m-d');
+				$sm->hora = date('H:i:s');
+				$sm->concepto = 'Anulación Nota de Crédito';
+				$sm->codigo = $codigo;
+				$sm->cantidad_actual = $nueva_cantidad;
+				$sm->cantidad_movimiento = '-' . $cantidad;
+				$sm->producto_id = $producto_id;
+				$sm->save();
+			}
+
+			$ncdm = new NotaCreditoDetalle();
+			$ncdm->notacreditodetalle_id = $notacreditodetalle_id;
+			$ncdm->delete();
+		}
+
+		$select = "ccc.cuentacorrientecliente_id AS ID";
+		$from = "cuentacorrientecliente ccc";
+		$where = "ccc.egreso_id = {$egreso_id}";
+		$cuentacorrientecliente_id = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
+		$cuentacorrientecliente_id = (is_array($cuentacorrientecliente_id) AND !empty($cuentacorrientecliente_id)) ? $cuentacorrientecliente_id[0]['ID'] : 0;
+
+		if ($cuentacorrientecliente_id != 0) {
+			$cccm = new CuentaCorrienteCliente();
+			$cccm->cuentacorrientecliente_id = $cuentacorrientecliente_id;
+			$cccm->get();
+			$cccm->referencia = 'Comprobante venta: {$comprobante}';
+			$cccm->importe = $importe;
+			$cccm->estadomovimientocuenta = 1;
+			$cccm->save();
+		}
+
+		$ncm = new NotaCredito();
+		$ncm->notacredito_id = $notacredito_id;
+		$ncm->delete();
+
+		header("Location: " . URL_APP . "/egreso/consultar/{$egreso_id}");
 	}
 }
 ?>
