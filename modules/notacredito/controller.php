@@ -2,6 +2,8 @@
 require_once "modules/notacredito/model.php";
 require_once "modules/notacredito/view.php";
 require_once "modules/notacreditodetalle/model.php";
+require_once "modules/stock/model.php";
+require_once "modules/cuentacorrientecliente/model.php";
 require_once "modules/egreso/model.php";
 require_once "modules/tipofactura/model.php";
 require_once "tools/facturaAFIPTool.php";
