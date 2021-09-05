@@ -210,7 +210,7 @@ class NotaCreditoController {
 	function anular($arg) {
 		SessionHandler()->check_session();
 		
-		$notacredito_id = filter_input(INPUT_POST, 'notacredito_id');
+		$notacredito_id = $arg;
 		$this->model->notacredito_id = $notacredito_id;
 		$this->model->get();
 		$egreso_id = $this->model->egreso_id;
