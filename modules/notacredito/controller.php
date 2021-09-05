@@ -241,7 +241,7 @@ class NotaCreditoController {
 			$where = "s.producto_id = {$producto_id} ORDER BY s.stock_id DESC LIMIT 1";
 			$stock_id = CollectorCondition('Stock', $where, 4, $from, $select);
 			$stock_id = (is_array($stock_id) AND !empty($stock_id)) ? $stock_id[0]['ID'] : 0;
-			print_r($stock_id);exit;
+			print_r($producto_id);exit;
 			if ($stock_id != 0) {
 				$sm = new Stock();
 				$sm->stock_id = $stock_id;
