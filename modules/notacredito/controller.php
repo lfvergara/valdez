@@ -217,7 +217,6 @@ class NotaCreditoController {
 		$this->model->get();
 		$egreso_id = $this->model->egreso_id;
 
-		$egreso_id = filter_input(INPUT_POST, 'egreso_id');
 		$em = new Egreso();
 		$em->egreso_id = $egreso_id;
 		$em->get();
