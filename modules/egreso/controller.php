@@ -237,14 +237,9 @@ class EgresoController {
 		$from = "notacredito nc";
 		$where = "nc.egreso_id = {$egreso_id}";
 		$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
-		if (is_array($notacredito) AND !empty($notacredito)) {
-			$notacredito_id = $notacredito[0]['notacredito_id'];
-		} else {
-			$notacredito_id = 0;
-		}
+		$notacredito_id = (is_array($notacredito) AND !empty($notacredito)) ? $notacredito[0]['notacredito_id'] : 0;
 
-		$select_egresoafip = "eafip.punto_venta AS PUNTO_VENTA, eafip.numero_factura AS NUMERO_FACTURA, tf.nomenclatura AS TIPOFACTURA,
-							  eafip.cae AS CAE, eafip.vencimiento AS FVENCIMIENTO, eafip.fecha AS FECHA, tf.tipofactura_id AS TF_ID";
+		$select_egresoafip = "eafip.punto_venta AS PUNTO_VENTA, eafip.numero_factura AS NUMERO_FACTURA, tf.nomenclatura AS TIPOFACTURA, eafip.cae AS CAE, eafip.vencimiento AS FVENCIMIENTO, eafip.fecha AS FECHA, tf.tipofactura_id AS TF_ID";
 		$from_egresoafip = "egresoafip eafip INNER JOIN tipofactura tf ON eafip.tipofactura = tf.tipofactura_id";
 		$where_egresoafip = "eafip.egreso_id = {$egreso_id}";
 		$egresoafip = CollectorCondition()->get('EgresoAfip', $where_egresoafip, 4, $from_egresoafip, $select_egresoafip);
