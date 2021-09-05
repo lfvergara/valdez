@@ -213,6 +213,7 @@ class NotaCreditoController {
 		$notacredito_id = filter_input(INPUT_POST, 'notacredito_id');
 		$this->model->notacredito_id = $notacredito_id;
 		$this->model->get();
+		$egreso_id = $this->model->egreso_id;
 
 		$egreso_id = filter_input(INPUT_POST, 'egreso_id');
 		$em = new Egreso();
@@ -224,7 +225,7 @@ class NotaCreditoController {
 				   ncd.costo_producto AS COSTO, ROUND(ncd.importe, 2) AS IMPORTE, ncd.iva AS IVA, p.exento AS EXENTO";
 		$from = "notacreditodetalle ncd INNER JOIN producto p ON ncd.producto_id = p.producto_id INNER JOIN
 				 productounidad pu ON p.productounidad = pu.productounidad_id";
-		$where = "ncd.egreso_id = {$egreso_id}";
+		$where = "ncd.notacredito_id = {$notacredito_id}";
 		$notacreditodetalle_collection = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
 		print_r($notacreditodetalle_collection);exit;
 	}
