@@ -24,7 +24,7 @@ class NotaCreditoView extends View {
 		print $template;
 	}
 
-	function consultar($notacreditodetalle_collection, $obj_notacredito, $egresoafip, $obj_egreso, $notacredito_id) {
+	function consultar($notacreditodetalle_collection, $obj_notacredito, $egresoafip, $obj_egreso, $notacredito_id, $flag_ccc) {
 		$gui = file_get_contents("static/modules/notacredito/consultar.html");
 		$tbl_notacreditodetalle_array = file_get_contents("static/modules/notacredito/tbl_notacreditodetalle_array.html");
 		$tbl_notacreditodetalle_array = $this->render_regex_dict('TBL_NOTACREDITODETALLE', $tbl_notacreditodetalle_array, $notacreditodetalle_collection);
@@ -50,6 +50,7 @@ class NotaCreditoView extends View {
 
 		$obj_notacredito->punto_venta = str_pad($obj_notacredito->punto_venta, 4, '0', STR_PAD_LEFT);
 		$obj_notacredito->numero_factura = str_pad($obj_notacredito->numero_factura, 8, '0', STR_PAD_LEFT);
+		$emitido_afip = $obj_notacredito->emitido_afip;
 		
 		if ($obj_notacredito->tipofactura->tipofactura_id == 6) {
 			$obj_notacredito->btn_presentarafip_nc = 'none';
@@ -58,6 +59,16 @@ class NotaCreditoView extends View {
 				$obj_notacredito->btn_presentarafip_nc = 'none';
 			} else {
 				$obj_notacredito->btn_presentarafip_nc = 'block';
+			}
+		}
+
+		if ($emitido_afip == 1) {
+			$obj_notacredito->btn_anular_nc = 'none';
+		} else {
+			if ($flag_ccc == 1) {
+				$obj_notacredito->btn_anular_nc = 'none';
+			} else {
+				$obj_notacredito->btn_anular_nc = 'block';
 			}
 		}
 

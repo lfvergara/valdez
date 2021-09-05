@@ -72,6 +72,11 @@ class IngresoController {
 		$condicionpago_collection = Collector()->get('CondicionPago');
 		$condicioniva_collection = Collector()->get('CondicionIVA');
 		$tipofactura_collection = Collector()->get('TipoFactura');
+		$array_ids = array(1,2,3);
+		foreach ($tipofactura_collection as $clave=>$valor) {
+			if (!in_array($valor->tipofactura_id, $array_ids)) unset($tipofactura_collection[$clave]);
+		}
+
 
 		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, 
 				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL, 
@@ -151,6 +156,11 @@ class IngresoController {
 		$condicionpago_collection = Collector()->get('CondicionPago');
 		$condicioniva_collection = Collector()->get('CondicionIVA');
 		$tipofactura_collection = Collector()->get('TipoFactura');
+		$array_ids = array(1,2,3);
+		foreach ($tipofactura_collection as $clave=>$valor) {
+			if (!in_array($valor->tipofactura_id, $array_ids)) unset($tipofactura_collection[$clave]);
+		}
+
 
 		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, 
 				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL, 
@@ -390,6 +400,7 @@ class IngresoController {
 				$ccpm->cuentacorrienteproveedor_id = $cuentacorrienteproveedor[0]['ID'];
 				$ccpm->get();
 				$ccpm->importe = $importe_total_iva;
+				$ccpm->proveedor_id = $proveedor;
 				$ccpm->save();
 			} else {
 				$ccpm = new CuentaCorrienteProveedor();

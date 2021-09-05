@@ -270,8 +270,6 @@ class EgresoController {
 			$this->model->fecha_vencimiento = 0;
 			$tipofactura_id = $this->model->tipofactura->tipofactura_id;
 			$plantilla_tipofactura = $this->model->tipofactura->plantilla_impresion;
-			//$plantilla_tipofactura = (string)$plantilla_tipofactura;
-			//@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
 		} else {
 			$egresoafip = $egresoafip[0];
 			$tipofactura_id = $egresoafip['TF_ID'];
@@ -287,8 +285,6 @@ class EgresoController {
 			unset($this->model->tipofactura);
 			$this->model->tipofactura = $tfm;
 			$tipofactura_id = $this->model->tipofactura->tipofactura_id;
-			//$plantilla_tipofactura = $this->model->tipofactura->plantilla_impresion;
-			//@$facturaPDFHelper->$plantilla_tipofactura($egresodetalle_collection, $cm, $this->model, $vendedor, $flete);
 		}
 
 		switch ($tipofactura_id) {
@@ -374,6 +370,11 @@ class EgresoController {
 		$vendedor_collection = CollectorCondition()->get('Vendedor', NULL, 4, $from, $select);
 		$tipofactura_collection = Collector()->get('TipoFactura');
 		$condicionpago_collection = Collector()->get('CondicionPago');
+		$array_ids = array(1,2,3);
+		foreach ($tipofactura_collection as $clave=>$valor) {
+			if (!in_array($valor->tipofactura_id, $array_ids)) unset($tipofactura_collection[$clave]);
+		}
+
 
 		$this->view->configurar($egresodetalle_collection, $cuentacorrientecliente_collection, $this->model, $egresoafip, $notacredito_id,
 								$vendedor_collection, $tipofactura_collection, $condicionpago_collection);

@@ -62,6 +62,7 @@ class NotaCreditoController {
 		$notacredito_id = $arg;
 		$this->model->notacredito_id = $notacredito_id;
 		$this->model->get();
+		$egreso_id = $this->model->egreso_id;
 
 		$em = new Egreso();
 		$em->egreso_id = $this->model->egreso_id;
@@ -70,7 +71,6 @@ class NotaCreditoController {
 		$cm = new Configuracion();
 		$cm->configuracion_id = 1;
 		$cm->get();
-
 
 		$select = "ncd.codigo_producto AS CODIGO, ncd.descripcion_producto AS DESCRIPCION, ncd.cantidad AS CANTIDAD,
 				   pu.denominacion AS UNIDAD, ncd.descuento AS DESCUENTO, ncd.valor_descuento AS VD, 
@@ -91,7 +91,6 @@ class NotaCreditoController {
 			$em->punto_venta = $egresoafip[0]['PUNTO_VENTA'];
 			$em->numero_factura = $egresoafip[0]['NUMERO_FACTURA'];		
 		}		
-
 		
 		$notacreditoPDFHelper = new NotaCreditoPDF();
 		$notacreditoPDFHelper->genera_notacredito($notacreditodetalle_collection, $cm, $em, $this->model);
@@ -99,8 +98,14 @@ class NotaCreditoController {
 		$em = new Egreso();
 		$em->egreso_id = $this->model->egreso_id;
 		$em->get();
+
+		$select = "ccc.importe AS IMP";
+		$from = "cuentacorrientecliente ccc";
+		$where = "ccc.egreso_id = {$egreso_id} AND ccc.tipomovimientocuenta = 2 ORDER BY ccc.cuentacorrientecliente_id DESC";
+		$flag_ccc = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select);
+		$flag_ccc = (is_array($flag_ccc) AND !empty($flag_ccc)) ? 1 : 0;
 		
-		$this->view->consultar($notacreditodetalle_collection, $this->model, $egresoafip, $em, $notacredito_id);
+		$this->view->consultar($notacreditodetalle_collection, $this->model, $egresoafip, $em, $notacredito_id, $flag_ccc);
 	}
 
 	function prepara_notacredito_afip($arg) {
@@ -200,6 +205,28 @@ class NotaCreditoController {
 		}
 
 		header("Location: " . URL_APP . "/egreso/consultar/{$egreso_id}");
+	}
+
+	function anular($arg) {
+		SessionHandler()->check_session();
+		
+		$notacredito_id = filter_input(INPUT_POST, 'notacredito_id');
+		$this->model->notacredito_id = $notacredito_id;
+		$this->model->get();
+
+		$egreso_id = filter_input(INPUT_POST, 'egreso_id');
+		$em = new Egreso();
+		$em->egreso_id = $egreso_id;
+		$em->get();
+
+		$select = "ncd.codigo_producto AS CODIGO, ncd.descripcion_producto AS DESCRIPCION, ncd.cantidad AS CANTIDAD,
+				   pu.denominacion AS UNIDAD, ncd.descuento AS DESCUENTO, ncd.valor_descuento AS VD, p.no_gravado AS NOGRAVADO,
+				   ncd.costo_producto AS COSTO, ROUND(ncd.importe, 2) AS IMPORTE, ncd.iva AS IVA, p.exento AS EXENTO";
+		$from = "notacreditodetalle ncd INNER JOIN producto p ON ncd.producto_id = p.producto_id INNER JOIN
+				 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$where = "ncd.egreso_id = {$egreso_id}";
+		$notacreditodetalle_collection = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
+		print_r($notacreditodetalle_collection);exit;
 	}
 }
 ?>
