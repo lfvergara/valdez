@@ -35,6 +35,7 @@ class GastoCategoriaController {
 		SessionHandler()->check_session();
 		$this->model->gastocategoria_id = filter_input(INPUT_POST, 'gastocategoria_id');
 		$this->model->get();
+		print_r($this->model);exit;
 		$this->model->codigo = filter_input(INPUT_POST, 'codigo');
 		$this->model->denominacion = filter_input(INPUT_POST, 'denominacion');
 		$this->model->gastosubcategoria_id = filter_input(INPUT_POST, 'gastosubcategoria');
