@@ -27,8 +27,18 @@ class GastoCategoriaController {
 		SessionHandler()->check_session();
 		foreach ($_POST as $clave=>$valor) $this->model->$clave = $valor;
 		$this->model->oculto = 0;
-		print_r($this->model);exit;
-        $this->model->save();
+		$this->model->save();
+		header("Location: " . URL_APP . "/gastocategoria/panel");
+	}
+
+	function actualizar() {
+		SessionHandler()->check_session();
+		$this->model->gastocategoria_id = filter_input(INPUT_POST, 'gastocategoria_id');
+		$this->model->get();
+		$this->model->codigo = filter_input(INPUT_POST, 'codigo');
+		$this->model->denominacion = filter_input(INPUT_POST, 'denominacion');
+		$this->model->gastosubcategoria_id = filter_input(INPUT_POST, 'gastosubcategoria_id');
+		$this->model->save();
 		header("Location: " . URL_APP . "/gastocategoria/panel");
 	}
 

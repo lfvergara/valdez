@@ -20,7 +20,7 @@
         </div>
         <div class="x_content">
             <div class=" form">
-                <form class="form" id="formulario_guardar" method="post" action="{url_app}/gastocategoria/guardar">
+                <form class="form" id="formulario_guardar" method="post" action="{url_app}/gastocategoria/actualizar">
                     <div class="form-group">
                         <label>Código</label>
                         <input type="text" class="form-control" id="codigo" name="codigo" value="{gastocategoria-codigo}" required>
@@ -31,7 +31,7 @@
                     </div>
                     <div class="form-group">
                         <label>Subcategoria</label>
-                        <select class="form-control m-bot15" name="subcategoria" id="subcategoria" required>
+                        <select class="form-control m-bot15" name="gastosubcategoria" id="gastosubcategoria" required>
                           <option value="{gastosubcategoria-gastosubcategoria_id}">{gastosubcategoria-denominacion}</option>
                           {subcategoria}
                         </select>
