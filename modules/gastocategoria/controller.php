@@ -37,8 +37,7 @@ class GastoCategoriaController {
 		$this->model->get();
 		$this->model->codigo = filter_input(INPUT_POST, 'codigo');
 		$this->model->denominacion = filter_input(INPUT_POST, 'denominacion');
-		$this->model->gastosubcategoria_id = filter_input(INPUT_POST, 'gastosubcategoria');
-		print_r($this->model);exit;
+		$this->model->gastosubcategoria = filter_input(INPUT_POST, 'gastosubcategoria');		
 		$this->model->save();
 		header("Location: " . URL_APP . "/gastocategoria/panel");
 	}
