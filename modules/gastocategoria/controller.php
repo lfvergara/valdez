@@ -25,9 +25,9 @@ class GastoCategoriaController {
 
 	function guardar() {
 		SessionHandler()->check_session();
-
 		foreach ($_POST as $clave=>$valor) $this->model->$clave = $valor;
 		$this->model->oculto = 0;
+		print_r($this->model);exit;
         $this->model->save();
 		header("Location: " . URL_APP . "/gastocategoria/panel");
 	}
