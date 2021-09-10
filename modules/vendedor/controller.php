@@ -10,6 +10,7 @@ require_once "modules/egresocomision/model.php";
 require_once "modules/cliente/model.php";
 require_once "modules/notacredito/model.php";
 require_once "modules/empleado/model.php";
+require_once "modules/vendedorempleado/model.php";
 require_once "tools/pagoComisionPDFTool.php";
 require_once "tools/visitaClientesPDFTool.php";
 
