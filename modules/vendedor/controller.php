@@ -9,6 +9,7 @@ require_once "modules/egreso/model.php";
 require_once "modules/egresocomision/model.php";
 require_once "modules/cliente/model.php";
 require_once "modules/notacredito/model.php";
+require_once "modules/empleado/model.php";
 require_once "tools/pagoComisionPDFTool.php";
 require_once "tools/visitaClientesPDFTool.php";
 
@@ -651,18 +652,27 @@ class VendedorController {
 	function guardar() {
 		SessionHandler()->check_session();
 
-		$this->model->apellido = filter_input(INPUT_POST, 'apellido');
-		$this->model->nombre = filter_input(INPUT_POST, 'nombre');
+		$apellido = filter_input(INPUT_POST, 'apellido');
+		$nombre = filter_input(INPUT_POST, 'nombre');
+		$documento = filter_input(INPUT_POST, 'documento');
+		$codigopostal = filter_input(INPUT_POST, 'codigopostal');
+		$domicilio = filter_input(INPUT_POST, 'domicilio');
+		$localidad = filter_input(INPUT_POST, 'localidad');
+		$provincia = filter_input(INPUT_POST, 'provincia');
+		$documentotipo = filter_input(INPUT_POST, 'documentotipo');
+		
+		$this->model->apellido = $apellido;
+		$this->model->nombre = $nombre;
 		$this->model->comision = filter_input(INPUT_POST, 'comision');
 		$this->model->frecuenciaventa = filter_input(INPUT_POST, 'frecuenciaventa');
-		$this->model->documento = filter_input(INPUT_POST, 'documento');
-		$this->model->documentotipo = filter_input(INPUT_POST, 'documentotipo');
-		$this->model->provincia = filter_input(INPUT_POST, 'provincia');
-		$this->model->codigopostal = filter_input(INPUT_POST, 'codigopostal');
-		$this->model->localidad = filter_input(INPUT_POST, 'localidad');
+		$this->model->documento = $documento;
+		$this->model->documentotipo = $documentotipo;
+		$this->model->provincia = $provincia;
+		$this->model->codigopostal = $codigopostal;
+		$this->model->localidad = $localidad;
 		$this->model->latitud = filter_input(INPUT_POST, 'latitud');
 		$this->model->longitud = filter_input(INPUT_POST, 'longitud');
-		$this->model->domicilio = filter_input(INPUT_POST, 'domicilio');
+		$this->model->domicilio = $domicilio;
 		$this->model->observacion = filter_input(INPUT_POST, 'observacion');
 		$this->model->oculto = 0;
 		$this->model->save();
@@ -675,6 +685,7 @@ class VendedorController {
 		$array_infocontacto = $_POST['infocontacto'];
 		if (!empty($array_infocontacto)) {
 			foreach ($array_infocontacto as $clave=>$valor) {
+				if ($clave == 'Celular') $telefono = $valor;
 				$icm = new InfoContacto();
 				$icm->denominacion = $clave;
 				$icm->valor = $valor;
@@ -691,6 +702,26 @@ class VendedorController {
 			$iccm = new InfoContactoVendedor($this->model);
 			$iccm->save();
 		}
+
+		$em = new Empleado();
+		$em->apellido = $apellido;
+		$em->nombre = $nombre;
+		$em->documento = $documento;
+		$em->telefono = $telefono;
+		$em->domicilio = $domicilio;
+		$em->codigopostal = $codigopostal;
+		$em->localidad = $localidad;
+		$em->observacion = 'Vendedor';
+		$em->oculto = 0;
+		$em->provincia = $provincia;
+		$em->documentotipo = $documentotipo;
+		$em->save();
+		$empleado_id = $em->empleado_id;
+
+		$vem = new VendedorEmpleado();
+		$vem->vendedor_id = $vendedor_id;
+		$vem->empleado_id = $empleado_id;
+		$vem->save();
 
 		header("Location: " . URL_APP . "/vendedor/listar");
 	}

@@ -784,3 +784,12 @@ CREATE TABLE IF NOT EXISTS salario (
         REFERENCES empleado (empleado_id)
         ON DELETE CASCADE
 ) ENGINE=InnoDb;
+
+CREATE TABLE IF NOT EXISTS vendedorempleado (
+    vendedorempleado_id INT(11) NOT NULL 
+        AUTO_INCREMENT PRIMARY KEY
+    , vendedor_id INT(11)
+    , INDEX (vendedor_id)
+    , empleado_id INT(11)
+    , INDEX (empleado_id)
+) ENGINE=InnoDb;
