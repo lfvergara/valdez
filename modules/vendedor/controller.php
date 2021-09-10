@@ -653,12 +653,12 @@ class VendedorController {
 	function guardar() {
 		SessionHandler()->check_session();
 
-		$apellido = (is_null(filter_input(INPUT_POST, 'apellido')) ? '' : filter_input(INPUT_POST, 'apellido');
-		$nombre = (is_null(filter_input(INPUT_POST, 'nombre')) ? '' : filter_input(INPUT_POST, 'nombre');
-		$documento = (is_null(filter_input(INPUT_POST, 'documento')) ? 0 : filter_input(INPUT_POST, 'documento');
-		$codigopostal = (is_null(filter_input(INPUT_POST, 'codigopostal')) ? 0 : filter_input(INPUT_POST, 'codigopostal');
-		$domicilio = (is_null(filter_input(INPUT_POST, 'domicilio')) ? '' : filter_input(INPUT_POST, 'domicilio');
-		$localidad = (is_null(filter_input(INPUT_POST, 'localidad')) ? '' : filter_input(INPUT_POST, 'localidad');
+		$apellido = (is_null(filter_input(INPUT_POST, 'apellido'))) ? '' : filter_input(INPUT_POST, 'apellido');
+		$nombre = (is_null(filter_input(INPUT_POST, 'nombre'))) ? '' : filter_input(INPUT_POST, 'nombre');
+		$documento = (is_null(filter_input(INPUT_POST, 'documento'))) ? 0 : filter_input(INPUT_POST, 'documento');
+		$codigopostal = (is_null(filter_input(INPUT_POST, 'codigopostal'))) ? 0 : filter_input(INPUT_POST, 'codigopostal');
+		$domicilio = (is_null(filter_input(INPUT_POST, 'domicilio'))) ? '' : filter_input(INPUT_POST, 'domicilio');
+		$localidad = (is_null(filter_input(INPUT_POST, 'localidad'))) ? '' : filter_input(INPUT_POST, 'localidad');
 		$provincia = filter_input(INPUT_POST, 'provincia');
 		$documentotipo = filter_input(INPUT_POST, 'documentotipo');
 		
