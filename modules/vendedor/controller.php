@@ -686,7 +686,13 @@ class VendedorController {
 		$array_infocontacto = $_POST['infocontacto'];
 		if (!empty($array_infocontacto)) {
 			foreach ($array_infocontacto as $clave=>$valor) {
-				if ($clave == 'Celular') $telefono = $valor;
+				if ($clave == 'Celular') {
+					if (is_null($valor) OR empty($valor) OR $valor == '') {
+						$telefono = 0;
+					} else {
+						$telefono = $valor;
+					}
+				}
 				$icm = new InfoContacto();
 				$icm->denominacion = $clave;
 				$icm->valor = $valor;
