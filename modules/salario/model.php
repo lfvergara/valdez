@@ -7,6 +7,7 @@ class Salario extends StandardObject {
 	function __construct(Empleado $empleado=NULL) {
 		$this->salario_id = 0;
 		$this->periodo = '';
+		$this->tipo_pago = '';
 		$this->fecha = '';
 		$this->hora = '';
 		$this->monto = 0.00;

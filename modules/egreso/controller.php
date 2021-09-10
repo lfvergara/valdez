@@ -1419,6 +1419,13 @@ class EgresoController {
 			$array_exportacion[] = array('','','','','','','');
 			$array_exportacion[] = array('','','','','','Cuenta Corriente',$cant_cuentacorriente);
 			$array_exportacion[] = array('','','','','','Contado',$cant_contado);
+			$array_exportacion[] = array('','','','','','','');
+			$array_exportacion[] = array('','','','','','Combustible','$.......................');
+			$array_exportacion[] = array('','','','','','Sencillo','$.......................');
+			$array_exportacion[] = array('','','','','','Descuentos','$.......................');
+			$array_exportacion[] = array('','','','','','Cta. Cte.','$.......................');
+			$array_exportacion[] = array('','','','','','Efectivo','$.......................');
+			$array_exportacion[] = array('','','','','','Totales','$.......................');
 
 			$fecha_actual = date('Y-m-d');
 			$hrm = new HojaRuta();
@@ -1528,6 +1535,13 @@ class EgresoController {
 			$array_exportacion[] = array('','','','','','','');
 			$array_exportacion[] = array('','','','','','Cuenta Corriente',$cant_cuentacorriente);
 			$array_exportacion[] = array('','','','','','Contado',$cant_contado);
+			$array_exportacion[] = array('','','','','','','');
+			$array_exportacion[] = array('','','','','','Combustible','$.......................');
+			$array_exportacion[] = array('','','','','','Sencillo','$.......................');
+			$array_exportacion[] = array('','','','','','Descuentos','$.......................');
+			$array_exportacion[] = array('','','','','','Cuenta Corriente','$.......................');
+			$array_exportacion[] = array('','','','','','Efectivo','$.......................');
+			$array_exportacion[] = array('','','','','','Totales','$.......................');
 
 			$array_cantidades = array('{cant_cuentacorriente}'=>$cant_cuentacorriente,
 										'{cant_contado}'=>$cant_contado);
@@ -2088,7 +2102,6 @@ class EgresoController {
 			$array_exportacion[] = array('','','','','','','Contado',$cant_contado);
 			$array_exportacion[] = array('','','','','','','Total Abonado',$total_abonado);
 			$array_exportacion[] = array('','','','','','','Total Deuda',$total_deuda);
-			$array_exportacion[] = array('','','','','','','','');
 			$array_exportacion[] = array('','','','','','','','');
 			$array_exportacion[] = array('','','','','','','Combustible','$.......................');
 			$array_exportacion[] = array('','','','','','','Sencillo','$.......................');

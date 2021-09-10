@@ -15,8 +15,7 @@ class SalarioController {
     	SessionHandler()->check_session();
     	$periodo_actual =  date('Ym');
 
-		$select = "s.salario_id AS SALARIO_ID, CONCAT(date_format(s.fecha, '%d/%m/%Y'), ' ', s.hora) AS FECHA, u.denominacion AS USUARIO,
-				   CONCAT(e.apellido, ' ', e.nombre) AS EMPLEADO, s.monto AS IMPORTE, s.periodo AS PERIODO";
+		$select = "s.salario_id AS SALARIO_ID, CONCAT(date_format(s.fecha, '%d/%m/%Y'), ' ', s.hora) AS FECHA, u.denominacion AS USUARIO, CONCAT(e.apellido, ' ', e.nombre) AS EMPLEADO, s.monto AS IMPORTE, s.periodo AS PERIODO, s.tipo_pago AS TIPO";
 		$from = "salario s INNER JOIN empleado e ON s.empleado = e.empleado_id INNER JOIN usuario u ON s.usuario_id = u.usuario_id";
 		$where = "date_format(s.fecha, '%Y%m') = {$periodo_actual}";
 		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
@@ -46,8 +45,7 @@ class SalarioController {
 		$this->model->salario_id = $arg;
 		$this->model->get();
 
-		$select = "s.salario_id AS SALARIO_ID, CONCAT(date_format(s.fecha, '%d/%m/%Y'), ' ', s.hora) AS FECHA, u.denominacion AS USUARIO,
-				   CONCAT(e.apellido, ' ', e.nombre) AS EMPLEADO, s.monto AS IMPORTE, s.periodo AS PERIODO";
+		$select = "s.salario_id AS SALARIO_ID, CONCAT(date_format(s.fecha, '%d/%m/%Y'), ' ', s.hora) AS FECHA, u.denominacion AS USUARIO, CONCAT(e.apellido, ' ', e.nombre) AS EMPLEADO, s.monto AS IMPORTE, s.periodo AS PERIODO, s.tipo_pago AS TIPO";
 		$from = "salario s INNER JOIN empleado e ON s.empleado = e.empleado_id INNER JOIN usuario u ON s.usuario_id = u.usuario_id";
 		$where = "date_format(s.fecha, '%Y%m') = {$periodo_actual}";
 		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
@@ -91,20 +89,18 @@ class SalarioController {
 	}
 
 	function filtrar_salario() {
-    SessionHandler()->check_session();
+    	SessionHandler()->check_session();
 		$desde = filter_input(INPUT_POST, 'desde');
 		$hasta = filter_input(INPUT_POST, 'hasta');
 		$empleado = filter_input(INPUT_POST, 'empleado');
 
 		$where = (empty($empleado)) ? "s.fecha BETWEEN '{$desde}' AND '{$hasta}'" : "s.fecha BETWEEN '{$desde}' AND '{$hasta}' and s.empleado = {$empleado}";
 
-		$select = "s.salario_id AS SALARIO_ID, CONCAT(date_format(s.fecha, '%d/%m/%Y'), ' ', s.hora) AS FECHA, u.denominacion AS USUARIO,
-							   CONCAT(e.apellido, ' ', e.nombre) AS EMPLEADO, s.monto AS IMPORTE, s.periodo AS PERIODO";
+		$select = "s.salario_id AS SALARIO_ID, CONCAT(date_format(s.fecha, '%d/%m/%Y'), ' ', s.hora) AS FECHA, u.denominacion AS USUARIO, CONCAT(e.apellido, ' ', e.nombre) AS EMPLEADO, s.monto AS IMPORTE, s.periodo AS PERIODO, s.tipo_pago AS TIPO";
 		$from = "salario s INNER JOIN empleado e ON s.empleado = e.empleado_id INNER JOIN usuario u ON s.usuario_id = u.usuario_id";
 		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
 
 		$this->view->filtrar_salario($salario_collection);
-	}
-	
+	}	
 }
 ?>
