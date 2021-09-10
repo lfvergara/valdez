@@ -716,6 +716,7 @@ class VendedorController {
 		$em->oculto = 0;
 		$em->provincia = $provincia;
 		$em->documentotipo = $documentotipo;
+		print_r($em);exit;
 		$em->save();
 		$empleado_id = $em->empleado_id;
 
@@ -845,9 +846,6 @@ class VendedorController {
 		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
 		$cliente_collection = (!is_array($cliente_collection)) ? array() : $cliente_collection;
 
-		//$visitaClientesVendedorPDFTool = new visitaClientesVendedorPDF();
-		//$visitaClientesVendedorPDFTool->descarga_visita_clientes_vendedor($cliente_collection, $this->model);
-
 		$subtitulo = "{$vendedor_denominacion} - {$frecuencia_denominacion}";
 		$array_encabezados = array('COD', 'CLIENTE', 'NOM FANTASIA', 'DOCUMENTO', 'CONDICION', 'BARRIO', 'DOMICILIO');
 		$array_exportacion = array();
@@ -874,7 +872,8 @@ class VendedorController {
 		$from = "vendedor v";
 		$where = "v.documento = {$arg}";
 		$flag = CollectorCondition()->get('Vendedor', $where, 4, $from, $select);
-		print $flag[0]["DUPLICADO"];
+		$flag = (is_array($flag) AND !empty($flag)) ? $flag[0]['DUPLICADO'] : 0;
+		print $flag;
 	}
 
 	function formulario_abonar_egreso_ajax($arg) {
