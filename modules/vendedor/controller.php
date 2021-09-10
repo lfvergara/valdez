@@ -722,7 +722,6 @@ class VendedorController {
 		$em->oculto = 0;
 		$em->provincia = $provincia;
 		$em->documentotipo = $documentotipo;
-		print_r($em);exit;
 		$em->save();
 		$empleado_id = $em->empleado_id;
 
