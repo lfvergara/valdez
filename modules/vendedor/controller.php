@@ -558,77 +558,113 @@ class VendedorController {
 		$egreso_ids = $_POST['objeto'];
 		$flag_iva = filter_input(INPUT_POST, 'flag_iva');
 
+		$importe_salario = 0;
 		if ($flag_iva == 0) {
-		foreach ($egreso_ids as $egreso_id) {
-			$em = new Egreso();
-			$em->egreso_id = $egreso_id;
-			$em->get();
-			$importe_total = $em->importe_total;
-			$comision = $em->egresocomision->valor_comision;
+			foreach ($egreso_ids as $egreso_id) {
+				$em = new Egreso();
+				$em->egreso_id = $egreso_id;
+				$em->get();
+				$importe_total = $em->importe_total;
+				$comision = $em->egresocomision->valor_comision;
 
-			$select = "nc.importe_total AS IMPORTETOTAL";
-			$from = "notacredito nc";
-			$where = "nc.egreso_id = {$egreso_id}";
-			$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
+				$select = "nc.importe_total AS IMPORTETOTAL";
+				$from = "notacredito nc";
+				$where = "nc.egreso_id = {$egreso_id}";
+				$notacredito = CollectorCondition()->get('NotaCredito', $where, 4, $from, $select);
 
-			if (is_array($notacredito) AND !empty($notacredito)) {
-				$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
-				$importe_total = $importe_total - $importe_notacredito;
-			}
+				if (is_array($notacredito) AND !empty($notacredito)) {
+					$importe_notacredito = $notacredito[0]['IMPORTETOTAL'];
+					$importe_total = $importe_total - $importe_notacredito;
+				}
 
-			$valor_abonado = round(($comision * $importe_total / 100),2);
-			$ecm = new EgresoComision();
-			$ecm->egresocomision_id = $em->egresocomision->egresocomision_id;
-			$ecm->get();
-			$ecm->fecha = filter_input(INPUT_POST, 'fecha_pago');
-			$ecm->valor_abonado = $valor_abonado;
-			$ecm->estadocomision = 3;
-			$ecm->iva = 0;
-			$ecm->save();
-		}
-		}else {
+				$valor_abonado = round(($comision * $importe_total / 100),2);
+				$ecm = new EgresoComision();
+				$ecm->egresocomision_id = $em->egresocomision->egresocomision_id;
+				$ecm->get();
+				$ecm->fecha = filter_input(INPUT_POST, 'fecha_pago');
+				$ecm->valor_abonado = $valor_abonado;
+				$ecm->estadocomision = 3;
+				$ecm->iva = 0;
+				$ecm->save();
+
+				$importe_salario = $importe_salario + $valor_abonado;
+			} 
+		} else {
 			/*PAGO COMISION SIN IVA*/
 			foreach ($egreso_ids as $egreso_id) {
-			 $em = new Egreso();
-			 $em->egreso_id = $egreso_id;
-			 $em->get();
-			 $comision = $em->egresocomision->valor_comision;
+			 	$em = new Egreso();
+			 	$em->egreso_id = $egreso_id;
+			 	$em->get();
+			 	$comision = $em->egresocomision->valor_comision;
 
- 			 $select = "SUM(ROUND((importe/CONCAT(1,'.',(iva))),2)) as ITSINIVA";
-			 $from = "egresodetalle";
-			 $where = "egreso_id = {$egreso_id}";
-			 $egreso_siniva_collection = CollectorCondition()->get('EgresoDetalle', $where, 4, $from, $select);
-			 $importe_total_sin_iva = $egreso_siniva_collection[0]['ITSINIVA'];
-			 $comision_sin_iva =  ROUND(($comision * $importe_total_sin_iva / 100),2);
+ 			 	$select = "SUM(ROUND((importe/CONCAT(1,'.',(iva))),2)) as ITSINIVA";
+			 	$from = "egresodetalle";
+			 	$where = "egreso_id = {$egreso_id}";
+			 	$egreso_siniva_collection = CollectorCondition()->get('EgresoDetalle', $where, 4, $from, $select);
+			 	$importe_total_sin_iva = $egreso_siniva_collection[0]['ITSINIVA'];
+			 	$comision_sin_iva =  ROUND(($comision * $importe_total_sin_iva / 100),2);
 
-			 /*nota de credito sin iva*/
-			 $select = "SUM(ROUND((importe/CONCAT(1,'.',(iva))),2)) as IMPORTETOTAL";
-			 $from = "notacreditodetalle";
-			 $where = "egreso_id = {$egreso_id}";
-			 $notacredito = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
+			 	/*nota de credito sin iva*/
+			 	$select = "SUM(ROUND((importe/CONCAT(1,'.',(iva))),2)) as IMPORTETOTAL";
+			 	$from = "notacreditodetalle";
+			 	$where = "egreso_id = {$egreso_id}";
+			 	$notacredito = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
 
-			 if (is_array($notacredito) AND !empty($notacredito)) {
-				$importe_notacredito_sin_iva = $notacredito[0]['IMPORTETOTAL'];
-				$importe_total_sin_iva = $importe_total_sin_iva - $importe_notacredito_sin_iva;
- 			}
+			 	if (is_array($notacredito) AND !empty($notacredito)) {
+					$importe_notacredito_sin_iva = $notacredito[0]['IMPORTETOTAL'];
+					$importe_total_sin_iva = $importe_total_sin_iva - $importe_notacredito_sin_iva;
+ 				}
 
-			$valor_abonado = ROUND(($comision * $importe_total_sin_iva / 100),2);
+				$valor_abonado = ROUND(($comision * $importe_total_sin_iva / 100),2);
 
-			$ecm = new EgresoComision();
-			$ecm->egresocomision_id = $em->egresocomision->egresocomision_id;
-			$ecm->get();
-			$ecm->fecha = filter_input(INPUT_POST, 'fecha_pago');
-			$ecm->valor_abonado = $valor_abonado;
-			$ecm->estadocomision = 3;
-			$ecm->iva = 1;
-			$ecm->save();
+				$ecm = new EgresoComision();
+				$ecm->egresocomision_id = $em->egresocomision->egresocomision_id;
+				$ecm->get();
+				$ecm->fecha = filter_input(INPUT_POST, 'fecha_pago');
+				$ecm->valor_abonado = $valor_abonado;
+				$ecm->estadocomision = 3;
+				$ecm->iva = 1;
+				$ecm->save();
+
+				$importe_salario = $importe_salario + $valor_abonado;
 			}
-
 		}
-		$array_busqueda = array("{fecha_desde}"=>filter_input(INPUT_POST, 'fecha_desde'),
-							 	"{fecha_hasta}"=>filter_input(INPUT_POST, 'fecha_hasta'),
-							 	"{vendedor_id}"=>filter_input(INPUT_POST, 'vendedor_id'));
-        $_SESSION["data-search-" . APP_ABREV] = $array_busqueda;
+		
+		$fecha_desde = filter_input(INPUT_POST, 'fecha_desde');
+		$fecha_hasta = filter_input(INPUT_POST, 'fecha_hasta');
+		$vendedor_id = filter_input(INPUT_POST, 'vendedor_id');
+		
+		$array_busqueda = array("{fecha_desde}"=>$fecha_desde, "{fecha_hasta}"=>$fecha_hasta, "{vendedor_id}"=>$vendedor_id);
+    	$_SESSION["data-search-" . APP_ABREV] = $array_busqueda;
+			
+    	$select = "ve.empleado_id AS ID";
+	 	$from = "vendedorempleado ve";
+	 	$where = "ve.vendedor_id = {$vendedor_id}";
+	 	$empleado_id = CollectorCondition()->get('VendedorEmpleado', $where, 4, $from, $select);
+	 	$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
+
+	 	if ($empleado_id != 0) {
+
+	 		$select = "sa.salario_id AS ID";
+	 		$from = "salario sa";
+	 		$where = "sa.empleado_id = {$empleado_id} AND sa.tipo_pago = 'ADELANTO'";
+	 		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+	 		$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
+
+	    	$sm = new Salario();
+	    	$sm->desde = "Desde {$fecha_desde} hasta {$fecha_hasta}";
+	    	$sm->hasta = "Desde {$fecha_desde} hasta {$fecha_hasta}";
+	    	$sm->detalle = "Desde {$fecha_desde} hasta {$fecha_hasta}";
+			$sm->tipo_pago = 'Salario';
+			$sm->fecha = date('Y-m-d');
+			$sm->hora = date('H:i:s');
+			$sm->monto = round($importe_salario, 2);
+			$sm->usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
+			$sm->empleado = $empleado;
+	 	}
+
+
+
 		header("Location: " . URL_APP . "/vendedor/ventas_vendedor");
 	}
 
