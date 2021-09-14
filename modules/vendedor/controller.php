@@ -364,6 +364,8 @@ class VendedorController {
 
 		$array_busqueda = array('{fecha_desde}'=>$fecha_desde,
 								'{fecha_hasta}'=>$fecha_hasta,
+								'{desde}'=>$desde,
+								'{hasta}'=>$hasta,
 								'{vendedor_id}'=>$vendedor_id);
 		$_SESSION["data-search-" . APP_ABREV] = $array_busqueda;
 
