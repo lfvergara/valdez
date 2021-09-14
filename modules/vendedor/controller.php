@@ -562,6 +562,8 @@ class VendedorController {
 		$flag_iva = filter_input(INPUT_POST, 'flag_iva');
 		$fecha_desde = filter_input(INPUT_POST, 'fecha_desde');
 		$fecha_hasta = filter_input(INPUT_POST, 'fecha_hasta');
+		$desde = filter_input(INPUT_POST, 'desde');
+		$hasta = filter_input(INPUT_POST, 'hasta');
 		$vendedor_id = filter_input(INPUT_POST, 'vendedor_id');
 		
 		$array_busqueda = array("{fecha_desde}"=>$fecha_desde, "{fecha_hasta}"=>$fecha_hasta, "{vendedor_id}"=>$vendedor_id);
@@ -655,16 +657,15 @@ class VendedorController {
 			*/
 
 	    	$sm = new Salario();
-	    	$sm->desde = $fecha_desde;
-	    	$sm->hasta = $fecha_hasta;
+	    	$sm->desde = $desde;
+	    	$sm->hasta = $hasta;
 	    	$sm->detalle = "Desde {$fecha_desde} hasta {$fecha_hasta}";
-			$sm->tipo_pago = 'Salario';
+			$sm->tipo_pago = 'SALARIO';
 			$sm->fecha = date('Y-m-d');
 			$sm->hora = date('H:i:s');
 			$sm->monto = round($importe_salario, 2);
 			$sm->usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
 			$sm->empleado = $empleado_id;
-			print_r($sm);exit;
 			$sm->save();
 	 	}
 
