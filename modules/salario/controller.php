@@ -66,12 +66,17 @@ class SalarioController {
 		$this->model->get();
 		$desde = $this->model->desde;
 		$hasta = $this->model->hasta;
+		$tipo_pago = $this->model->tipo_pago;
 
-		$select = "s.monto AS IMPORTE, s.detalle AS DETALLE, s.tipo_pago AS TIPO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), ' hasta ', date_format(s.hasta, '%d/%m/%Y')) AS PERIODO";
-		$from = "salario s";
-		$where = "s.desde BETWEEN '{$desde}' AND '{$hasta}' AND s.tipo_pago = 'ADELANTO'";
-		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
-		$salario_collection = (is_array($salario_collection) AND !empty($salario_collection)) ? $salario_collection : array();
+		if ($tipo_pago == 'ADELANTO') {
+			$salario_collection = array();
+		} else {
+			$select = "s.monto AS IMPORTE, s.detalle AS DETALLE, s.tipo_pago AS TIPO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), ' hasta ', date_format(s.hasta, '%d/%m/%Y')) AS PERIODO";
+			$from = "salario s";
+			$where = "s.desde BETWEEN '{$desde}' AND '{$hasta}' AND s.tipo_pago = 'ADELANTO'";
+			$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+			$salario_collection = (is_array($salario_collection) AND !empty($salario_collection)) ? $salario_collection : array();
+		}
 
 		$reciboSueldoPDFHelper = new reciboSueldoPDFTool();
 		$reciboSueldoPDFHelper->generarReciboSueldo($this->model, $salario_collection);
