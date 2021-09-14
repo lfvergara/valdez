@@ -16,15 +16,18 @@ class reciboSueldoPDFTool extends View {
         $importe_salario = $obj_salario->monto;
         
         $array_recibo = array();
-        $array_temp = array('DETALLE'=>$periodo_salario, 'TIPOPAGO'=>$tipopago_salario, 'MONTO'=>$importe_salario);
+        $monto_adelanto = 0;
+        $array_temp = array('DETALLE'=>$periodo_salario, 'TIPOPAGO'=>$tipopago_salario, 'MONTO'=>'$' . $importe_salario);
         $array_recibo[] = $array_temp; 
         foreach ($salario_collection as $clave=>$valor) {
             $array_temp = array();
-            $array_temp = array('DETALLE'=>$valor['DETALLE'], 'TIPOPAGO'=>$valor['TIPO'], 'MONTO'=>$valor['IMPORTE']);
+            $array_temp = array('DETALLE'=>$valor['DETALLE'], 'TIPOPAGO'=>$valor['TIPO'], 'MONTO'=>'-$'$valor['IMPORTE']);
             $array_recibo[] = $array_temp;
+
+            $monto_adelanto = $monto_adelanto + $valor['IMPORTE'];
         }
 
-
+        $obj_salario->monto = round($obj_salario->monto - $monto_adelanto, 2);
         $gui_tbl_salario = $this->render_regex_dict('TBL_RECIBOSUELDO', $gui_tbl_salario, $array_recibo);
         $obj_salario = $this->set_dict($obj_salario);
         $gui_html = str_replace('{tbl_recibosueldo}', $gui_tbl_salario, $gui_html);
