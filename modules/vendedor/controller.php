@@ -560,7 +560,19 @@ class VendedorController {
 		SessionHandler()->check_session();
 		$egreso_ids = $_POST['objeto'];
 		$flag_iva = filter_input(INPUT_POST, 'flag_iva');
-
+		$fecha_desde = filter_input(INPUT_POST, 'fecha_desde');
+		$fecha_hasta = filter_input(INPUT_POST, 'fecha_hasta');
+		$vendedor_id = filter_input(INPUT_POST, 'vendedor_id');
+		
+		$array_busqueda = array("{fecha_desde}"=>$fecha_desde, "{fecha_hasta}"=>$fecha_hasta, "{vendedor_id}"=>$vendedor_id);
+    	$_SESSION["data-search-" . APP_ABREV] = $array_busqueda;
+			
+    	$select = "ve.empleado_id AS ID";
+	 	$from = "vendedorempleado ve";
+	 	$where = "ve.vendedor_id = {$vendedor_id}";
+	 	$empleado_id = CollectorCondition()->get('VendedorEmpleado', $where, 4, $from, $select);
+	 	$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
+	 	print_r($empleado_id);exit;
 		$importe_salario = 0;
 		if ($flag_iva == 0) {
 			foreach ($egreso_ids as $egreso_id) {
@@ -633,20 +645,7 @@ class VendedorController {
 			}
 		}
 		
-		$fecha_desde = filter_input(INPUT_POST, 'fecha_desde');
-		$fecha_hasta = filter_input(INPUT_POST, 'fecha_hasta');
-		$vendedor_id = filter_input(INPUT_POST, 'vendedor_id');
-		
-		$array_busqueda = array("{fecha_desde}"=>$fecha_desde, "{fecha_hasta}"=>$fecha_hasta, "{vendedor_id}"=>$vendedor_id);
-    	$_SESSION["data-search-" . APP_ABREV] = $array_busqueda;
-			
-    	$select = "ve.empleado_id AS ID";
-	 	$from = "vendedorempleado ve";
-	 	$where = "ve.vendedor_id = {$vendedor_id}";
-	 	$empleado_id = CollectorCondition()->get('VendedorEmpleado', $where, 4, $from, $select);
-	 	$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
-
-	 	if ($empleado_id != 0) {
+		if ($empleado_id != 0) {
 
 	 		$select = "sa.salario_id AS ID";
 	 		$from = "salario sa";
