@@ -21,7 +21,7 @@ class reciboSueldoPDFTool extends View {
         $array_recibo[] = $array_temp; 
         foreach ($salario_collection as $clave=>$valor) {
             $array_temp = array();
-            $array_temp = array('DETALLE'=>$valor['DETALLE'], 'TIPOPAGO'=>$valor['TIPO'], 'MONTO'=>'-$'$valor['IMPORTE']);
+            $array_temp = array('DETALLE'=>$valor['DETALLE'], 'TIPOPAGO'=>$valor['TIPO'], 'MONTO'=>'-$' . $valor['IMPORTE']);
             $array_recibo[] = $array_temp;
 
             $monto_adelanto = $monto_adelanto + $valor['IMPORTE'];
