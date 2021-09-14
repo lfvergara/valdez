@@ -664,6 +664,7 @@ class VendedorController {
 			$sm->monto = round($importe_salario, 2);
 			$sm->usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
 			$sm->empleado = $empleado_id;
+			print_r($sm);exit;
 			$sm->save();
 	 	}
 
