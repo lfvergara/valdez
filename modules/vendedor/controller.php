@@ -519,12 +519,14 @@ class VendedorController {
 
 		$array_totales = array('{fecha_desde}'=>$fecha_desde,
 							   '{fecha_hasta}'=>$fecha_hasta,
+							   '{desde}'=>$desde,
+							   '{hasta}'=>$hasta,
 							   '{porcentaje_comision}'=>"%{$porcentaje_comision}",
 							   '{valor_comision_total}'=>round($valor_comision_total,2),
 		 					   '{valor_comision_pendiente}'=>round($valor_comision_pendiente,2),
-								 '{valor_comision_pendiente_siniva}'=>round($valor_comision_pendiente_siniva,2),
+							   '{valor_comision_pendiente_siniva}'=>round($valor_comision_pendiente_siniva,2),
 		 					   '{valor_comision_abonada}'=>round($valor_comision_abonado,2),
-								 '{valor_comision_abonado_siniva}'=>round($valor_comision_abonado_siniva,2),
+							   '{valor_comision_abonado_siniva}'=>round($valor_comision_abonado_siniva,2),
 		 					   '{valor_total_facturado}'=>round($valor_total_facturado,2),
 		 					   '{valor_total_facturado_comision_pendiente}'=>round($valor_total_facturado_comision_pendiente,2));
 
