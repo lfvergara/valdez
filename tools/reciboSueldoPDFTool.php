@@ -27,7 +27,7 @@ class reciboSueldoPDFTool extends View {
             $monto_adelanto = $monto_adelanto + $valor['IMPORTE'];
         }
 
-        $obj_salario->monto = round($obj_salario->monto - $monto_adelanto, 2);
+        $obj_salario->monto = round(($obj_salario->monto - $monto_adelanto), 2);
         $gui_tbl_salario = $this->render_regex_dict('TBL_RECIBOSUELDO', $gui_tbl_salario, $array_recibo);
         $obj_salario = $this->set_dict($obj_salario);
         $gui_html = str_replace('{tbl_recibosueldo}', $gui_tbl_salario, $gui_html);
