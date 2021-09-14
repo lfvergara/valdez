@@ -9,7 +9,8 @@ class User {
 	    			token = ?";
 	    $datos = array($hash);
         $result = execute_query($sql, $datos);
-		return isset($result[0]) ? $result[0]['usuariodetalle_id'] : 0;
+        $usuariodetalle_id = (is_array($result) AND !empty($result)) ? $result[0]['usuariodetalle_id'] : 0;
+		return $usuariodetalle_id;
 	}
 
 	static function get_usuario_id($usuariodetalle_id) {
@@ -21,7 +22,8 @@ class User {
 	    			usuariodetalle = ?";
 	    $datos = array($usuariodetalle_id);
         $result = execute_query($sql, $datos);
-		return isset($result[0]) ? $result[0]['usuario_id'] : 0;
+        $usuario_id = (is_array($result) AND !empty($result)) ? $result[0]['usuario_id'] : 0;
+		return $usuario_id;
 	}
 }
 
