@@ -517,8 +517,8 @@ class VendedorController {
 
 		$array_totales = array('{fecha_desde}'=>$fecha_desde,
 							   '{fecha_hasta}'=>$fecha_hasta,
-							   '{desde}'=>$desde,
-							   '{hasta}'=>$hasta,
+							   '{desde}'=>$fecha_desde,
+							   '{hasta}'=>$fecha_hasta,
 							   '{porcentaje_comision}'=>"%{$porcentaje_comision}",
 							   '{valor_comision_total}'=>round($valor_comision_total,2),
 		 					   '{valor_comision_pendiente}'=>round($valor_comision_pendiente,2),
