@@ -648,9 +648,7 @@ class VendedorController {
 		}
 		
 		if ($empleado_id != 0) {
-			require_once 'tools/reciboSueldoPDFTool.php';
-			
-	    	$sm = new Salario();
+			$sm = new Salario();
 	    	$sm->desde = $desde;
 	    	$sm->hasta = $hasta;
 	    	$sm->detalle = "Desde {$fecha_desde} hasta {$fecha_hasta}";
@@ -662,23 +660,10 @@ class VendedorController {
 			$sm->empleado = $empleado_id;
 			$sm->save();
 			$salario_id = $sm->salario_id;
-
-	    	$sm = new Salario();
-			$sm->salario_id = $salario_id;
-			$sm->get();
-
-			$select = "s.monto AS IMPORTE, s.detalle AS DETALLE, s.tipo_pago AS TIPO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), ' hasta ', date_format(s.hasta, '%d/%m/%Y')) AS PERIODO";
-			$from = "salario s";
-			$where = "s.desde BETWEEN '{$desde}' AND '{$hasta}' AND s.tipo_pago = 'ADELANTO'";
-			$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
-			$salario_collection = (is_array($salario_collection) AND !empty($salario_collection)) ? $salario_collection : array();
-
-			$reciboSueldoPDFHelper = new reciboSueldoPDFTool();
-			$reciboSueldoPDFHelper->generarReciboSueldo($sm, $salario_collection);
 	 	}
 
 
-		header("Location: " . URL_APP . "/vendedor/ventas_vendedor");
+		header("Location: " . URL_APP . "/salario/panel");
 	}
 
 	function abonar_comision_parcial() {
