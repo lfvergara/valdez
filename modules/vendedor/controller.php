@@ -11,6 +11,7 @@ require_once "modules/cliente/model.php";
 require_once "modules/notacredito/model.php";
 require_once "modules/empleado/model.php";
 require_once "modules/vendedorempleado/model.php";
+require_once "modules/salario/model.php";
 require_once "tools/pagoComisionPDFTool.php";
 require_once "tools/visitaClientesPDFTool.php";
 
@@ -662,7 +663,6 @@ class VendedorController {
 			$sm->usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
 			$sm->empleado = $empleado;
 	 	}
-
 
 
 		header("Location: " . URL_APP . "/vendedor/ventas_vendedor");
