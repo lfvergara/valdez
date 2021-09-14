@@ -572,7 +572,7 @@ class VendedorController {
 	 	$where = "ve.vendedor_id = {$vendedor_id}";
 	 	$empleado_id = CollectorCondition()->get('VendedorEmpleado', $where, 4, $from, $select);
 	 	$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
-	 	print_r($empleado_id);exit;
+	 	
 		$importe_salario = 0;
 		if ($flag_iva == 0) {
 			foreach ($egreso_ids as $egreso_id) {
@@ -646,12 +646,13 @@ class VendedorController {
 		}
 		
 		if ($empleado_id != 0) {
-
+			/*
 	 		$select = "sa.salario_id AS ID";
 	 		$from = "salario sa";
 	 		$where = "sa.empleado_id = {$empleado_id} AND sa.tipo_pago = 'ADELANTO'";
 	 		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
 	 		$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
+			*/
 
 	    	$sm = new Salario();
 	    	$sm->desde = $fecha_desde;
@@ -663,6 +664,7 @@ class VendedorController {
 			$sm->monto = round($importe_salario, 2);
 			$sm->usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
 			$sm->empleado = $empleado_id;
+			$sm->save();
 	 	}
 
 
