@@ -652,8 +652,8 @@ class VendedorController {
 	 		$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
 
 	    	$sm = new Salario();
-	    	$sm->desde = "Desde {$fecha_desde} hasta {$fecha_hasta}";
-	    	$sm->hasta = "Desde {$fecha_desde} hasta {$fecha_hasta}";
+	    	$sm->desde = $fecha_desde;
+	    	$sm->hasta = $fecha_hasta;
 	    	$sm->detalle = "Desde {$fecha_desde} hasta {$fecha_hasta}";
 			$sm->tipo_pago = 'Salario';
 			$sm->fecha = date('Y-m-d');

@@ -64,8 +64,17 @@ class SalarioController {
 		$salario_id = $arg;
 		$this->model->salario_id = $salario_id;
 		$this->model->get();
+		$desde = $this->model->desde;
+		$hasta = $this->model->hasta;
+
+		$select = "s.monto AS IMPORTE, s.detalle AS DETALLE, s.tipo_pago AS TIPO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), ' hasta ', date_format(s.hasta, '%d/%m/%Y')) AS PERIODO";
+		$from = "salario s";
+		$where = "s.desde BETWEEN '{$desde}' AND '{$hasta}' AND s.tipo_pago = 'ADELANTO'";
+		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+		$salario_collection = (is_array($salario_collection) AND !empty($salario_collection)) ? $salario_collection : array();
+
 		$reciboSueldoPDFHelper = new reciboSueldoPDFTool();
-		$reciboSueldoPDFHelper->generarReciboSueldo($this->model);
+		$reciboSueldoPDFHelper->generarReciboSueldo($this->model, $salario_collection);
 	}
 
 	function buscar() {
