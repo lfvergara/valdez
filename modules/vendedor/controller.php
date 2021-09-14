@@ -648,14 +648,8 @@ class VendedorController {
 		}
 		
 		if ($empleado_id != 0) {
-			/*
-	 		$select = "sa.salario_id AS ID";
-	 		$from = "salario sa";
-	 		$where = "sa.empleado_id = {$empleado_id} AND sa.tipo_pago = 'ADELANTO'";
-	 		$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
-	 		$empleado_id = (is_array($empleado_id) AND !empty($empleado_id)) ? $empleado_id[0]['ID'] : 0;
-			*/
-
+			require_once 'tools/reciboSueldoPDFTool.php';
+			
 	    	$sm = new Salario();
 	    	$sm->desde = $desde;
 	    	$sm->hasta = $hasta;
@@ -667,6 +661,20 @@ class VendedorController {
 			$sm->usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
 			$sm->empleado = $empleado_id;
 			$sm->save();
+			$salario_id = $sm->salario_id;
+
+	    	$sm = new Salario();
+			$sm->salario_id = $salario_id;
+			$sm->get();
+
+			$select = "s.monto AS IMPORTE, s.detalle AS DETALLE, s.tipo_pago AS TIPO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), ' hasta ', date_format(s.hasta, '%d/%m/%Y')) AS PERIODO";
+			$from = "salario s";
+			$where = "s.desde BETWEEN '{$desde}' AND '{$hasta}' AND s.tipo_pago = 'ADELANTO'";
+			$salario_collection = CollectorCondition()->get('Salario', $where, 4, $from, $select);
+			$salario_collection = (is_array($salario_collection) AND !empty($salario_collection)) ? $salario_collection : array();
+
+			$reciboSueldoPDFHelper = new reciboSueldoPDFTool();
+			$reciboSueldoPDFHelper->generarReciboSueldo($sm, $salario_collection);
 	 	}
 
 
