@@ -81,7 +81,7 @@ class PedidoVendedorController {
 			if ($estado == 'PROCESADO') {
 				$pedidovendedor_collection[$clave]["DISPLAY_ESTADO_CCC_VENCIDA"] = 'none';
 			} else {
-				$pedidovendedor_collection[$clave]["DISPLAY_ESTADO_CCC_VENCIDA"] = ($cant_facturas_vencidas > 0) ? 'block': 'none';
+				$pedidovendedor_collection[$clave]["DISPLAY_ESTADO_CCC_VENCIDA"] = ($cant_facturas_vencidas > 0) ? 'inline-block': 'none';
 			}
 		}		
 
