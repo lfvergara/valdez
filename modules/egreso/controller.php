@@ -1309,7 +1309,6 @@ class EgresoController {
 				 		break;
 				}
 
-
 				$egresoentrega_id = $em->egresoentrega->egresoentrega_id;
 				$eem = new EgresoEntrega();
 				$eem->egresoentrega_id = $egresoentrega_id;
@@ -1325,8 +1324,6 @@ class EgresoController {
 								$em->fecha
 								, "{$punto_venta}-{$numero_factura}"
 								, $em->cliente->razon_social
-								, $em->cliente->localidad
-								, $em->cliente->domicilio
 								, $em->condicionpago->denominacion
 								, $em->importe_total);
 				$array_exportacion[] = $array_temp;
@@ -1416,7 +1413,7 @@ class EgresoController {
 		}
 
 		$subtitulo = "{$hrm->fecha} - HOJA DE RUTA: {$denominacion} - Nº{$arg}";
-		$array_encabezados = array('FECHA', 'COMPROBANTE', 'CLIENTE', 'BARRIO', 'DOMICILIO', 'COND PAGO', 'IMPORTE TOTAL');
+		$array_encabezados = array('FECHA', 'COMPROBANTE', 'CLIENTE', 'COND PAGO', 'IMPORTE TOTAL');
 		$array_exportacion[] = $array_encabezados;
 		$total = 0;
 		foreach ($egreso_ids as $egreso_id) {
@@ -1441,8 +1438,6 @@ class EgresoController {
 							$em->fecha
 							, "{$punto_venta}-{$numero_factura}"
 							, $em->cliente->razon_social
-							, $em->cliente->localidad
-							, $em->cliente->domicilio
 							, $em->condicionpago->denominacion
 							, $em->importe_total);
 			$array_exportacion[] = $array_temp;
@@ -1992,8 +1987,6 @@ class EgresoController {
 			$array_temp = array($em->fecha
 								, "{$punto_venta}-{$numero_factura}"
 								, $em->cliente->razon_social
-								, $em->cliente->localidad
-								, $em->cliente->domicilio
 								, $em->condicionpago->denominacion
 								, $em->importe_total
 								, $importe);
