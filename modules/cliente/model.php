@@ -14,9 +14,7 @@ require_once "modules/categoriacliente/model.php";
 
 class Cliente extends StandardObject {
 
-	function __construct(Provincia $provincia=NULL, DocumentoTipo $documentotipo=NULL, CondicionIVA $condicioniva=NULL, Flete $flete=NULL,
-                         CondicionFiscal $condicionfiscal=NULL, FrecuenciaVenta $frecuenciaventa=NULL, Vendedor $vendedor=NULL,
-                         TipoFactura $tipofactura=NULL,ListaPrecio $listaprecio=NULL,CategoriaCliente $categoriacliente=NULL) {
+	function __construct(Provincia $provincia=NULL, DocumentoTipo $documentotipo=NULL, CondicionIVA $condicioniva=NULL, Flete $flete=NULL, CondicionFiscal $condicionfiscal=NULL, FrecuenciaVenta $frecuenciaventa=NULL, Vendedor $vendedor=NULL, TipoFactura $tipofactura=NULL,ListaPrecio $listaprecio=NULL,CategoriaCliente $categoriacliente=NULL) {
 		$this->cliente_id = 0;
         $this->razon_social = '';
 		$this->nombre_fantasia = '';
