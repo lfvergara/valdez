@@ -160,7 +160,6 @@ class ClienteController {
 		$this->model->longitud = filter_input(INPUT_POST, 'longitud');
 		$this->model->impacto_ganancia = filter_input(INPUT_POST, 'impacto_ganancia');
 		$this->model->dias_vencimiento_cuenta_corriente = filter_input(INPUT_POST, 'dias_vencimiento_cuenta_corriente');
-		$this->model->oculto = filter_input(INPUT_POST, 'oculto');
 		$this->model->domicilio = filter_input(INPUT_POST, 'domicilio');
 		$this->model->ordenentrega = filter_input(INPUT_POST, 'ordenentrega');
 		$this->model->entregaminima = filter_input(INPUT_POST, 'entregaminima');
