@@ -97,6 +97,7 @@ class ClienteView extends View {
 		$gui_slt_tipofactura = file_get_contents("static/common/slt_tipofactura.html");
 		$gui_lst_input_infocontacto = file_get_contents("static/modules/cliente/lst_input_infocontacto.html");
 		$gui_slt_categoriacliente = file_get_contents("static/common/slt_categoriacliente.html");
+		$gui_slt_listaprecio = file_get_contents("static/common/slt_listaprecio.html");
 
 		foreach ($vendedor_collection as $vendedor) unset($vendedor->infocontacto_collection, $vendedor->frecuenciaventa);
 		foreach ($flete_collection as $flete) unset($flete->infocontacto_collection);
@@ -121,6 +122,7 @@ class ClienteView extends View {
 		$gui_slt_flete = $this->render_regex('SLT_FLETE', $gui_slt_flete, $flete_collection);
 		$gui_slt_tipofactura = $this->render_regex('SLT_TIPOFACTURA', $gui_slt_tipofactura, $tipofactura_collection);
 		$gui_slt_categoriacliente = $this->render_regex('SLT_CATEGORIACLIENTE', $gui_slt_categoriacliente, $categoriacliente_collection);
+		$gui_slt_listaprecio = $this->render_regex('SLT_LISTAPRECIO', $gui_slt_listaprecio, $listaprecio_collection);
 
 		$render = str_replace('{slt_provincia}', $gui_slt_provincia, $gui);
 		$render = str_replace('{slt_documentotipo}', $gui_slt_documentotipo, $render);
@@ -132,6 +134,7 @@ class ClienteView extends View {
 		$render = str_replace('{slt_tipofactura}', $gui_slt_tipofactura, $render);
 		$render = str_replace('{lst_input_infocontacto}', $gui_lst_input_infocontacto, $render);
 		$render = str_replace('{slt_categoriacliente}', $gui_slt_categoriacliente, $render);
+		$render = str_replace('{slt_listaprecio}', $gui_slt_listaprecio, $render);
 		$render = $this->render($obj_cliente, $render);
 		$render = $this->render_breadcrumb($render);
 		$template = $this->render_template($render);
