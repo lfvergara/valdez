@@ -43,7 +43,6 @@ class SessionBaseHandler {
                         $redirect = URL_APP . "/reporte/vdr_panel";
                         break;
                     default:
-                        // $redirect = URL_APP . "/reporte/panel";
                         $redirect = ($um->nivel < 3) ? URL_APP . "/reporte/home" : URL_APP . "/reporte/panel";
                         break;
                 }

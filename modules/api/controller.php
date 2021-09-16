@@ -48,9 +48,11 @@ class ApiController {
     }
 
     function checkin() {
-        if (isset($_POST['usuario']) && !empty($_POST['usuario']) && isset($_POST['pass']) && !empty($_POST['pass'])) {
-            $user = hash(ALGORITMO_USER, $_POST['usuario']);
-            $clave = hash(ALGORITMO_PASS, $_POST['pass']);
+        $usuario = filter_input(INPUT_POST, 'usuario');
+        $pass = filter_input(INPUT_POST, 'pass');
+        if (!is_null($usuario) && !is_null($pass)) {
+            $user = hash(ALGORITMO_USER, $usuario);
+            $clave = hash(ALGORITMO_PASS, $pass);
             $hash = hash(ALGORITMO_FINAL, $user . $clave);
             
             $usuariodetalle_id = User::get_usuariodetalle_id($hash);
