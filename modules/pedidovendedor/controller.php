@@ -44,7 +44,7 @@ class PedidoVendedorController {
     			   CASE pv.estadopedido WHEN 1 THEN 'inline-block' WHEN 2 THEN 'none' WHEN 3 THEN 'none' END AS DSPBTN,
     			   CASE pv.estadopedido WHEN 1 THEN 'SOLICITADO' WHEN 2 THEN 'PROCESADO' WHEN 3 THEN 'CANCELADO' END AS LBLEST,
     			   CASE pv.estadopedido WHEN 1 THEN 'primary' WHEN 2 THEN 'success' WHEN 3 THEN 'danger' END AS CLAEST,
-    			   LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED";
+    			   LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED, c.cliente_id AS CLIID";
 
 		if ($usuario_rol == 5) {
 			$vendedor_id = $usuariovendedor_id[0]['VENID'];
@@ -61,6 +61,29 @@ class PedidoVendedorController {
 		}
 
 		$pedidovendedor_collection = (is_array($pedidovendedor_collection) AND !empty($pedidovendedor_collection)) ? $pedidovendedor_collection : array();
+
+		foreach ($pedidovendedor_collection as $clave=>$valor) {
+			$cliente_id = $valor['CLIID'];
+			$estado = $valor['LBLEST'];
+			$cm = new Cliente();
+			$cm->cliente_id = $cliente_id;
+			$cm->get();
+			$dias_vencimiento_cuenta_corriente = $cm->dias_vencimiento_cuenta_corriente;
+			
+			$select = "COUNT(ccc.egreso_id) AS CANT";
+			$from = "cuentacorrientecliente ccc";
+			$where = "ccc.fecha < date_add(NOW(), INTERVAL -{$dias_vencimiento_cuenta_corriente} DAY) AND ccc.cliente_id = {$cliente_id} AND ccc.estadomovimientocuenta != 4 AND (ccc.importe > 0 OR ccc.ingreso > 0)";
+			$groupby = "ccc.egreso_id ORDER BY ccc.cliente_id ASC, ccc.egreso_id ASC, ccc.fecha DESC, ccc.estadomovimientocuenta DESC";
+			$vencimiento_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select, $groupby);
+			$cant_facturas_vencidas = (is_array($vencimiento_collection) AND !empty($vencimiento_collection)) ? $vencimiento_collection[0]['CANT'] : 0;
+
+			$pedidovendedor_collection[$clave]["DSPBTN"] = ($cant_facturas_vencidas > 0) ? 'none' : $pedidovendedor_collection[$clave]["DSPBTN"];
+			if ($estado == 'PROCESADO') {
+				$pedidovendedor_collection[$clave]["DISPLAY_ESTADO_CCC_VENCIDA"] = 'none';
+			} else {
+				$pedidovendedor_collection[$clave]["DISPLAY_ESTADO_CCC_VENCIDA"] = ($cant_facturas_vencidas > 0) ? 'block': 'none';
+			}
+		}		
 
 		$select = "v.vendedor_id AS ID, CONCAT(v.apellido, ' ', v.nombre) AS DENOMINACION";
 		$from = "vendedor v ORDER BY CONCAT(v.apellido, ' ', v.nombre) ASC";
