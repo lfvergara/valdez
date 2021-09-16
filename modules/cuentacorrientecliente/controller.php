@@ -302,27 +302,12 @@ class CuentaCorrienteClienteController {
 			$prewhere = "AND v.vendedor_id = {$argumento}";
 		}
 
-		$select = "e.egreso_id, date_format(e.fecha, '%d/%m/%Y') AS FECHA, date_format(DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY), '%d/%m/%Y') AS VENCIMIENTO,
-				   CASE WHEN DATE_ADD(e.fecha, INTERVAL e.dias_alerta_comision DAY) <= CURDATE() AND DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) > CURDATE() THEN CONCAT('ALERTA(+', e.dias_alerta_comision, 'Días)')
-				   WHEN DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) <= CURDATE() THEN CONCAT('VENCIDA(+', e.dias_vencimiento, ')') ELSE 'PENDIENTE' END AS ESTACOMP,
-				   CASE WHEN DATE_ADD(e.fecha, INTERVAL e.dias_alerta_comision DAY) <= CURDATE() AND DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) > CURDATE() THEN 'warning'
-				   WHEN DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) <= CURDATE() THEN 'danger' ELSE 'success' END AS CLASSCOMP,
-				   CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', 
-				   LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', 
-				   LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, c.razon_social AS CLIENTE, c.localidad AS BARRIO, c.domicilio AS DOMICILIO, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR,
-				   ((IF((SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id) IS NULL, 0, (SELECT ROUND(SUM(cccia.importe),2)
-				   	FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id))) - (SELECT ROUND(SUM(cccd.importe),2) FROM cuentacorrientecliente cccd
-					WHERE cccd.tipomovimientocuenta = 1 AND cccd.egreso_id = ccc.egreso_id)) AS BALANCE";
-		$from = "cuentacorrientecliente ccc INNER JOIN egreso e ON ccc.egreso_id = e.egreso_id INNER JOIN 
-				 cliente c ON ccc.cliente_id = c.cliente_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN
-				 tipofactura tf ON e.tipofactura = tf.tipofactura_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
-		$where = "((IF((SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND
-					  cccia.egreso_id = ccc.egreso_id) IS NULL, 0, (SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia
-					  WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id))) - (SELECT ROUND(SUM(cccd.importe),2)
-					  FROM cuentacorrientecliente cccd WHERE cccd.tipomovimientocuenta = 1 AND cccd.egreso_id = ccc.egreso_id)) < -0.5 {$prewhere}";
+		$select = "e.egreso_id, date_format(e.fecha, '%d/%m/%Y') AS FECHA, date_format(DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY), '%d/%m/%Y') AS VENCIMIENTO, CASE WHEN DATE_ADD(e.fecha, INTERVAL e.dias_alerta_comision DAY) <= CURDATE() AND DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) > CURDATE() THEN CONCAT('ALERTA(+', e.dias_alerta_comision, 'Días)') WHEN DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) <= CURDATE() THEN CONCAT('VENCIDA(+', e.dias_vencimiento, ')') ELSE 'PENDIENTE' END AS ESTACOMP, CASE WHEN DATE_ADD(e.fecha, INTERVAL e.dias_alerta_comision DAY) <= CURDATE() AND DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) > CURDATE() THEN 'warning' WHEN DATE_ADD(e.fecha, INTERVAL e.dias_vencimiento DAY) <= CURDATE() THEN 'danger' ELSE 'success' END AS CLASSCOMP, CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, c.razon_social AS CLIENTE, c.localidad AS BARRIO, c.domicilio AS DOMICILIO, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ((IF((SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id) IS NULL, 0, (SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id))) - (SELECT ROUND(SUM(cccd.importe),2) FROM cuentacorrientecliente cccd WHERE cccd.tipomovimientocuenta = 1 AND cccd.egreso_id = ccc.egreso_id)) AS BALANCE";
+		$from = "cuentacorrientecliente ccc INNER JOIN egreso e ON ccc.egreso_id = e.egreso_id INNER JOIN cliente c ON ccc.cliente_id = c.cliente_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN tipofactura tf ON e.tipofactura = tf.tipofactura_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where = "((IF((SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id) IS NULL, 0, (SELECT ROUND(SUM(cccia.importe),2) FROM cuentacorrientecliente cccia WHERE cccia.tipomovimientocuenta = 2 AND cccia.egreso_id = ccc.egreso_id))) - (SELECT ROUND(SUM(cccd.importe),2) FROM cuentacorrientecliente cccd WHERE cccd.tipomovimientocuenta = 1 AND cccd.egreso_id = ccc.egreso_id)) < -0.5 {$prewhere}";
 		$groupby = "ccc.egreso_id ORDER BY e.fecha ASC";
 		$cuentacorriente_collection = CollectorCondition()->get('CuentaCorrienteCliente', $where, 4, $from, $select, $groupby);
-
+		print_r($cuentacorriente_collection);exit;
 		$vendedor_collection = Collector()->get('Vendedor');
 		$this->view->buscar($cuentacorriente_collection, $vendedor_collection, $argumento);
 	}
