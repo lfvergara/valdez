@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once "common/libs/PHPExcel/PHPExcel.php";
 
 
