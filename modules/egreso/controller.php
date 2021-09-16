@@ -118,6 +118,28 @@ class EgresoController {
 		$where = "p.oculto = 0 AND p.producto_id != 344";
 		$groupby = "p.producto_id";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select, $groupby);
+		foreach ($producto_collection as $clave=>$valor) {
+			$producto_id = $valor['PRODUCTO_ID'];
+			$select = "MAX(s.stock_id) AS STOCK_ID";
+			$from = "stock s";
+			$where = "s.producto_id = {$producto_ids}";
+			$groupby = "s.producto_id";
+			$stock_id = CollectorCondition()->get('Stock', $where, 4, $from, $select, $groupby);
+			$stock_id = (is_array($stock_id) AND !empty($stock_id)) ? $stock_id[0]['STOCK_ID'] : 0;
+
+			if ($stock_id == 0) {
+				$producto_collection[$clave]['STOCK'] = 0;
+				$producto_collection[$clave]['CLASS_STOCK'] = 'danger';
+			} else {
+				$sm = new Stock();
+				$sm->stock_id = $stock_id;
+				$sm->get();
+				$class_stm = ($sm->cantidad_actual > 0) ? 'success' : 'danger';
+				
+				$producto_collection[$clave]['STOCK'] = $sm->cantidad_actual;
+				$producto_collection[$clave]['CLASS_STOCK'] = $class_stm;
+			}
+		}
 
 		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, CONCAT(c.razon_social, '(', c.nombre_fantasia, ')') AS RAZON_SOCIAL, CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
 		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id";
