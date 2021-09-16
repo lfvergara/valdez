@@ -57,7 +57,7 @@ class SessionBaseHandler {
     }
 
     function check_session() {
-        if($_SESSION['login' . APP_ABREV] !== true) {
+        if($_SESSION['login' . APP_ABREV] == true) {
             $this->checkout();
         }
     }
