@@ -129,7 +129,7 @@ class EgresoController {
 
 			if ($stock_id == 0) {
 				$producto_collection[$clave]['STOCK'] = 0;
-				$producto_collection[$clave]['CLASS_STOCK'] = 'danger';
+				$producto_collection[$clave]['CLASTO'] = 'danger';
 			} else {
 				$sm = new Stock();
 				$sm->stock_id = $stock_id;
@@ -137,7 +137,7 @@ class EgresoController {
 				$class_stm = ($sm->cantidad_actual > 0) ? 'success' : 'danger';
 				
 				$producto_collection[$clave]['STOCK'] = $sm->cantidad_actual;
-				$producto_collection[$clave]['CLASS_STOCK'] = $class_stm;
+				$producto_collection[$clave]['CLASTO'] = $class_stm;
 			}
 		}
 
