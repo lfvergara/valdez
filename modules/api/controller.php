@@ -679,7 +679,16 @@ class ApiController {
                         $sm = new Stock();
                         $sm->stock_id = $stock_id;
                         $sm->get();
+
+                        $select = "SUM(pvd.cantidad) AS SUGERIDO ";
+                        $from = "pedidovendedor pv INNER JOIN pedidovendedordetalle pvd ON pv.pedidovendedor_id = pvd.pedidovendedor_id";
+                        $where = "pv.estadopedido = 1 AND pvd.producto_id = {$obj->producto_id}"; 
+                        $group_by = "pvd.producto_id"; 
+                        $sugerido = CollectorCondition()->get('PedidoVendedor', $where, 4, $from, $select, $group_by);
+                        $sugerido = (is_array($sugerido) AND !empty($sugerido)) ? $sugerido[0]['SUGERIDO'] : 0;
+
                         $cantidad_disponible = $sm->cantidad_actual;
+                        $stock_sugerido = round(($cantidad_disponible - $sugerido),2);
                         $producto->producto_id = $obj->producto_id;
                         $producto->codigo = $obj->codigo;
                         $producto->denominacion = $obj->codigo." - ".$obj->denominacion;
@@ -700,6 +709,7 @@ class ApiController {
                         $producto->productocategoria = $obj->productocategoria;
                         $producto->productounidad = $obj->productounidad;
                         $producto->cantidad_disponible = $cantidad_disponible;
+                        $producto->cantidad_sugerida = $stock_sugerido;
                         if($producto->oculto == 0){
                             array_push($respuesta, $producto);
                         }
