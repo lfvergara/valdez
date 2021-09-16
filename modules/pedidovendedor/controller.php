@@ -45,18 +45,21 @@ class PedidoVendedorController {
     			   CASE pv.estadopedido WHEN 1 THEN 'SOLICITADO' WHEN 2 THEN 'PROCESADO' WHEN 3 THEN 'CANCELADO' END AS LBLEST,
     			   CASE pv.estadopedido WHEN 1 THEN 'primary' WHEN 2 THEN 'success' WHEN 3 THEN 'danger' END AS CLAEST,
     			   LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED";
-		$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN
-				 vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN
-				 estadopedido ep ON pv.estadopedido = ep.estadopedido_id";
 
 		if ($usuario_rol == 5) {
 			$vendedor_id = $usuariovendedor_id[0]['VENID'];
-			$where = "pv.fecha = '{$dia_actual}' AND pv.vendedor_id = {$vendedor_id} ORDER BY cl.razon_social ASC";
+			$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN
+					 vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN
+					 estadopedido ep ON pv.estadopedido = ep.estadopedido_id";
+			$where = "pv.vendedor_id = {$vendedor_id} ORDER BY cl.razon_social ASC";
+			$pedidovendedor_collection = CollectorCondition()->get('PedidoVendedor', $where, 4, $from, $select);
 		} else {
-			$where = "pv.fecha = '{$dia_actual}' ORDER BY CONCAT(ve.APELLIDO, ' ', ve.nombre) DESC";
+			$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN
+					 vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN
+					 estadopedido ep ON pv.estadopedido = ep.estadopedido_id ORDER BY CONCAT(ve.APELLIDO, ' ', ve.nombre) DESC";
+			$pedidovendedor_collection = CollectorCondition()->get('PedidoVendedor', NULL, 4, $from, $select);
 		}
 
-		$pedidovendedor_collection = CollectorCondition()->get('PedidoVendedor', $where, 4, $from, $select);
 		$pedidovendedor_collection = (is_array($pedidovendedor_collection) AND !empty($pedidovendedor_collection)) ? $pedidovendedor_collection : array();
 
 		$select = "v.vendedor_id AS ID, CONCAT(v.apellido, ' ', v.nombre) AS DENOMINACION";
