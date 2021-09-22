@@ -761,7 +761,7 @@ class ApiController {
                     $pedidoVendedor->subtotal = $json->subtotal;
                     $pedidoVendedor->importe_total = $json->importe_total;
                     $pedidoVendedor->detalle = null;
-                    $pedidoVendedor->condicionpago = 1;
+                    $pedidoVendedor->condicionpago = $json->condicion_pago;
                     $pedidoVendedor->estadopedido = $json->estado_pedido;
                     $pedidoVendedor->cliente_id = $json->cliente_id;
                     $pedidoVendedor->vendedor_id = $json->vendedor_id;
