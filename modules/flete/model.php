@@ -14,6 +14,7 @@ class Flete extends StandardObject {
         $this->latitud = '';
         $this->longitud = '';
 		$this->observacion = '';
+        $this->oculto = 0;
         $this->documentotipo = $documentotipo;
         $this->infocontacto_collection = array();
 	}

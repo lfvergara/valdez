@@ -20,6 +20,7 @@ class EntregaClienteDetalleController {
 		$cobrador_collection = Collector()->get('Cobrador');
 		foreach ($cobrador_collection as $clave=>$valor) {
 			if ($valor->oculto == 1) unset($cobrador_collection[$clave]);
+			if ($valor->vendedor_id == 0) unset($cobrador_collection[$clave]);
 		}
 
 		foreach ($vendedor_collection as $clave=>$valor) {

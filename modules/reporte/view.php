@@ -220,8 +220,7 @@ class ReporteView extends View {
 		print $template;
 	}
 
-	function reportes($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection,
-					  $gasto_collection, $gastocategoria_collection, $productomarca_collection, $proveedor_collection,$user_level,$clientes_collection) {
+	function reportes($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection, $gastocategoria_collection, $productomarca_collection, $proveedor_collection,$user_level,$clientes_collection) {
 		$gui = file_get_contents("static/modules/reporte/reportes.html");
 		$tbl_proveedor = file_get_contents("static/modules/reporte/tbl_proveedor.html");
 		$tbl_productos = file_get_contents("static/modules/reporte/tbl_productos_array.html");
@@ -234,23 +233,16 @@ class ReporteView extends View {
 		$tbl_productomarca_grafico = file_get_contents("static/modules/reporte/tbl_productomarcagrafico.html");
 		$tbl_sum_importe_producto = file_get_contents("static/modules/reporte/tbl_sum_importe_producto.html");
 		$tbl_sum_cantidad_producto = file_get_contents("static/modules/reporte/tbl_sum_cantidad_producto.html");
-		$gui_lbl_piechart_gasto = file_get_contents("static/modules/reporte/lbl_piechart_gasto.html");
-		$gui_valores_piechart_gasto = file_get_contents("static/modules/reporte/valores_piechart_gasto.html");
-
+		
 		$tbl_producto = $this->render_regex_dict('TBL_PRODUCTO', $tbl_producto, $producto_collection);
 		$tbl_productomarca = $this->render_regex('TBL_PRODUCTOMARCA', $tbl_productomarca, $productomarca_collection);
 		$slt_productomarca = $this->render_regex('SLT_PRODUCTOMARCA', $slt_productomarca, $productomarca_collection);
 		$tbl_productomarca_grafico = $this->render_regex('TBL_PRODUCTOMARCAGRAFICO', $tbl_productomarca_grafico, $productomarca_collection);
-		$gui_lbl_piechart_gasto = $this->render_regex_dict('LBL_PIECHART_GASTO', $gui_lbl_piechart_gasto, $gasto_collection);
-		$gui_valores_piechart_gasto = $this->render_regex_dict('VALORES_PIECHART_GASTO', $gui_valores_piechart_gasto, $gasto_collection);
-
+		
 		$tbl_productos = $this->render_regex_dict('TBL_PRODUCTOS', $tbl_productos, $producto_collection);
 		$tbl_productomarcas = $this->render_regex('TBL_PRODUCTOMARCAS', $tbl_productomarcas, $productomarca_collection);
 		$tbl_proveedor = $this->render_regex_dict('TBL_PROVEEDOR', $tbl_proveedor, $proveedor_collection);
 		$tbl_vendedor = $this->render_regex_dict('TBL_VENDEDOR', $tbl_vendedor, $vendedor_collection);
-
-		$gui_lbl_piechart_gasto = str_replace('<!--LBL_PIECHART_GASTO-->', '', $gui_lbl_piechart_gasto);
-		$gui_valores_piechart_gasto = str_replace('<!--VALORES_PIECHART_GASTO-->', '', $gui_valores_piechart_gasto);
 
 		$sum_importe_producto = $this->order_collection_array($sum_importe_producto, 'IMPORTE', SORT_DESC);
 		$sum_cantidad_producto = $this->order_collection_array($sum_cantidad_producto, 'CANTIDAD', SORT_DESC);
@@ -282,12 +274,9 @@ class ReporteView extends View {
 		$usuario_id = $_SESSION["data-login-" . APP_ABREV]["usuario-usuario_id"];
 		if($usuario_id == 13){
 			$display_perfil = '';
-		}else {
+		} else {
 			$display_perfil = ($user_level == 2) ? 'none' : '';
 		}
-
-		$gui_slt_cliente = file_get_contents("static/common/slt_cliente.html");
-		$gui_slt_cliente = $this->render_regex_dict('SLT_CLIENTE', $gui_slt_cliente, $clientes_collection);
 
 		$render = str_replace('{fecha_sys}', date('d/m/Y'), $gui);
 		$render = str_replace('{periodo_actual}', date('Ym'), $render);
@@ -300,41 +289,49 @@ class ReporteView extends View {
 		$render = str_replace('{slt_productomarca}', $slt_productomarca, $render);
 		$render = str_replace('{slt_proveedor}', $gui_slt_proveedor, $render);
 		$render = str_replace('{slt_gastocategoria}', $gui_slt_gastocategoria, $render);
-		$render = str_replace('{lbl_piechart_gasto}', $gui_lbl_piechart_gasto, $render);
-		$render = str_replace('{valores_piechart_gasto}', $gui_valores_piechart_gasto, $render);
 		$render = str_replace('{display_perfil}', $display_perfil, $render);
-		$render = str_replace('{slt_cliente}', $gui_slt_cliente, $render);
 		$render = str_replace('{tbl_vendedor}', $tbl_vendedor, $render);
 		$render = str_replace('{tbl_proveedor}', $tbl_proveedor, $render);
 		$render = str_replace('{slt_vendedor}', $gui_slt_vendedor, $render);
 		$render = str_replace('{tbl_productos}', $tbl_productos, $render);
 		$render = str_replace('{tbl_productomarcas}', $tbl_productomarcas, $render);
-
 		$render = $this->render_breadcrumb($render);
 		$template = $this->render_template($render);
 		print $template;
 	}
 
 	function detalle_facturaproveedor($cuentacorriente_collection, $obj_proveedor) {
-			$gui = file_get_contents("static/modules/reporte/detalle_facturaproveedor.html");
-			$gui_tbl_cuentacorriente = file_get_contents("static/modules/reporte/tbl_cuentacorriente_corto_array.html");
+		$gui = file_get_contents("static/modules/reporte/detalle_facturaproveedor.html");
+		$gui_tbl_cuentacorriente = file_get_contents("static/modules/reporte/tbl_cuentacorriente_corto_array.html");
 
-			unset($obj_proveedor->infocontacto_collection);
+		unset($obj_proveedor->infocontacto_collection);
 
-			$obj_proveedor = $this->set_dict($obj_proveedor);
-			$gui_tbl_cuentacorriente = $this->render_regex_dict('TBL_CUENTACORRIENTE', $gui_tbl_cuentacorriente, $cuentacorriente_collection);
-			$render = str_replace('{tbl_cuentacorriente}', $gui_tbl_cuentacorriente, $gui);
-			$render = $this->render($obj_proveedor, $render);
-			$render = $this->render_breadcrumb($render);
-			$template = $this->render_template($render);
-			print $template;
+		$obj_proveedor = $this->set_dict($obj_proveedor);
+		$gui_tbl_cuentacorriente = $this->render_regex_dict('TBL_CUENTACORRIENTE', $gui_tbl_cuentacorriente, $cuentacorriente_collection);
+		$render = str_replace('{tbl_cuentacorriente}', $gui_tbl_cuentacorriente, $gui);
+		$render = $this->render($obj_proveedor, $render);
+		$render = $this->render_breadcrumb($render);
+		$template = $this->render_template($render);
+		print $template;
+	}
+
+	function post_generar($obj_resultado, $array_titulo, $tipo_grafico) {
+		if ($tipo_grafico == 1) {
+			$gui = file_get_contents("static/modules/reporte/generar_grafico_importe.html");
+			$gui_tbl_cobertura_vendedor_marca = file_get_contents("static/modules/reporte/tbl_cobertura_vendedor_marca_importe.html");
+			$obj_resultado = $this->order_collection_array($obj_resultado, 'IMPORTE', SORT_DESC);
+			$gui_tbl_cobertura_vendedor_marca = $this->render_regex_dict('TBL_COBERTURA_VENDEDOR_MARCA', $gui_tbl_cobertura_vendedor_marca, $obj_resultado);
+		} else {
+			$gui = file_get_contents("static/modules/reporte/generar_grafico_cantidad.html");
+			$gui_tbl_cobertura_vendedor_marca = file_get_contents("static/modules/reporte/tbl_cobertura_vendedor_marca_cantidad.html");
+			$obj_resultado = $this->order_collection_array($obj_resultado, 'CANTIDAD', SORT_DESC);
+			$gui_tbl_cobertura_vendedor_marca = $this->render_regex_dict('TBL_COBERTURA_VENDEDOR_MARCA', $gui_tbl_cobertura_vendedor_marca, $obj_resultado);
 		}
-
-		function post_generar($obj_resultado) {
-			$gui = file_get_contents("static/modules/reporte/generar_grafico.html");
-			$render = $this->render_regex_dict('DATOS_GRAFICO', $gui, $obj_resultado);
-
-	 		print $render;
-		}
+		
+		$render = str_replace('{tbl_cobertura_vendedor_marca}', $gui_tbl_cobertura_vendedor_marca, $gui);
+		$render = $this->render_regex_dict('DATOS_GRAFICO', $render, $obj_resultado);
+		$render = $this->render($array_titulo, $render);
+ 		print $render;
+	}
 }
 ?>

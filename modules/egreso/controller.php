@@ -683,7 +683,8 @@ class EgresoController {
 			$costo_producto = $egreso['costo'];
 			$valor_descuento = $egreso['importe_descuento'];
 			$importe = $egreso['costo_total'];
-
+			$iva = $egreso['iva'];
+			
 			$pm = new Producto();
 			$pm->producto_id = $producto_id;
 			$pm->get();
@@ -691,9 +692,15 @@ class EgresoController {
 			$neto = $pm->costo;
 			$flete = $pm->flete;
 			$porcentaje_ganancia = $pm->porcentaje_ganancia;
-			$valor_neto = $neto + ($flete * $neto / 100);
+			
+			if ($tipofactura == 2) {
+				$valor_neto = $neto + ($iva * $neto / 100);
+				$valor_neto = $valor_neto + ($flete * $valor_neto / 100);
+			} else {
+				$valor_neto = $neto + ($flete * $neto / 100);
+			}
+			
 			$total_neto = $valor_neto * $cantidad;
-
 			$ganancia_temp = $total_neto * ($porcentaje_ganancia / 100 + 1);
 			$ganancia = round(($ganancia_temp - $total_neto),2);
 

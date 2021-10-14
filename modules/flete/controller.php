@@ -3,6 +3,7 @@ require_once "modules/flete/model.php";
 require_once "modules/flete/view.php";
 require_once "modules/documentotipo/model.php";
 require_once "modules/infocontacto/model.php";
+require_once "modules/cobrador/model.php";
 
 
 class FleteController {
@@ -21,7 +22,8 @@ class FleteController {
 		$select = "f.flete_id AS FLETE_ID, f.localidad AS LOCALIDAD, f.denominacion AS DENOMINACION, 
 				   CONCAT(dt.denominacion, ' ', f.documento) AS DOCUMENTO";
 		$from = "flete f INNER JOIN documentotipo dt ON f.documentotipo = dt.documentotipo_id";
-		$flete_collection = CollectorCondition()->get('Flete', NULL, 4, $from, $select);
+		$where = "f.oculto = 0";
+		$flete_collection = CollectorCondition()->get('Flete', $where, 4, $from, $select);
 		$this->view->listar($flete_collection);
 	}
 
@@ -49,14 +51,16 @@ class FleteController {
 	function guardar() {
 		SessionHandler()->check_session();
 
-		$this->model->denominacion = filter_input(INPUT_POST, 'denominacion');	
+		$denominacion = filter_input(INPUT_POST, 'denominacion');	
+		$this->model->denominacion = $denominacion;	
 		$this->model->documento = filter_input(INPUT_POST, 'documento');	
 		$this->model->documentotipo = filter_input(INPUT_POST, 'documentotipo');	
 		$this->model->localidad = filter_input(INPUT_POST, 'localidad');	
 		$this->model->latitud = filter_input(INPUT_POST, 'latitud');	
 		$this->model->longitud = filter_input(INPUT_POST, 'longitud');	
 		$this->model->domicilio = filter_input(INPUT_POST, 'domicilio');	
-		$this->model->observacion = filter_input(INPUT_POST, 'observacion');	
+		$this->model->observacion = filter_input(INPUT_POST, 'observacion');
+		$this->model->oculto = 0;
 		$this->model->save();
 		$flete_id = $this->model->flete_id;
 
@@ -83,6 +87,13 @@ class FleteController {
 			$icfm = new InfoContactoFlete($this->model);
 			$icfm->save();
 		}
+
+		$cm = new Cobrador();
+		$cm->denominacion = $denominacion;
+		$cm->oculto = 0;
+		$cm->vendedor_id = 0;
+		$cm->flete_id = $flete_id;
+		$cm->save();
 	
 		header("Location: " . URL_APP . "/flete/listar");
 	}
@@ -118,6 +129,30 @@ class FleteController {
 			}
 		}
 	
+		header("Location: " . URL_APP . "/flete/listar");
+	}
+
+	function eliminar($arg) {
+		SessionHandler()->check_session();
+		$flete_id = $arg;
+		$this->model->flete_id = $arg;
+		$this->model->get();
+		$this->model->oculto = 1;
+		$this->model->save();
+
+		$select = "c.cobrador_id AS ID";
+		$from = "cobrador c";
+		$where = "c.flete_id = {$flete_id}";
+		$cobrador_id = CollectorCondition()->get('Cobrador', $where, 4, $from, $select);
+		$cobrador_id = (is_array($cobrador_id) AND !empty($cobrador_id)) ? $cobrador_id[0]['ID'] : 0;
+		if ($cobrador_id != 0) {
+			$cm = new Cobrador();
+			$cm->cobrador_id = $cobrador_id;
+			$cm->get();
+			$cm->oculto = 1;
+			$cm->save();
+		}
+		
 		header("Location: " . URL_APP . "/flete/listar");
 	}
 

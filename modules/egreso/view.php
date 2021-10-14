@@ -56,6 +56,7 @@ class EgresoView extends View {
 		$tbl_egreso_array = file_get_contents("static/modules/egreso/tbl_entregaspendientes_array.html");
 		$tbl_egreso_array = $this->render_regex_dict('TBL_EGRESO', $tbl_egreso_array, $egreso_collection);		
 
+		foreach ($flete_collection as $clave=>$valor) if ($valor->oculto == 1) unset($flete_collection[$clave]);
 		foreach ($flete_collection as $flete) unset($flete->infocontacto_collection);
 		$lst_btn_flete = $this->render_regex('LST_FLETE', $lst_btn_flete, $flete_collection);		
 

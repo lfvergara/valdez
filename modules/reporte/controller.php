@@ -687,7 +687,7 @@ class ReporteController {
 		$liquidacion = (is_null($liquidacion)) ? 0 : $liquidacion;
 
 		//DETALLE LIQUIDACIONES
-		$select = "CONCAT(e.apellido, e.nombre) AS EMPLEADO,s.periodo AS DETALLE,ROUND(s.monto, 2) AS IMPORTETOTAL";
+		$select = "CONCAT(e.apellido, e.nombre) AS EMPLEADO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), 'hasta el ', date_format(s.hasta, '%d/%m/%Y')) AS DETALLE, ROUND(s.monto, 2) AS IMPORTETOTAL";
 		$from = "salario s INNER JOIN empleado e on e.empleado_id = s.empleado";
 		$where = "s.fecha = '{$fecha_sys}'";
 		$detalle_liquidacion = CollectorCondition()->get('Salario', $where, 4, $from, $select);
@@ -906,15 +906,6 @@ class ReporteController {
 		$where = "ec.fecha = '{$fecha_filtro}' AND ec.estadocomision IN (2,3) GROUP BY e.vendedor";
 		$detalle_comision = CollectorCondition()->get('EgresoComision', $where, 4, $from, $select);
 
-		// $select = "ROUND(SUM(g.importe), 2) AS IMPORTETOTAL";
-		// $from = "gasto g";
-		// $where = "g.fecha = '{$fecha_filtro}'";
-		// $gasto_diario = CollectorCondition()->get('Gasto', $where, 4, $from, $select);
-		// $gasto_diario = (is_array($gasto_diario)) ? $gasto_diario[0]['IMPORTETOTAL'] : 0;
-		//
-		// //GASTO DIARIO
-		// $gasto_diario = (is_null($gasto_diario)) ? 0 : $gasto_diario;
-
 		//GASTO DIARIO
 		$select = "ROUND(SUM(g.importe), 2) AS IMPORTETOTAL";
 		$from = "gasto g";
@@ -938,7 +929,7 @@ class ReporteController {
 		$liquidacion = (is_null($liquidacion)) ? 0 : $liquidacion;
 
 		//DETALLE LIQUIDACIONES
-		$select = "CONCAT(e.apellido, e.nombre) AS EMPLEADO,s.periodo AS DETALLE,ROUND(s.monto, 2) AS IMPORTETOTAL";
+		$select = "CONCAT(e.apellido, e.nombre) AS EMPLEADO, CONCAT('Desde ', date_format(s.desde, '%d/%m/%Y'), 'hasta el ', date_format(s.hasta, '%d/%m/%Y')) AS DETALLE, ROUND(s.monto, 2) AS IMPORTETOTAL";
 		$from = "salario s INNER JOIN empleado e on e.empleado_id = s.empleado";
 		$where = "s.fecha = '{$fecha_filtro}'";
 		$detalle_liquidacion = CollectorCondition()->get('Salario', $where, 4, $from, $select);
@@ -1291,7 +1282,7 @@ class ReporteController {
 							   '{cajadiaria}'=>$cajadiaria,
 							   '{activo_corriente}'=>$activo_corriente,
 							   '{pasivo_corriente}'=>$pasivo_corriente,
-							   '{ganancia_per_actual}'=>$ganancia_per_actual);
+							   '{ganancia_per_actual}'=>round($ganancia_per_actual,2));
 
 		$select = "SUM(g.importe) AS IMPORTE,gc.denominacion AS GASTOCATEGORIA";
 		$from = "gasto g INNER JOIN gastocategoria gc ON gc.gastocategoria_id = g.gastocategoria INNER JOIN gastosubcategoria gsc ON gsc.gastosubcategoria_id = gc.gastosubcategoria";
@@ -1592,12 +1583,10 @@ class ReporteController {
 							   '{deuda_ccclientes}'=>$estado_cuentacorrientecliente,
 							   '{deuda_ccproveedores}'=>$deuda_cuentacorrienteproveedor,
 							   '{deuda_comisiones}'=>$deuda_comision_total,
-
-
 							   '{cajadiaria}'=>$cajadiaria,
 							   '{activo_corriente}'=>$activo_corriente,
 							   '{pasivo_corriente}'=>$pasivo_corriente,
-							   '{ganancia_per_actual}'=>$ganancia_per_actual);
+							   '{ganancia_per_actual}'=>round($ganancia_per_actual,2));
 
 		$select = "SUM(g.importe) AS IMPORTE,gc.denominacion AS GASTOCATEGORIA";
 		$from = "gasto g INNER JOIN gastocategoria gc ON gc.gastocategoria_id = g.gastocategoria INNER JOIN gastosubcategoria gsc ON gsc.gastosubcategoria_id = gc.gastosubcategoria";
@@ -1674,18 +1663,15 @@ class ReporteController {
 				   ROUND(SUM(ed.cantidad),2) AS CANTIDAD, ed.producto_id AS PRID";
 		$from = "egreso e INNER JOIN egresodetalle ed ON e.egreso_id = ed.egreso_id";
 		$where = "date_format(e.fecha, '%Y%m') = '{$periodo_actual}'";
-
+		
 		$groupby = "ed.producto_id, ed.codigo_producto ORDER BY	ROUND(SUM(ed.importe),2) DESC";
 		$sum_importe_producto = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
-		$sum_importe_producto = (is_array($sum_importe_producto) AND !empty($sum_importe_producto)) ? $sum_importe_producto : array();
 
 		$groupby = "ed.producto_id, ed.codigo_producto ORDER BY	ROUND(SUM(ed.cantidad),2) DESC";
 		$sum_cantidad_producto = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $groupby);
-		$sum_cantidad_producto = (is_array($sum_cantidad_producto) AND !empty($sum_cantidad_producto)) ? $sum_cantidad_producto : array();
 
 		$select = "ROUND(SUM(ncd.importe),2) AS IMPORTE, ROUND(SUM(ncd.cantidad),2) AS CANTIDAD";
 		$from = "notacreditodetalle ncd INNER JOIN notacredito nc ON ncd.notacredito_id = nc.notacredito_id";
-		
 		foreach ($sum_importe_producto as $clave=>$valor) {
 			$tmp_producto_id = $valor["PRID"];
 			$where = "ncd.producto_id = {$tmp_producto_id} AND date_format(nc.fecha, '%Y%m') = '{$periodo_actual}'";
@@ -1721,36 +1707,29 @@ class ReporteController {
 		}
 
 		$select = "v.vendedor_id AS ID, CONCAT(v.apellido, ' ', v.nombre) AS DENOMINACION";
-		$from = "vendedor v ORDER BY CONCAT(v.apellido, ' ', v.nombre) ASC";
-		$vendedor_collection = CollectorCondition()->get('Egreso', NULL, 4, $from, $select);
+		$from = "vendedor v";
+		$where = "v.oculto = 0 ORDER BY CONCAT(v.apellido, ' ', v.nombre) ASC";
+		$vendedor_collection = CollectorCondition()->get('Vendedor', $where, 4, $from, $select);
 
-		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
-				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
-				 productomarca pm ON p.productomarca = pm.productomarca_id";
-		$groupby = "p.producto_id";
-		$producto_collection = CollectorCondition()->get('Producto', NULL, 4, $from, $select, $groupby);
-
-		$gastocategoria_collection = Collector()->get('GastoCategoria');
-		$select = "gc.denominacion AS DENOMINACION, SUM(g.importe) AS IMPORTE";
-		$from = "gasto g INNER JOIN	gastocategoria gc ON g.gastocategoria = gc.gastocategoria_id";
-		$where = "date_format(g.fecha, '%Y%m') = '{$periodo_actual}'";
-		$group_by = "gc.gastocategoria_id";
-		$gasto_collection = CollectorCondition()->get('Gasto', $where, 4, $from, $select, $group_by);
-
+		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, pc.denominacion AS CATEGORIA, p.codigo AS CODIGO";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id";
+		$where = "p.oculto = 0";
+		$groupby = "p.producto_id ORDER BY CONCAT(pm.denominacion, ' ', p.denominacion) ASC";
+		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select, $groupby);
 		$productomarca_collection = Collector()->get('ProductoMarca');
+		$gastocategoria_collection = Collector()->get('GastoCategoria');
 
 		$select = "p.proveedor_id AS ID, p.razon_social AS DENOMINACION";
-		$from = "proveedor p ORDER BY p.razon_social ASC";
-		$proveedor_collection = CollectorCondition()->get('Proveedor', NULL, 4, $from, $select);
+		$from = "proveedor p";
+		$where = "p.oculto = 0 ORDER BY p.razon_social ASC";
+		$proveedor_collection = CollectorCondition()->get('Proveedor', $where, 4, $from, $select);
 
 		$select = "cl.cliente_id AS ID,cl.razon_social AS RAZON_SOCIAL, cl.nombre_fantasia AS NOMBRE_FANTASIA";
 		$from = "cliente cl";
-		$where = "cl.oculto = 0";
+		$where = "cl.oculto = 0 ORDER BY c.razon_social ASC";
 		$clientes_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
 
-		$this->view->reportes($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection,
-							  $gasto_collection, $gastocategoria_collection, $productomarca_collection, $proveedor_collection,$user_level,$clientes_collection);
+		$this->view->reportes($sum_importe_producto, $sum_cantidad_producto, $vendedor_collection, $producto_collection, $gastocategoria_collection, $productomarca_collection, $proveedor_collection,$user_level,$clientes_collection);
 	}
 
 	function calcula_cajadiaria() {
@@ -1958,7 +1937,6 @@ class ReporteController {
 
 	function post_descarga() {
 		SessionHandler()->check_session();
-		//require_once "tools/excelreport.php";
 		require_once "tools/excelreport_tipo2.php";
 
 		$fecha_sys = strtotime(date('Y-m-d'));
@@ -2112,7 +2090,7 @@ class ReporteController {
 					$datos_reporte = CollectorCondition()->get('Egreso', $where, 4, $from, $select, $group_by);
 
 					$subtitulo = "VENDEDOR: {$razon_social} - DESDE: {$desde}   HASTA {$hasta}";
-					$array_encabezados = array('CLIENTE', 'CANTIDAD VENTAS','','','','');
+					$array_encabezados = array('CLIENTE', 'CANTIDAD VENTAS','','','');
 					$array_exportacion = array();
 					$array_exportacion[] = $array_encabezados;
 					foreach ($datos_reporte as $clave=>$valor) {
@@ -2120,7 +2098,6 @@ class ReporteController {
 						$array_temp = array(
 									  $valor["CLIENTE"]
 									, $valor["CANT"]
-									, ''
 									, ''
 									, ''
 									, '');
@@ -2278,7 +2255,7 @@ class ReporteController {
 				$datos_reporte = CollectorCondition()->get('EgresoDetalle', $where, 4, $from, $select);
 
 				$subtitulo = "GASTOS POR RANGO DE FECHA Y CATEGORÍA";
-				$array_encabezados = array('FECHA', 'CATEGORÍA', 'DETALLE', 'IMPORTE');
+				$array_encabezados = array('FECHA', 'CATEGORÍA', 'DETALLE', 'IMPORTE', '');
 				$array_exportacion = array();
 				$array_exportacion[] = $array_encabezados;
 				$sum_importe = 0;
@@ -2289,7 +2266,8 @@ class ReporteController {
 								  $valor["FECHA"]
 								, $valor["DENOMINACION"]
 								, $valor["DETALLE"]
-								, $valor["IMPORTE"]);
+								, $valor["IMPORTE"],
+								, '');
 					$array_exportacion[] = $array_temp;
 				}
 
@@ -2398,8 +2376,8 @@ class ReporteController {
 							foreach ($datos_reporte as $c=>$v) {
 								$producto_id = $v["PRID"];
 								if ($producto_id == $tmp_producto_id) {
-									$datos_reporte[$clave]['TOTIMPO'] = $datos_reporte[$clave]['TOTIMPO'] - $datos_notacredito[0]['IMPORTE'];
-									$datos_reporte[$clave]['TOTCANT'] = $datos_reporte[$clave]['TOTCANT'] - $datos_notacredito[0]['CANTIDAD'];
+									$datos_reporte[$c]['TOTIMPO'] = $datos_reporte[$c]['TOTIMPO'] - $datos_notacredito[0]['IMPORTE'];
+									$datos_reporte[$c]['TOTCANT'] = $datos_reporte[$c]['TOTCANT'] - $datos_notacredito[0]['CANTIDAD'];
 
 								}
 							}
@@ -2517,7 +2495,7 @@ class ReporteController {
 			} else {
 				$select = "cl.cliente_id AS ID,cl.razon_social AS RAZON_SOCIAL, cl.nombre_fantasia AS NOMBRE_FANTASIA, cl.documento AS DOCUMENTO,p.denominacion AS PROVINCIA";
 				$from = "cliente cl INNER JOIN provincia p ON cl.provincia = p.provincia_id";
-				$where = "cl.cliente_id = {$cliente} ND cl.oculto = 0";
+				$where = "cl.cliente_id = {$cliente} AND cl.oculto = 0";
 				$clientes_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
 				$newArray = $clientes_collection;
 			}
@@ -2540,103 +2518,100 @@ class ReporteController {
 
 	function post_generar($arg){
 		SessionHandler()->check_session();
-			//PARAMETROS
-			$var = explode("@", $arg);
+		//PARAMETROS
+		$var = explode("@", $arg);
+		$desde = $var[0];
+		$hasta = $var[1];
+		$vendedor_id = $var[2];
+		$tipo_grafico = $var[3];
+		$marca_ids = $var[4];
 
-			$desde = $var[0];
-			$hasta = $var[1];
-			$vendedor_id = $var[2];
-			$marca_ids = $var[3];
-			// $marca_ids = implode(',', $marca_ids);
+		$pmm = new ProductoMarca();
+		$pmm->productomarca_id = $marca_ids;
+		$pmm->get();
+		$marca = $pmm->denominacion;
+		
+		$select = "CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0)) ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA, c.razon_social AS CLIENTE, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ed.cantidad AS CANTIDAD, pm.denominacion AS MARCA, ed.producto_id AS PRID, ed.egreso_id AS EGRID, ed.descuento AS DESCUENTO, ed.importe AS IMPORTE, date_format(e.fecha, '%d/%m/%Y') AS FECHA, ed.descripcion_producto AS PRODUCTO";
+		$from = "egresodetalle ed INNER JOIN egreso e ON ed.egreso_id = e.egreso_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN cliente c ON e.cliente = c.cliente_id INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		$where_vendedor_all = "pm.productomarca_id IN ({$marca_ids}) AND e.fecha BETWEEN '{$desde}' AND '{$hasta}' ORDER BY v.vendedor_id DESC, pm.productomarca_id DESC";
+		$where_vendedor = "pm.productomarca_id IN ({$marca_ids}) AND e.vendedor = {$vendedor_id} AND e.fecha BETWEEN '{$desde}' AND '{$hasta}' ORDER BY v.vendedor_id DESC, pm.productomarca_id DESC";
+		$where = ($vendedor_id == 'all') ? $where_vendedor_all : $where_vendedor;
+		$datos_reporte = CollectorCondition()->get('EgresoDetalle', $where, 4, $from, $select);
+		$array_titulo = array('{fecha_desde}'=>$desde, '{fecha_hasta}'=>$hasta, '{marca}'=>$marca);
 
-			$select = "CASE WHEN eafip.egresoafip_id IS NULL THEN CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE e.tipofactura = tf.tipofactura_id), ' ', LPAD(e.punto_venta, 4, 0), '-', LPAD(e.numero_factura, 8, 0))
-						 ELSE CONCAT((SELECT tf.nomenclatura FROM tipofactura tf WHERE eafip.tipofactura = tf.tipofactura_id), ' ', LPAD(eafip.punto_venta, 4, 0), '-', LPAD(eafip.numero_factura, 8, 0)) END AS FACTURA,
-						 c.razon_social AS CLIENTE, CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, ed.cantidad AS CANTIDAD, pm.denominacion AS MARCA, ed.producto_id AS PRID, ed.egreso_id AS EGRID,
-						 ed.descuento AS DESCUENTO, ed.importe AS IMPORTE, date_format(e.fecha, '%d/%m/%Y') AS FECHA, ed.descripcion_producto AS PRODUCTO";
-			$from = "egresodetalle ed INNER JOIN egreso e ON ed.egreso_id = e.egreso_id INNER JOIN vendedor v ON e.vendedor = v.vendedor_id INNER JOIN
-					 cliente c ON e.cliente = c.cliente_id INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN
-					 productomarca pm ON p.productomarca = pm.productomarca_id LEFT JOIN egresoafip eafip ON e.egreso_id = eafip.egreso_id";
+		if (is_array($datos_reporte)) {
+			foreach ($datos_reporte as $clave=>$valor) {
+				$tmp_producto_id = $valor["PRID"];
+				$tmp_egreso_id = $valor["EGRID"];
+				$select = "ncd.cantidad AS CANTIDAD, ncd.importe AS IMPORTE";
+				$from = "notacreditodetalle ncd";
+				$where = "ncd.producto_id = {$tmp_producto_id} AND ncd.egreso_id = {$tmp_egreso_id}";
+				$datos_notacredito = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
 
-			$where_vendedor_all = "pm.productomarca_id IN ({$marca_ids}) AND e.fecha BETWEEN '{$desde}' AND '{$hasta}' ORDER BY v.vendedor_id DESC,pm.productomarca_id DESC";
-			$where_vendedor = "pm.productomarca_id IN ({$marca_ids}) AND e.vendedor = {$vendedor_id} AND e.fecha BETWEEN '{$desde}' AND '{$hasta}' ORDER BY v.vendedor_id DESC,pm.productomarca_id DESC";
-			$where = ($vendedor_id == 'all') ? $where_vendedor_all : $where_vendedor;
-			$datos_reporte = CollectorCondition()->get('EgresoDetalle', $where, 4, $from, $select);
-
-			if (is_array($datos_reporte)) {
-
-				foreach ($datos_reporte as $clave=>$valor) {
-					$tmp_producto_id = $valor["PRID"];
-					$tmp_egreso_id = $valor["EGRID"];
-					$select = "ncd.cantidad AS CANTIDAD, ncd.importe AS IMPORTE";
-					$from = "notacreditodetalle ncd";
-					$where = "ncd.producto_id = {$tmp_producto_id} AND ncd.egreso_id = {$tmp_egreso_id}";
-					$datos_notacredito = CollectorCondition()->get('NotaCreditoDetalle', $where, 4, $from, $select);
-
-					if (is_array($datos_notacredito) AND !empty($datos_notacredito)) {
-						$datos_reporte[$clave]['NC_IMPORTE'] = $datos_notacredito[0]['IMPORTE'];
-						$datos_reporte[$clave]['NC_CANTIDAD'] = $datos_notacredito[0]['CANTIDAD'];
-					} else {
-						$datos_reporte[$clave]['NC_IMPORTE'] = 0;
-						$datos_reporte[$clave]['NC_CANTIDAD'] = 0;
-					}
+				if (is_array($datos_notacredito) AND !empty($datos_notacredito)) {
+					$datos_reporte[$clave]['NC_IMPORTE'] = $datos_notacredito[0]['IMPORTE'];
+					$datos_reporte[$clave]['NC_CANTIDAD'] = $datos_notacredito[0]['CANTIDAD'];
+				} else {
+					$datos_reporte[$clave]['NC_IMPORTE'] = 0;
+					$datos_reporte[$clave]['NC_CANTIDAD'] = 0;
 				}
-
-				$array_exportacion = array();
-				$sum_importe = 0;
-				foreach ($datos_reporte as $clave=>$valor) {
-					$temp_importe = 0;
-					$temp_importe = $valor["IMPORTE"] - $valor["NC_IMPORTE"];
-					$sum_importe = $sum_importe + $temp_importe;
-					$array_temp = array();
-					$array_temp = array(
-						'VENDEDOR' => $valor["VENDEDOR"]
-						,'MARCA' => $valor["MARCA"]
-						,'CANTIDAD' => $valor["CANTIDAD"] - $valor["NC_CANTIDAD"]
-						,'IMPORTE' => $temp_importe);
-						$array_exportacion[] = $array_temp;
-					}
-
-					$array_temp = array();
-					if ($vendedor_id == 'all') {
-						foreach ($array_exportacion as $key => $value) {
-							if (array_search($value['VENDEDOR'], array_column($array_temp, 'VENDEDOR')) === FALSE) {
-								$array_temp[] = array('VENDEDOR' => $value['VENDEDOR']
-								,'MARCA' => $value['MARCA']
-								,'CANTIDAD' => $value['CANTIDAD']
-								,'IMPORTE' => $value['IMPORTE']);
-							} else {
-								$key = array_search($value['VENDEDOR'], array_column($array_temp, 'VENDEDOR'));
-								if ($array_temp[$key]['MARCA'] == $value['MARCA']) {
-									$array_temp[$key]['IMPORTE'] = $value['IMPORTE'] + $array_temp[$key]['IMPORTE'];
-									$array_temp[$key]['CANTIDAD'] = $value['CANTIDAD'] + $array_temp[$key]['CANTIDAD'];
-								} else {
-									$array_temp[] = array('VENDEDOR' => $value['VENDEDOR']
-									,'MARCA' => $value['MARCA']
-									,'CANTIDAD' => $value['CANTIDAD']
-									,'IMPORTE' => $value['IMPORTE']);
-								}
-							}
-						}
-					} else {
-						foreach ($array_exportacion as $key => $value) {
-							if (array_search($value['MARCA'], array_column($array_temp, 'MARCA')) === FALSE) {
-								$array_temp[] = array('VENDEDOR' => $value['VENDEDOR']
-								,'MARCA' => $value['MARCA']
-								,'CANTIDAD' => $value['CANTIDAD']
-								,'IMPORTE' => $value['IMPORTE']);
-							} else {
-								$key = array_search($value['MARCA'], array_column($array_temp, 'MARCA'));
-								$array_temp[$key]['IMPORTE'] = $value['IMPORTE'] + $array_temp[$key]['IMPORTE'];
-								$array_temp[$key]['CANTIDAD'] = $value['CANTIDAD'] + $array_temp[$key]['CANTIDAD'];
-							}
-						}
-					}
-			} else {
-				$array_temp = array();
 			}
 
-			$this->view->post_generar($array_temp);
+			$array_exportacion = array();
+			$sum_importe = 0;
+			foreach ($datos_reporte as $clave=>$valor) {
+				$temp_importe = 0;
+				$temp_importe = $valor["IMPORTE"] - $valor["NC_IMPORTE"];
+				$sum_importe = $sum_importe + $temp_importe;
+				$array_temp = array();
+				$array_temp = array(
+					'VENDEDOR' => $valor["VENDEDOR"]
+					,'MARCA' => $valor["MARCA"]
+					,'CANTIDAD' => $valor["CANTIDAD"] - $valor["NC_CANTIDAD"]
+					,'IMPORTE' => $temp_importe);
+					$array_exportacion[] = $array_temp;
+				}
 
+				$array_temp = array();
+				if ($vendedor_id == 'all') {
+					foreach ($array_exportacion as $key => $value) {
+						if (array_search($value['VENDEDOR'], array_column($array_temp, 'VENDEDOR')) === FALSE) {
+							$array_temp[] = array('VENDEDOR' => $value['VENDEDOR']
+							,'MARCA' => $value['MARCA']
+							,'CANTIDAD' => $value['CANTIDAD']
+							,'IMPORTE' => $value['IMPORTE']);
+						} else {
+							$key = array_search($value['VENDEDOR'], array_column($array_temp, 'VENDEDOR'));
+							if ($array_temp[$key]['MARCA'] == $value['MARCA']) {
+								$array_temp[$key]['IMPORTE'] = $value['IMPORTE'] + $array_temp[$key]['IMPORTE'];
+								$array_temp[$key]['CANTIDAD'] = $value['CANTIDAD'] + $array_temp[$key]['CANTIDAD'];
+							} else {
+								$array_temp[] = array('VENDEDOR' => $value['VENDEDOR']
+								,'MARCA' => $value['MARCA']
+								,'CANTIDAD' => $value['CANTIDAD']
+								,'IMPORTE' => $value['IMPORTE']);
+							}
+						}
+					}
+				} else {
+					foreach ($array_exportacion as $key => $value) {
+						if (array_search($value['MARCA'], array_column($array_temp, 'MARCA')) === FALSE) {
+							$array_temp[] = array('VENDEDOR' => $value['VENDEDOR']
+							,'MARCA' => $value['MARCA']
+							,'CANTIDAD' => $value['CANTIDAD']
+							,'IMPORTE' => $value['IMPORTE']);
+						} else {
+							$key = array_search($value['MARCA'], array_column($array_temp, 'MARCA'));
+							$array_temp[$key]['IMPORTE'] = $value['IMPORTE'] + $array_temp[$key]['IMPORTE'];
+							$array_temp[$key]['CANTIDAD'] = $value['CANTIDAD'] + $array_temp[$key]['CANTIDAD'];
+						}
+					}
+				}
+		} else {
+			$array_temp = array();
+		}
+
+		$this->view->post_generar($array_temp, $array_titulo, $tipo_grafico);
 	}
 
 	function reporte_balance_producto() {

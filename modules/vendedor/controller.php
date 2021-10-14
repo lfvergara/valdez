@@ -12,6 +12,7 @@ require_once "modules/notacredito/model.php";
 require_once "modules/empleado/model.php";
 require_once "modules/vendedorempleado/model.php";
 require_once "modules/salario/model.php";
+require_once "modules/cobrador/model.php";
 require_once "tools/pagoComisionPDFTool.php";
 require_once "tools/visitaClientesPDFTool.php";
 
@@ -764,6 +765,13 @@ class VendedorController {
 		$vem->empleado_id = $empleado_id;
 		$vem->save();
 
+		$cm = new Cobrador();
+		$cm->denominacion = "{$apellido} {$nombre}";
+		$cm->oculto = 0;
+		$cm->vendedor_id = $vendedor_id;
+		$cm->flete_id = 0;
+		$cm->save();
+
 		header("Location: " . URL_APP . "/vendedor/listar");
 	}
 
@@ -802,6 +810,30 @@ class VendedorController {
 			}
 		}
 
+		header("Location: " . URL_APP . "/vendedor/listar");
+	}
+
+	function eliminar($arg) {
+		SessionHandler()->check_session();
+		$vendedor_id = $arg;
+		$this->model->vendedor_id = $arg;
+		$this->model->get();
+		$this->model->oculto = 1;
+		$this->model->save();
+
+		$select = "c.cobrador_id AS ID";
+		$from = "cobrador c";
+		$where = "c.vendedor_id = {$vendedor_id}";
+		$cobrador_id = CollectorCondition()->get('Cobrador', $where, 4, $from, $select);
+		$cobrador_id = (is_array($cobrador_id) AND !empty($cobrador_id)) ? $cobrador_id[0]['ID'] : 0;
+		if ($cobrador_id != 0) {
+			$cm = new Cobrador();
+			$cm->cobrador_id = $cobrador_id;
+			$cm->get();
+			$cm->oculto = 1;
+			$cm->save();
+		}
+		
 		header("Location: " . URL_APP . "/vendedor/listar");
 	}
 
@@ -877,16 +909,17 @@ class VendedorController {
 		$fvm->get();
 		$frecuencia_denominacion = $fvm->dia_1 . "/" . $fvm->dia_2;
 
-		$select = "LPAD(c.cliente_id, 5, 0) AS CODCLI, c.razon_social AS CLIENTE, c.nombre_fantasia AS FANTASIA, c.domicilio AS DOMICILIO, c.localidad AS BARRIO,
-				   CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO, cf.denominacion AS CONDICION, tf.nomenclatura AS TIPOFAC";
-		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id INNER JOIN condicionfiscal cf ON c.condicionfiscal = cf.condicionfiscal_id INNER JOIN
-				 tipofactura tf ON c.tipofactura = tf.tipofactura_id";
+		$select = "LPAD(c.cliente_id, 5, 0) AS CODCLI, c.razon_social AS CLIENTE, c.nombre_fantasia AS FANTASIA, c.domicilio AS DOMICILIO, c.localidad AS BARRIO, CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO, cf.denominacion AS CONDICION, tf.nomenclatura AS TIPOFAC, (SELECT valor FROM infocontacto ic INNER JOIN infocontactocliente icc ON ic.infocontacto_id = icc.compositor WHERE icc.compuesto = c.cliente_id AND ic.denominacion = 'Teléfono') AS TEL, f.denominacion AS FLETE";
+		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id INNER JOIN condicionfiscal cf ON c.condicionfiscal = cf.condicionfiscal_id INNER JOIN tipofactura tf ON c.tipofactura = tf.tipofactura_id INNER JOIN flete f ON c.flete = f.flete_id";
 		$where = "c.vendedor = {$vendedor_id} AND c.frecuenciaventa = {$frecuenciaventa_id} AND c.oculto = 0";
 		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
 		$cliente_collection = (!is_array($cliente_collection)) ? array() : $cliente_collection;
 
+		//$visitaClientesVendedorPDFTool = new visitaClientesVendedorPDF();
+		//$visitaClientesVendedorPDFTool->descarga_visita_clientes_vendedor($cliente_collection, $this->model);
+
 		$subtitulo = "{$vendedor_denominacion} - {$frecuencia_denominacion}";
-		$array_encabezados = array('COD', 'CLIENTE', 'NOM FANTASIA', 'DOCUMENTO', 'CONDICION', 'BARRIO', 'DOMICILIO');
+		$array_encabezados = array('COD', 'CLIENTE', 'NOM FANTASIA', 'DOCUMENTO', 'CONDICION', 'BARRIO', 'DOMICILIO', 'TELEFONO', 'FLETE');
 		$array_exportacion = array();
 		$array_exportacion[] = $array_encabezados;
 		foreach ($cliente_collection as $clave=>$valor) {
@@ -898,12 +931,13 @@ class VendedorController {
 						, $valor["DOCUMENTO"]
 						, $valor["TIPOFAC"]
 						, $valor["BARRIO"]
-						, $valor["DOMICILIO"]);
+						, $valor["DOMICILIO"]
+						, $valor["TEL"]
+						, $valor["FLETE"]);
 			$array_exportacion[] = $array_temp;
 		}
 
 		ExcelReport()->extraer_informe_conjunto($subtitulo, $array_exportacion);
-
 	}
 
 	function verifica_documento_ajax($arg) {

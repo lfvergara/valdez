@@ -377,6 +377,7 @@ class HojaRutaController {
 		$cobrador_collection = Collector()->get('Cobrador');
 		foreach ($cobrador_collection as $clave=>$valor) {
 			if ($valor->oculto == 1) unset($cobrador_collection[$clave]);
+			if ($valor->flete_id == 0) unset($cobrador_collection[$clave]);
 		}
 
 		$this->view->entregas($array_formulario, $this->model,$flete,$cobrador_collection,$monto_total);
