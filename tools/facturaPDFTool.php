@@ -12,6 +12,18 @@ class FacturaPDF extends View {
         unset($obj_egreso->cliente, $obj_egreso->vendedor, $obj_cliente->infocontacto_collection,
               $obj_cliente->vendedor->infocontacto_collection, $obj_egreso->egresocomision, $obj_egreso->egresoentrega);
 
+        $array_qr = array('fecha_venta'=>$obj_egreso->fecha,
+                          'cuit'=>$obj_configuracion->cuit, 
+                          'pto_venta'=>$obj_egreso->punto_venta, 
+                          'tipofactura'=>$obj_egreso->tipofactura->afip_id, 
+                          'numero_factura'=>$obj_egreso->numero_factura, 
+                          'total'=>$obj_egreso->subtotal, 
+                          'cliente_tipo_doc'=>$obj_cliente->documentotipo->afip_id, 
+                          'cliente_nro_doc'=>$obj_cliente->documento, 
+                          'cae'=>$obj_egreso->cae);
+
+        $cod_qr = $this->qrAFIP($array_qr);
+
         $obj_egreso->punto_venta = str_pad($obj_egreso->punto_venta, 4, '0', STR_PAD_LEFT);
         $obj_egreso->numero_factura = str_pad($obj_egreso->numero_factura, 8, '0', STR_PAD_LEFT);
         $egreso_id = $obj_egreso->egreso_id;
@@ -93,6 +105,18 @@ class FacturaPDF extends View {
         unset($obj_egreso->cliente, $obj_egreso->vendedor, $obj_cliente->infocontacto_collection,
               $obj_cliente->vendedor->infocontacto_collection, $obj_egreso->egresocomision, $obj_egreso->egresoentrega);
 
+        $array_qr = array('fecha_venta'=>$obj_egreso->fecha,
+                          'cuit'=>$obj_configuracion->cuit, 
+                          'pto_venta'=>$obj_egreso->punto_venta, 
+                          'tipofactura'=>$obj_egreso->tipofactura->afip_id, 
+                          'numero_factura'=>$obj_egreso->numero_factura, 
+                          'total'=>$obj_egreso->subtotal, 
+                          'cliente_tipo_doc'=>$obj_cliente->documentotipo->afip_id, 
+                          'cliente_nro_doc'=>$obj_cliente->documento, 
+                          'cae'=>$obj_egreso->cae);
+
+        $cod_qr = $this->qrAFIP($array_qr);
+
 	    $condicionfiscal_id = $obj_cliente->condicionfiscal->condicionfiscal_id;
 	    $condicioniva_id = $obj_cliente->condicioniva->condicioniva_id;
 
@@ -105,8 +129,6 @@ class FacturaPDF extends View {
         $suma_alicuota_iva = 0;
         $descuento_por_producto = 0;
         foreach ($egresodetalle_collection as $clave=>$valor) {
-            // $importe_total = $importe_total + $valor['IMPORTE'];
-            // $descuento_por_producto = $descuento_por_producto + $valor["VD"];
 
             $importe_total = $importe_total + $valor['IMPORTE'];
             $alicuota = (100 + $valor['IVA']) / 100;
@@ -114,8 +136,6 @@ class FacturaPDF extends View {
             $valor_alicuota_importe = round(($valor['IMPORTE'] - $subtotal),2);
 
             $valor_alicuota_costo = round($valor['COSTO'] / $alicuota, 2);
-            // $importe_neto = round($valor['COSTO'] - $valor_alicuota_costo);
-            //$importe_neto = round(($valor_alicuota_costo - $importe_neto),2);
 	        $iva = round(($valor['IVA'] * $valor['NETPRO'] / 100), 2);
             $importe_neto = round(($valor['NETPRO'] + $iva), 2);
 
@@ -127,10 +147,6 @@ class FacturaPDF extends View {
             $descuento_por_producto = $descuento_por_producto + $valor["VD"];
             $suma_alicuota_iva = $suma_alicuota_iva + $valor_alicuota_importe;
         }
-
-        // $descuento_por_factura = $obj_egreso->descuento * $importe_total / 100;
-        // $obj_egreso->valor_descuento_total = round(($descuento_por_producto + $descuento_por_factura),2);
-        // $obj_egreso->subtotal = round($obj_egreso->subtotal - $obj_egreso->valor_descuento_total,2);
 
         $descuento_por_factura = $obj_egreso->descuento * $importe_total / 100;
         $obj_egreso->valor_descuento_total = round(($descuento_por_producto + $descuento_por_factura),2);
@@ -365,6 +381,41 @@ class FacturaPDF extends View {
         $dompdf->render();
         $dompdf->stream("{$nombre_PDF}.pdf");
         exit;
+    }
+
+    function qrAFIP($array_qr) {
+        require_once 'vendor/autoload.php';
+        $datos_cmp_base_64 = json_encode([
+            "ver" => 1,
+            "fecha" => substr($array_qr['fecha_venta'], 0, 10),
+            "cuit" => (int) $array_qr['cuit'],
+            "ptoVta" => (int) $array_qr['pto_venta'],
+            "tipoCmp" => (int) $array_qr['tipofactura'],
+            "nroCmp" => (int) $array_qr['numero_factura'],
+            "importe" => (float) $array_qr['total'],
+            "moneda" => "PES",
+            "ctz" => (float) 1,
+            "tipoDocRec" => (int) $array_qr['cliente_tipo_doc'],
+            "nroDocRec" => (int) $array_qr['cliente_nro_doc'],
+            "tipoCodAut" => "E",
+            "codAut" => (int) $array_qr['cae']
+        ]);
+        
+        $datos_cmp_base_64 = base64_encode($datos_cmp_base_64);
+        $url = 'https://www.afip.gob.ar/fe/qr/';
+        $to_qr = $url.'?p='.$datos_cmp_base_64;
+
+        $barcode = new \Com\Tecnick\Barcode\Barcode();
+        $bobj = $barcode->getBarcodeObj(
+                'QRCODE,H',
+                $to_qr,
+                -4,
+                -4,
+                'black',
+                array(-2, -2, -2, -2)
+            )->setBackgroundColor('white');
+        $qr_div = base64_encode($bobj->getPngData());
+        return $qr_div;
     }
 }
 ?>
