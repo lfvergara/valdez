@@ -14,7 +14,6 @@ class ReporteView extends View {
 	function panel($stock_collection, $array_totales, $sum_importe_producto, $sum_cantidad_producto, $sum_semestre_cuentas,
 				   $vendedor_collection, $gasto_collection, $cuentacorrienteproveedor_collection) {
 		$gui = file_get_contents("static/modules/reporte/panel.html");
-		//$tbl_stock = file_get_contents("static/modules/reporte/tbl_stock_minimo.html");
 		$tbl_cuentacorrienteproveedor = file_get_contents("static/modules/reporte/tbl_cuentacorrienteproveedor.html");
 		$tbl_sum_importe_producto = file_get_contents("static/modules/reporte/tbl_sum_importe_producto.html");
 		$tbl_sum_cantidad_producto = file_get_contents("static/modules/reporte/tbl_sum_cantidad_producto.html");
@@ -26,7 +25,6 @@ class ReporteView extends View {
 		$gui_valores_piechart_gasto = file_get_contents("static/modules/reporte/valores_piechart_gasto.html");
 
 		$gui_slt_vendedor = $this->render_regex_dict('SLT_VENDEDOR', $gui_slt_vendedor, $vendedor_collection);
-		//$tbl_stock = $this->render_regex('TBL_STOCK', $tbl_stock, $stock_collection);
 		$tbl_cuentacorrienteproveedor = $this->render_regex_dict('TBL_CUENTACORRIENTEPROVEEDOR', $tbl_cuentacorrienteproveedor, $cuentacorrienteproveedor_collection);
 		$gui_lbl_piechart_gasto = $this->render_regex_dict('LBL_PIECHART_GASTO', $gui_lbl_piechart_gasto, $gasto_collection);
 		$gui_valores_piechart_gasto = $this->render_regex_dict('VALORES_PIECHART_GASTO', $gui_valores_piechart_gasto, $gasto_collection);
