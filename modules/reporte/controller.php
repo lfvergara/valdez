@@ -2266,7 +2266,7 @@ class ReporteController {
 								  $valor["FECHA"]
 								, $valor["DENOMINACION"]
 								, $valor["DETALLE"]
-								, $valor["IMPORTE"],
+								, $valor["IMPORTE"]
 								, '');
 					$array_exportacion[] = $array_temp;
 				}
