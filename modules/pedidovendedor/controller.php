@@ -38,25 +38,15 @@ class PedidoVendedorController {
 		$usuariovendedor_id = CollectorCondition()->get('UsuarioVendedor', $where, 4, $from, $select);
 
     	$dia_actual = date('Y-m-d');
-    	$select = "pv.pedidovendedor_id AS PEDVENID, CONCAT(date_format(pv.fecha, '%d/%m/%Y'), ' ', LEFT(pv.hora,5)) AS FECHA,
-    			   UPPER(cl.razon_social) AS CLIENTE, UPPER(cl.nombre_fantasia) AS FANTASIA, pv.subtotal AS SUBTOTAL,
-    			   pv.importe_total AS IMPORTETOTAL, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR,
-    			   CASE pv.estadopedido WHEN 1 THEN 'inline-block' WHEN 2 THEN 'none' WHEN 3 THEN 'none' END AS DSPBTN,
-    			   CASE pv.estadopedido WHEN 1 THEN 'SOLICITADO' WHEN 2 THEN 'PROCESADO' WHEN 3 THEN 'CANCELADO' END AS LBLEST,
-    			   CASE pv.estadopedido WHEN 1 THEN 'primary' WHEN 2 THEN 'success' WHEN 3 THEN 'danger' END AS CLAEST,
-    			   LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED, cl.cliente_id AS CLIID";
+    	$select = "pv.pedidovendedor_id AS PEDVENID, CONCAT(date_format(pv.fecha, '%d/%m/%Y'), ' ', LEFT(pv.hora,5)) AS FECHA, UPPER(cl.razon_social) AS CLIENTE, UPPER(cl.nombre_fantasia) AS FANTASIA, pv.subtotal AS SUBTOTAL, pv.importe_total AS IMPORTETOTAL, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, CASE pv.estadopedido WHEN 1 THEN 'inline-block' WHEN 2 THEN 'none' WHEN 3 THEN 'none' END AS DSPBTN, CASE pv.estadopedido WHEN 1 THEN 'SOLICITADO' WHEN 2 THEN 'PROCESADO' WHEN 3 THEN 'CANCELADO' END AS LBLEST, CASE pv.estadopedido WHEN 1 THEN 'primary' WHEN 2 THEN 'success' WHEN 3 THEN 'danger' END AS CLAEST, LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED, cl.cliente_id AS CLIID";
 
 		if ($usuario_rol == 5) {
 			$vendedor_id = $usuariovendedor_id[0]['VENID'];
-			$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN
-					 vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN
-					 estadopedido ep ON pv.estadopedido = ep.estadopedido_id";
+			$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN estadopedido ep ON pv.estadopedido = ep.estadopedido_id";
 			$where = "pv.vendedor_id = {$vendedor_id} ORDER BY cl.razon_social ASC";
 			$pedidovendedor_collection = CollectorCondition()->get('PedidoVendedor', $where, 4, $from, $select);
 		} else {
-			$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN
-					 vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN
-					 estadopedido ep ON pv.estadopedido = ep.estadopedido_id ORDER BY CONCAT(ve.APELLIDO, ' ', ve.nombre) DESC";
+			$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN estadopedido ep ON pv.estadopedido = ep.estadopedido_id ORDER BY CONCAT(ve.APELLIDO, ' ', ve.nombre) DESC";
 			$pedidovendedor_collection = CollectorCondition()->get('PedidoVendedor', NULL, 4, $from, $select);
 		}
 
@@ -86,9 +76,10 @@ class PedidoVendedorController {
 		}		
 
 		$select = "v.vendedor_id AS ID, CONCAT(v.apellido, ' ', v.nombre) AS DENOMINACION";
-		$from = "vendedor v ORDER BY CONCAT(v.apellido, ' ', v.nombre) ASC";
-		$vendedor_collection = CollectorCondition()->get('Vendedor', NULL, 4, $from, $select);
-		$this->view->panel($pedidovendedor_collection, $vendedor_collection);
+		$from = "vendedor v";
+		$where = "v.oculto = 0 ORDER BY CONCAT(v.apellido, ' ', v.nombre) ASC";
+		$vendedor_collection = CollectorCondition()->get('Vendedor', $where, 4, $from, $select);
+		$this->view->panel1($pedidovendedor_collection, $vendedor_collection);
 	}
 
 	function agregar() {
@@ -100,16 +91,13 @@ class PedidoVendedorController {
 		$where = "uv.usuario_id = {$usuario_id}";
 		$usuariovendedor_id = CollectorCondition()->get('UsuarioVendedor', $where, 4, $from, $select);
 
-		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
-				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
-				 productomarca pm ON p.productomarca = pm.productomarca_id";
+		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, pc.denominacion AS CATEGORIA, p.codigo AS CODIGO";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id";
 		$where = "p.oculto = 0";
 		$groupby = "p.producto_id";
 		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select, $groupby);
 
-		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, c.razon_social AS RAZON_SOCIAL,
-				   CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
+		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, c.razon_social AS RAZON_SOCIAL, CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
 		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id";
 
 		if ($usuario_rol == 5) {
@@ -235,11 +223,8 @@ class PedidoVendedorController {
 		$vm->vendedor_id = $vendedor_id;
 		$vm->get();
 
-		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD,
-				   pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.valor_descuento AS VD,
-				   pvd.costo_producto AS COSTO, ROUND(pvd.importe, 2) AS IMPORTE, pvd.iva AS IVA";
-		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN
-				 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.valor_descuento AS VD, pvd.costo_producto AS COSTO, ROUND(pvd.importe, 2) AS IMPORTE, pvd.iva AS IVA";
+		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
 		$where = "pvd.pedidovendedor_id = {$pedidovendedor_id}";
 		$pedidovendedordetalle_collection = CollectorCondition()->get('PedidoVendedorDetalle', $where, 4, $from, $select);
 
@@ -257,16 +242,8 @@ class PedidoVendedorController {
 
     	$desde = filter_input(INPUT_POST, 'desde');
     	$hasta = filter_input(INPUT_POST, 'hasta');
-    	$select = "pv.pedidovendedor_id AS PEDVENID, CONCAT(date_format(pv.fecha, '%d/%m/%Y'), ' ', LEFT(pv.hora,5)) AS FECHA,
-    			   UPPER(cl.razon_social) AS CLIENTE, UPPER(cl.nombre_fantasia) AS FANTASIA, pv.subtotal AS SUBTOTAL,
-    			   pv.importe_total AS IMPORTETOTAL, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR,
-    			   CASE pv.estadopedido WHEN 1 THEN 'inline-block' WHEN 2 THEN 'none' WHEN 3 THEN 'none' END AS DSPBTN,
-    			   CASE pv.estadopedido WHEN 1 THEN 'SOLICITADO' WHEN 2 THEN 'PROCESADO' WHEN 3 THEN 'CANCELADO' END AS LBLEST,
-    			   CASE pv.estadopedido WHEN 1 THEN 'primary' WHEN 2 THEN 'success' WHEN 3 THEN 'danger' END AS CLAEST,
-    			   LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED";
-		$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN
-				 vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN
-				 estadopedido ep ON pv.estadopedido = ep.estadopedido_id";
+    	$select = "pv.pedidovendedor_id AS PEDVENID, CONCAT(date_format(pv.fecha, '%d/%m/%Y'), ' ', LEFT(pv.hora,5)) AS FECHA, UPPER(cl.razon_social) AS CLIENTE, UPPER(cl.nombre_fantasia) AS FANTASIA, pv.subtotal AS SUBTOTAL, pv.importe_total AS IMPORTETOTAL, UPPER(CONCAT(ve.APELLIDO, ' ', ve.nombre)) AS VENDEDOR, CASE pv.estadopedido WHEN 1 THEN 'inline-block' WHEN 2 THEN 'none' WHEN 3 THEN 'none' END AS DSPBTN, CASE pv.estadopedido WHEN 1 THEN 'SOLICITADO' WHEN 2 THEN 'PROCESADO' WHEN 3 THEN 'CANCELADO' END AS LBLEST, CASE pv.estadopedido WHEN 1 THEN 'primary' WHEN 2 THEN 'success' WHEN 3 THEN 'danger' END AS CLAEST, LPAD(pv.pedidovendedor_id, 8, 0) AS NUMPED";
+		$from = "pedidovendedor pv INNER JOIN cliente cl ON pv.cliente_id = cl.cliente_id INNER JOIN vendedor ve ON pv.vendedor_id = ve.vendedor_id INNER JOIN estadopedido ep ON pv.estadopedido = ep.estadopedido_id";
 		if ($usuario_rol == 5) {
 			$vendedor_id = $usuariovendedor_id[0]['VENID'];
 			$where = "pv.fecha BETWEEN '{$desde}' AND '{$hasta}' AND pv.vendedor_id = {$vendedor_id} ORDER BY cl.razon_social ASC";
@@ -300,17 +277,12 @@ class PedidoVendedorController {
 		$cm->cliente_id = $cliente_id;
 		$cm->get();
 
-		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
-				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL,
-				   p.costo as COSTO, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA, (((p.costo * p.porcentaje_ganancia)/100)+p.costo) AS VENTA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
-				 productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id LEFT JOIN
-				 productodetalle pd ON p.producto_id = pd.producto_id LEFT JOIN proveedor prv ON pd.proveedor_id = prv.proveedor_id";
+		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL, p.costo as COSTO, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA, (((p.costo * p.porcentaje_ganancia)/100)+p.costo) AS VENTA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id LEFT JOIN productodetalle pd ON p.producto_id = pd.producto_id LEFT JOIN proveedor prv ON pd.proveedor_id = prv.proveedor_id";
 		$groupby = "p.producto_id";
 		$producto_collection = CollectorCondition()->get('Producto', NULL, 4, $from, $select, $groupby);
 
-		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, CONCAT(c.razon_social, '(', c.nombre_fantasia, ')') AS RAZON_SOCIAL,
-				   CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
+		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, CONCAT(c.razon_social, '(', c.nombre_fantasia, ')') AS RAZON_SOCIAL, CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
 		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id";
 		if ($usuario_rol == 5) {
 			$vendedor_id = $usuariovendedor_id[0]['VENID'];
@@ -320,12 +292,8 @@ class PedidoVendedorController {
 		}
 
 		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
-		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD,
-				   pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE,
-				   pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, pvd.valor_descuento AS VD,
-				   pvd.iva AS IVA, pvd.valor_ganancia AS VALGAN";
-		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN
-		 		 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE, pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, pvd.valor_descuento AS VD, pvd.iva AS IVA, pvd.valor_ganancia AS VALGAN";
+		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
 		$where = "pvd.pedidovendedor_id = {$arg}";
 		$pedidovendedordetalle_collection = CollectorCondition()->get('PedidoVendedorDetalle', $where, 4, $from, $select);
 
@@ -349,17 +317,12 @@ class PedidoVendedorController {
 		$cm->cliente_id = $cliente_id;
 		$cm->get();
 
-		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION,
-				   pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL,
-				   p.costo as COSTO, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA, (((p.costo * p.porcentaje_ganancia)/100)+p.costo) AS VENTA";
-		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
-				 productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id LEFT JOIN
-				 productodetalle pd ON p.producto_id = pd.producto_id LEFT JOIN proveedor prv ON pd.proveedor_id = prv.proveedor_id";
+		$select = "p.producto_id AS PRODUCTO_ID, CONCAT(pm.denominacion, ' ', p.denominacion) AS DENOMINACION, pc.denominacion AS CATEGORIA, p.codigo AS CODIGO, p.stock_minimo AS STMINIMO, p.stock_ideal AS STIDEAL, p.costo as COSTO, p.iva AS IVA, p.porcentaje_ganancia AS GANANCIA, (((p.costo * p.porcentaje_ganancia)/100)+p.costo) AS VENTA";
+		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id LEFT JOIN productodetalle pd ON p.producto_id = pd.producto_id LEFT JOIN proveedor prv ON pd.proveedor_id = prv.proveedor_id";
 		$groupby = "p.producto_id";
 		$producto_collection = CollectorCondition()->get('Producto', NULL, 4, $from, $select, $groupby);
 
-		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, CONCAT(c.razon_social, '(', c.nombre_fantasia, ')') AS RAZON_SOCIAL,
-				   CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
+		$select = "c.cliente_id AS CLIENTE_ID, LPAD(c.cliente_id, 5, 0) AS CODCLI, CONCAT(c.razon_social, '(', c.nombre_fantasia, ')') AS RAZON_SOCIAL, CONCAT(dt.denominacion, ' ', c.documento) AS DOCUMENTO";
 		$from = "cliente c INNER JOIN documentotipo dt ON c.documentotipo = dt.documentotipo_id";
 		if ($usuario_rol == 5) {
 			$vendedor_id = $usuariovendedor_id[0]['VENID'];
@@ -369,12 +332,8 @@ class PedidoVendedorController {
 		}
 
 		$cliente_collection = CollectorCondition()->get('Cliente', $where, 4, $from, $select);
-		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD,
-				   pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE,
-				   pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, pvd.valor_descuento AS VD,
-				   pvd.iva AS IVA, pvd.valor_ganancia AS VALGAN";
-		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN
-		 		 productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select = "pvd.codigo_producto AS CODIGO, pvd.descripcion_producto AS DESCRIPCION, pvd.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, pvd.descuento AS DESCUENTO, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE, pvd.pedidovendedordetalle_id AS PEDVENID, pvd.producto_id AS PRODUCTO, pvd.valor_descuento AS VD, pvd.iva AS IVA, pvd.valor_ganancia AS VALGAN";
+		$from = "pedidovendedordetalle pvd INNER JOIN producto p ON pvd.producto_id = p.producto_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
 		$where = "pvd.pedidovendedor_id = {$arg}";
 		$pedidovendedordetalle_collection = CollectorCondition()->get('PedidoVendedorDetalle', $where, 4, $from, $select);
 
@@ -389,7 +348,6 @@ class PedidoVendedorController {
 
 		$this->view->procesar($producto_collection, $cliente_collection, $pedidovendedordetalle_collection, $condicionpago_collection, $condicioniva_collection, $tipofactura_collection, $this->model, $cm);
 	}
-
 
 	function actualizar() {
 		SessionHandler()->check_session();
@@ -477,13 +435,8 @@ class PedidoVendedorController {
 		$vm->get();
 		$vendedor_denominacion = $vm->apellido . ' ' . $vm->nombre;
 
-		$select = "CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, pv.pedidovendedor_id AS NUMPED, c.razon_social AS CLIENTE,
-				   c.nombre_fantasia AS FANTASIA, CONCAT(pm.denominacion, ' ', pr.denominacion) AS PRODUCTO, pvd.descuento AS PORDES, pvd.valor_descuento AS VALDES,
-				   pvd.cantidad AS CANTIDAD, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE, c.cliente_id AS CLIID,
-				   tf.nomenclatura AS NOMENCLATURA,pr.codigo AS CODIGO";
-		$from = "pedidovendedor pv INNER JOIN cliente c ON pv.cliente_id = c.cliente_id INNER JOIN vendedor v ON pv.vendedor_id = v.vendedor_id INNER JOIN
-		  		 pedidovendedordetalle pvd ON pv.pedidovendedor_id = pvd.pedidovendedor_id INNER JOIN tipofactura tf ON c.tipofactura = tf.tipofactura_id INNER JOIN
-		  		 producto pr ON pvd.producto_id = pr.producto_id INNER JOIN productomarca pm ON pr.productomarca = pm.productomarca_id";
+		$select = "CONCAT(v.apellido, ' ', v.nombre) AS VENDEDOR, pv.pedidovendedor_id AS NUMPED, c.razon_social AS CLIENTE, c.nombre_fantasia AS FANTASIA, CONCAT(pm.denominacion, ' ', pr.denominacion) AS PRODUCTO, pvd.descuento AS PORDES, pvd.valor_descuento AS VALDES, pvd.cantidad AS CANTIDAD, pvd.costo_producto AS COSTO, pvd.importe AS IMPORTE, c.cliente_id AS CLIID, tf.nomenclatura AS NOMENCLATURA,pr.codigo AS CODIGO";
+		$from = "pedidovendedor pv INNER JOIN cliente c ON pv.cliente_id = c.cliente_id INNER JOIN vendedor v ON pv.vendedor_id = v.vendedor_id INNER JOIN pedidovendedordetalle pvd ON pv.pedidovendedor_id = pvd.pedidovendedor_id INNER JOIN tipofactura tf ON c.tipofactura = tf.tipofactura_id INNER JOIN producto pr ON pvd.producto_id = pr.producto_id INNER JOIN productomarca pm ON pr.productomarca = pm.productomarca_id";
 
 		switch ($tipo_descarga) {
 			case 1:
@@ -580,7 +533,6 @@ class PedidoVendedorController {
 		$dias_vencimiento = $ccm->dias_vencimiento;
 
 		$num_factura = $this->siguiente_remito();
-
 		$select = "e.numero_factura AS NUMERO_FACTURA";
 		$from = "egreso e";
 		$where = "e.numero_factura = {$num_factura}";
@@ -833,11 +785,8 @@ class PedidoVendedorController {
 		$tfm->tipofactura_id = $tipofactura_id;
 		$tfm->get();
 
-		$select_egresos = "ed.codigo_producto AS CODIGO, ed.descripcion_producto AS DESCRIPCION, ed.cantidad AS CANTIDAD,
-						   pu.denominacion AS UNIDAD, ed.descuento AS DESCUENTO, ed.valor_descuento AS VD, p.no_gravado AS NOGRAVADO,
-						   ed.costo_producto AS COSTO, ROUND(ed.importe, 2) AS IMPORTE, ed.iva AS IVA, p.exento AS EXENTO";
-		$from_egresos = "egresodetalle ed INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN
-						  productounidad pu ON p.productounidad = pu.productounidad_id";
+		$select_egresos = "ed.codigo_producto AS CODIGO, ed.descripcion_producto AS DESCRIPCION, ed.cantidad AS CANTIDAD, pu.denominacion AS UNIDAD, ed.descuento AS DESCUENTO, ed.valor_descuento AS VD, p.no_gravado AS NOGRAVADO, ed.costo_producto AS COSTO, ROUND(ed.importe, 2) AS IMPORTE, ed.iva AS IVA, p.exento AS EXENTO";
+		$from_egresos = "egresodetalle ed INNER JOIN producto p ON ed.producto_id = p.producto_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id";
 		$where_egresos = "ed.egreso_id = {$egreso_id}";
 		$egresodetalle_collection = CollectorCondition()->get('EgresoDetalle', $where_egresos, 4, $from_egresos, $select_egresos);
 

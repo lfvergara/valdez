@@ -84,8 +84,9 @@ class IngresoController {
 		$from = "producto p INNER JOIN productocategoria pc ON p.productocategoria = pc.productocategoria_id INNER JOIN
 				 productomarca pm ON p.productomarca = pm.productomarca_id INNER JOIN productounidad pu ON p.productounidad = pu.productounidad_id LEFT JOIN
 				 productodetalle pd ON p.producto_id = pd.producto_id LEFT JOIN proveedor prv ON pd.proveedor_id = prv.proveedor_id";
+		$where = "p.oculto = 0";
 		$groupby = "p.producto_id";
-		$producto_collection = CollectorCondition()->get('Producto', NULL, 4, $from, $select, $groupby);
+		$producto_collection = CollectorCondition()->get('Producto', $where, 4, $from, $select, $groupby);
 
 		$select = "p.proveedor_id AS PROVEEDOR_ID, p.razon_social AS RAZON_SOCIAL,  
 				   CONCAT(dt.denominacion, ' ', p.documento) AS DOCUMENTO";
