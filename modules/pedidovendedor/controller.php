@@ -159,8 +159,11 @@ class PedidoVendedorController {
 		$this->model->subtotal = filter_input(INPUT_POST, 'subtotal');
 		$this->model->importe_total = $importe_total;
 		$this->model->estadopedido = 1;
+		$this->model->detalle = '';
+		$this->model->condicionpago = 1;
 		$this->model->cliente_id = $cliente_id;
 		$this->model->vendedor_id = $vendedor_id;
+		$this->model->egreso_id = 0;
 		$this->model->save();
 		$pedidovendedor_id = $this->model->pedidovendedor_id;
 
@@ -749,6 +752,7 @@ class PedidoVendedorController {
 			$this->model->pedidovendedor_id = filter_input(INPUT_POST, 'pedidovendedor_id');
 			$this->model->get();
 			$this->model->estadopedido = 2;
+			$this->model->egreso_id = $egreso_id;
 			$this->model->save();
 
 			header("Location: " . URL_APP . "/egreso/consultar/{$egreso_id}");
